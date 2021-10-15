@@ -43,7 +43,7 @@ public class HomeController {
 		String formattedDate = dateFormat.format(date);
 		System.out.println("디비에서 가지고 온값 " + a);
 		model.addAttribute("serverTime", formattedDate );
-		
+		//dis
 		return "home";
 	}
 	
