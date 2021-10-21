@@ -13,8 +13,15 @@
     <title>N247</title>
   </head>
   <body>
-    <h1>home</h1>
-    <a href="/mvc/login">login</a>
+  	<a href="#">other</a>
+    <h1>게시글1</h1>
+<!--    게시판 긁어 옴 날짜와 제목만 보여줌 클릭하면 모달로 전체 타임라인 창을 보여줌 -->
+    <a href="#">tab1</a>
+    <a href="/mvc/board2">tab2</a>
+    <a href="/mvc/board3">tab3</a>
+    <a href="/mvc/board3">입력</a>
+    <a href="/mvc/board3">연락처</a>
+    <a href="/mvc/board3">파일</a>
 
     <!-- Optional JavaScript; choose one of the two! -->
 

@@ -47,6 +47,25 @@ public class HomeController {
 		return "home";
 	}
 	
+	@RequestMapping(value = "login", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+	public String login(Locale locale, Model model) {
+		
+		return "login";
+	}
+	
+	
+	@RequestMapping(value = "top", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+	public String top(Locale locale, Model model) {
+		
+		return "top";
+	}
+	
+	
+	@RequestMapping(value = "board", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+	public String board(Locale locale, Model model) {
+		
+		return "board";
+	}
 	//서버에서 아무거나 가져오기
 	public static Integer getseverdata() {
 		String resource = "org/first/mvc/mybatis_config.xml";
