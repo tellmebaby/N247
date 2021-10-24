@@ -67,7 +67,7 @@ public class HomeController {
 		//들어갈때 로그인 정보를 가져온다 사용자 ID
 		//ID로 최신순으로 나열된 Post All (title, date) 을 보여준다
 		//Post 내용 (postId, date, title, description, 연락처 연결 id)
-		
+		//test
 		
 		
 		return "board";
