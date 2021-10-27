@@ -9,4 +9,21 @@
     SELECT count(*) id FROM hong.iamkayList where id
   </select>
   
+  <insert id="insertPost" parameterType="org.first.mvc.entity.Post">
+    insert into hong.N247 (hong.N247.create,userId,postTitle,description,tabId,tabTitle,rePerson) values (now(),#{userId},#{postTitle},#{description},#{tabId},#{tabTitle},#{rePerson})
+  </insert>
+  
+    <insert id="insertTab" parameterType="org.first.mvc.entity.Post">
+    insert into hong.N247_tab (userId,tabTitle) values (#{userId},#{tabTitle})
+  </insert>
+  
+  
+  <select id="getPostList" resultType="org.first.mvc.entity.Post">
+    select * from hong.N247 where userId = #{userId} order by id desc
+  </select>
+  
+    <select id="getTabList" resultType="org.first.mvc.entity.Post">
+    select * from hong.N247_tab where userId = #{userId} order by tabId desc
+  </select>
+  
 </mapper>
