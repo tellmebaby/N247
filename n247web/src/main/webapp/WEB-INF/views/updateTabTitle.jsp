@@ -8,38 +8,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+<link href="/docs/5.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 
     <title>N247</title>
   </head>
   <body>
-    <h1>post form</h1>
+    <h1>update tab form</h1>
 <!--  post 수정및 입력창 -->
 
-	
-
-	<form action="createPostAction" id="myForm" class="form-inline" method="post" accept-charset="UTF-8">
+	<form action="updateTabTitleAction" id="myForm" class="form-inline" method="get">
  	 	<i class="fas fa-search" aria-hidden="true"></i>
  	 	
 		<table>
 			<tr>
-				<td><input class="form-control form-control-sm" type="text" name="postTitle" placeholder="제목을 입력하세요" aria-label="postTitle"></td>
-			</tr>
-			<tr>
-				<td>
-					<select class="form-select" name="rePerson" aria-label="rePerson">
-<!-- 					연락처 정보 받아와서 옵션값 늘어나게 만들어야함. -->
-					  <option selected>관련자를 선택하세요</option>
-					  <option value="friend1">firend1</option>
-					  <option value="friend2">firend2</option>
-					  <option value="friend3">firedn3</option>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td colspan=3>
-				<textarea  name="description" rows="13" cols="46" ></textarea>
-				</td>
+				<td><input class="form-control form-control-sm" type="text" name="tabTitle" placeholder="${tabTitle.tabTitle }" aria-label="tabTitle"></td>
 			</tr>
 		 	<tr>		
 				<td colspan=4>
@@ -48,10 +30,12 @@
 				</td>
 			</tr>
  	 	</table>
- 	 		<input type="hidden" name="userId" value="${userSet.userId }">
- 	 		<input type="hidden" name="tabId" value="${userSet.tabId }">
- 	 		
+ 	 		<input type="hidden" name="tabId" value="${tabTitle.tabId }">
  	 </form>
+ 	 
+
+	 
+ 	 <a href="/mvc/board?tabId=${tabTitle.tabId} }"> board </a>
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
