@@ -3,6 +3,8 @@ package org.first.mvc.entity;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 public class Post {
 	
 	private Integer id;
@@ -45,6 +47,8 @@ public class Post {
 	
 	private Integer N247_reIsDel;
 	
+	private Integer N247_reTabId;
+	
 	private List <Post> replyList;
 	
 	private String krCreate;
@@ -61,21 +65,171 @@ public class Post {
 	
 	private long compareTime;
 	
+	private String compareMessage;
+	
 	private String TabLastUpdate;
 	
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date Tab_dueDay;
 	
 	private Double progress;
 	
 	private String progressBg;
 	
+	private Double tabProgress;
+	
+	private String tabProgressBg;
+	
 	private Date dueDay;
 	
 	private List <Post> friImgList;
+	
+	private String minDay;
+	
+	private String maxDay;
 
-
+	private int tabSelectCheck;
+	
+	private List <Post> postList;
+	
+	private List <Post> completePostList;
+	
+	private List <Post> tabList;
+	
+	private List <Post> friTabList;
+	
+	private List <Post> postFileNameList;
+	
+	private String dueMessage;
+	
+	private long tabDueDay;
 	
 	
+	private Integer tabAdmCheck;
+	
+	
+	
+	
+	public Integer getTabAdmCheck() {
+		return tabAdmCheck;
+	}
+
+	public void setTabAdmCheck(Integer tabAdmCheck) {
+		this.tabAdmCheck = tabAdmCheck;
+	}
+
+	public Integer getN247_reTabId() {
+		return N247_reTabId;
+	}
+
+	public void setN247_reTabId(Integer n247_reTabId) {
+		N247_reTabId = n247_reTabId;
+	}
+
+	public List<Post> getPostFileNameList() {
+		return postFileNameList;
+	}
+
+	public void setPostFileNameList(List<Post> postFileNameList) {
+		this.postFileNameList = postFileNameList;
+	}
+
+	public long getTabDueDay() {
+		return tabDueDay;
+	}
+
+	public void setTabDueDay(long tabDueDay) {
+		this.tabDueDay = tabDueDay;
+	}
+
+	public String getDueMessage() {
+		return dueMessage;
+	}
+
+	public void setDueMessage(String dueMessage) {
+		this.dueMessage = dueMessage;
+	}
+
+	public Double getTabProgress() {
+		return tabProgress;
+	}
+
+	public void setTabProgress(Double tabProgress) {
+		this.tabProgress = tabProgress;
+	}
+
+	public String getTabProgressBg() {
+		return tabProgressBg;
+	}
+
+	public void setTabProgressBg(String tabProgressBg) {
+		this.tabProgressBg = tabProgressBg;
+	}
+
+	public List<Post> getFriTabList() {
+		return friTabList;
+	}
+
+	public void setFriTabList(List<Post> friTabList) {
+		this.friTabList = friTabList;
+	}
+
+	public List<Post> getCompletePostList() {
+		return completePostList;
+	}
+
+	public void setCompletePostList(List<Post> completePostList) {
+		this.completePostList = completePostList;
+	}
+
+	public List<Post> getPostList() {
+		return postList;
+	}
+
+	public void setPostList(List<Post> postList) {
+		this.postList = postList;
+	}
+
+	public List<Post> getTabList() {
+		return tabList;
+	}
+
+	public void setTabList(List<Post> tabList) {
+		this.tabList = tabList;
+	}
+
+	public int getTabSelectCheck() {
+		return tabSelectCheck;
+	}
+
+	public void setTabSelectCheck(int tabSelectCheck) {
+		this.tabSelectCheck = tabSelectCheck;
+	}
+
+	public String getMinDay() {
+		return minDay;
+	}
+
+	public void setMinDay(String minDay) {
+		this.minDay = minDay;
+	}
+
+	public String getMaxDay() {
+		return maxDay;
+	}
+
+	public void setMaxDay(String maxDay) {
+		this.maxDay = maxDay;
+	}
+
+	public String getCompareMessage() {
+		return compareMessage;
+	}
+
+	public void setCompareMessage(String compareMessage) {
+		this.compareMessage = compareMessage;
+	}
+
 	public List<Post> getFriImgList() {
 		return friImgList;
 	}

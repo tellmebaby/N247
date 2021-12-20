@@ -2,6 +2,7 @@ package org.first.mvc.entity;
 
 
 import java.util.Date;
+import java.util.List;
 
 
 public class Member {
@@ -34,8 +35,37 @@ public class Member {
 	
 	private String mb_introduce;
 	
-	
+	private List<Post> tabList;
 
+	private List<Post> friTabList;
+	
+	private List<Member> friendInformationList;
+	
+	
+	
+	public List<Member> getFriendInformationList() {
+		return friendInformationList;
+	}
+
+	public void setFriendInformationList(List<Member> friendInformationList) {
+		this.friendInformationList = friendInformationList;
+	}
+
+	public List<Post> getFriTabList() {
+		return friTabList;
+	}
+
+	public void setFriTabList(List<Post> friTabList) {
+		this.friTabList = friTabList;
+	}
+
+	public List<Post> getTabList() {
+		return tabList;
+	}
+
+	public void setTabList(List<Post> tabList) {
+		this.tabList = tabList;
+	}
 
 	public String getMb_introduce() {
 		return mb_introduce;

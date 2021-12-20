@@ -17,27 +17,91 @@
     <title>N247</title>
   </head>
   <body>
-    <small>반갑습니다.</small>
-    <h1>새로운 탭을 만들어보세요.</h1>
-    <form action="createTabAction" id="myForm" class="form-inline" method="post">
- 	 	
- 	 	
-		<table>
-			<tr>
-				<td><input  type="text" name="tabTitle" placeholder="탭명을 입력하세요" aria-label="tabTitle"></td>
-			</tr>
-		 	<tr>		
-				<td colspan=4>
-				<button type="submit" class="btn btn-secondary">V</button>
-				<button type="submit" onclick="myFunction()" class="btn btn-secondary">X</button>
-				</td>
-			</tr>
- 	 	</table>
- 	 		<input type="hidden" name="userNum" value="${userSet.userNum }">
- 	 </form>
-    
+  	  	    <nav class="py-2 bg-light border-bottom">
+			    <div class="container d-flex flex-wrap">
+			      <ul class="nav me-auto">
+	
+			      </ul>
+			      <ul class="nav">
+			        <li class="nav-item"><a href="/mvc/logOutAction" class="nav-link link-dark px-2">Log out</a></li>
+			      </ul>
+			    </div>
+			</nav>
+  
+  		    <div class="container">
+			  <div class="row justify-content-md-center">
+			    <div class="col-md-8">
+			      <img src="/images/logoN247.png" class="img-fluid">
+			    </div>
+			  </div>
+			  <div class="row justify-content-md-center">
+			    <div class="col-md-auto">
+			       <small>반갑습니다. ${userSet.nickName }</small>
+			    </div>
+			  </div>
+			  <div class="row justify-content-md-center">
+			  	<div class="col-md-auto">
+			  		<h1>이제 프로젝트를 만들어 시작해보세요.</h1>
+			  	</div>
+			  </div>
+			  <div class="row justify-content-md-center">
+	    		<div class="dropdown">
+              <button class="btn btn-primary btn-block" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                New
+              </button>
+              <ul class="dropdown-menu dropdown-menu-right">
+	              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#project-create-modal">새로운 프로젝트</a></li>             
+			  </ul>
+            </div>
+	    		
+	    		
+   			 </div>
+   			 
+   			 
 
-
+	   <div class="modal fade" id="project-create-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">		    
+		<form action="createTabAction" id="myForm" class="form-inline" method="post">
+		 <div class="modal-dialog">	 
+		  <div class="modal-content">
+		   <div class="modal-header">
+		    <h5 class="modal-title">새로운 프로젝트</h5>
+              <button type="button" class="close btn btn-round" data-bs-dismiss="modal" aria-label="Close">
+                <i class="material-icons">close</i>
+              </button>  
+		   </div>
+		   <div class="modal-body">
+            <div class="tab-pane fade show active" id="task-add-details" role="tabpanel">
+              <h6>새로운 프로젝트</h6>
+                <div class="form-group row align-items-center">
+                    <label class="col-3">프로젝트명</label>
+                    <input class="form-control col" type="text" name="tabTitle" placeholder="프로젝트명" name="task-name">
+                </div>
+                <div class="form-group row">
+                    <label class="col-3">프로젝트 소개글</label>
+                    <textarea class="form-control col" rows="3" name="tab_intro" placeholder="프로젝트 소개글" name="task-description"></textarea>
+                </div>
+                    <hr> 
+                    <h6>Time line</h6>
+				<div class="form-group row align-items-center">
+     				<label class="col-3" for="date">프로젝트 완료일 </label>
+   					<input class="form-control col flatpickr-input" type="date" name="tab_dueDay" id="date" min="${thisTab.minDay }">
+   				</div>
+            </div>
+            <div class="alert alert-warning text-small" role="alert">
+                 <span>완료 시점은 언제든지 정할 수 있습니다. </span>
+            </div>
+           </div>
+		   <div class="modal-footer">
+		     <button role="button" class="btn btn-primary" type="submit">
+               프로젝트 만들기
+             </button>
+ 	 		<input type="hidden" name="userNum" value="${userInformation.userId }">
+ 	 		<input type="hidden" name="id" value="${userInformation.id }">
+		   </div>
+		  </div>	     
+		</div>
+	   </form>
+	 </div>
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->

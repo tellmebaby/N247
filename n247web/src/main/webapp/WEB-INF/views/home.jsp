@@ -17,44 +17,123 @@
     <title>N247</title>
   </head>
   <body>
-    <small>Your new 24/7 record</small>
-    <h1>N247</h1>
-    <a href="/mvc/signup">멤버가입</a>
-    
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo">Login</button>
-	<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
- 	 <div class="modal-dialog">
-  	 <form action="loginAction" method="post" >
-  	  <div class="modal-content">
-  	    <div class="modal-header">
-  	      <h5 class="modal-title" id="exampleModalLabel">Login</h5>	
-  	      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-  	    </div>
-  	    <div class="modal-body">    
-           <div class="mb-3 row">
-   			<label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
-   			 <div class="col-sm-10">
-     			 <input type="text" name="id" class="form-control" id="staticEmail" value="email@example.com">
-   		  	 </div>
- 	       </div>
-		   <div class="mb-3 row">
-		   		<small class=erm >${errorMessage }</small>
-			 <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
-			  <div class="col-sm-10">
-			   <input type="password" name="password" class="form-control" id="inputPassword">
-			  </div>   
+	  	    <nav class="py-2 bg-light border-bottom">
+			    <div class="container d-flex flex-wrap">
+			      <ul class="nav me-auto">
+	
+			      </ul>
+			      <ul class="nav">
+			        <li class="nav-item"><a href="#" class="nav-link link-dark px-2" data-bs-toggle="modal" data-bs-target="#member-login-Modal">Login</a></li>
+			        <li class="nav-item"><a href="#" class="nav-link link-dark px-2" data-bs-toggle="modal" data-bs-target="#member-signUp-Modal">Sign up</a></li>
+			      </ul>
+			    </div>
+			</nav>
+
+  			<p>
+		    <div class="container">
+			  <div class="row justify-content-md-center">
+			    <div class="col-md-8">
+			      <img src="/images/logoN247.png" class="img-fluid">
+			    </div>
+			  </div>
+			  <div class="row justify-content-md-center">
+			    <div class="col-md-auto">
+			       <small class=erm >${errorMessage }</small>
+			    </div>
+			  </div>
+			</div>
+			
+			<p>
+		    <p>
+		    <p>
+		   
+		   	<div class="container">
+			  <div class="row justify-content-md-center">
+			    <div class="col-md-6">
+			    	<img src="/images/mainImg.png" class="img-fluid">
+			    </div>
+			  </div>
+			</div>
+		   
+<!-- 		modal start -->
+		   <div class="modal fade" id="member-login-Modal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
+		 	 <div class="modal-dialog">
+		  	  <form action="loginAction" method="post" >
+		  	   <div class="modal-content">
+		  	     <div class="modal-header">
+		  	       <h5 class="modal-title" id="ModalLabel">Login</h5>	
+		  	       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		  	     </div>
+		  	     <div class="modal-body">    
+		           <div class="mb-3 row">
+		   			<label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
+		   			 <div class="col-sm-10">
+		     			 <input type="text" name="id" class="form-control" id="staticEmail" value="email@example.com">
+		   		  	 </div>
+		 	       </div>
+				   <div class="mb-3 row">
+					 <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
+					  <div class="col-sm-10">
+					   <input type="password" name="password" class="form-control" id="inputPassword">
+					  </div>   
+				   </div>
+				 </div>
+		    	 <div class="modal-footer">
+		           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+		           <button type="submit" class="btn btn-primary">로그인</button>
+		         </div>
+		      </div>
+		     </form>
+		    </div>
 		   </div>
-    	<div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-        <button type="submit" class="btn btn-primary">로그인</button>
-      </div>
-    </div>
-  </div>
-  </form>
-</div>
-</div>
-
-
+		   
+		   
+		   <div class="modal fade" id="member-signUp-Modal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
+		 	 <div class="modal-dialog">
+		  	  <form action="memberAction" method="post" >
+		  	   <div class="modal-content">
+		  	     <div class="modal-header">
+		  	       <h5 class="modal-title" id="ModalLabel">Sign up</h5>	
+		  	       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		  	     </div>
+		  	     <div class="modal-body">    
+		           <div class="mb-3 row">
+		   			<label for="staticEmail-signUp" class="col-sm-2 col-form-label">이메일</label>
+		   			 <div class="col-sm-10">
+		     			 <input type="text" name="id" class="form-control" id="staticEmail" value="email@example.com">
+		   		  	 </div>
+		 	       </div>
+		 	       <div class="mb-3 row">
+		   			<label for="staticEmail" class="col-sm-2 col-form-label">계정이름</label>
+		   			 <div class="col-sm-10">
+		     			 <input type="text" name="nickName" class="form-control" id="staticEmail" value="">
+		   		  	 </div>
+		 	       </div>
+				   <div class="mb-3 row">
+					 <label for="inputPassword" class="col-sm-2 col-form-label">비밀번호</label>
+					  <div class="col-sm-10">
+					   <input type="password" name="password" class="form-control" id="inputPassword-signUp">
+					  </div>   
+				   </div>
+				   <div class="mb-3 row">
+					 <label for="inputPassword" class="col-sm-2 col-form-label">비밀번호 재입력</label>
+					  <div class="col-sm-10">
+					   <input type="password" name="passwordConfirm" class="form-control" id="inputRePassword-signUp">
+					  </div>   
+				   </div>
+				   <div class="alert alert-warning text-small" role="alert">
+			                 <span>비밀번호는 숫자문자조합 8자이상 입력 </span>
+			            </div>
+				 </div>
+		    	 <div class="modal-footer">
+		           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+		           <button type="submit" class="btn btn-primary">가입하기</button>
+		         </div>
+		      </div>
+		     </form>
+		    </div>
+		   </div>
+<!-- 		   modal end -->
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->

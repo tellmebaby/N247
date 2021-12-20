@@ -24,7 +24,7 @@ public class FileService {
 	
 //	파일업로드
 	
-	public void uploadFile(MultipartHttpServletRequest multiRequest,Integer up_userId, Integer up_postId) throws Exception {
+	public void uploadFile(MultipartHttpServletRequest multiRequest,Integer up_userId, Integer up_postId, Integer tabId) throws Exception {
 //		파라미터 이름을 키로 파라미터에 해당하는 파일 정보를 값으로 하는 Map을 가져온다.
 		Map < String, MultipartFile > files = multiRequest.getFileMap();
 		//System.out.println("가져온게 이거야 파일 "+files.size());
@@ -97,7 +97,7 @@ public class FileService {
 				
 
 				//바뀐 파일 이름으로 기록되는지 확인해야함 
-				createFileToDb(saveFile.getName(),up_userId,up_postId);
+				createFileToDb(saveFile.getName(),up_userId,up_postId,tabId);
 				//System.out.println(saveFile.getName()+"이게 왜 안들어가지 위 ");
 
 			}else {
@@ -105,7 +105,7 @@ public class FileService {
 //				transferTo(File f) 메서드를 이용해서 업로드처리한다.
 				mFile.transferTo(saveFile);
 		
-				createFileToDb(saveFile.getName(),up_userId,up_postId);
+				createFileToDb(saveFile.getName(),up_userId,up_postId,tabId);
 				//System.out.println(saveFile.getName()+"이게 왜 안들어가지 아래 ");
 			}
 
@@ -114,7 +114,7 @@ public class FileService {
 	}
 	
 	
-	public static void createFileToDb (String up_fileName, Integer up_userId, Integer up_postId) {
+	public static void createFileToDb (String up_fileName, Integer up_userId, Integer up_postId, Integer tabId) {
 		
 		String resource = "org/first/mvc/mybatis_config.xml";
 		InputStream inputStream;
@@ -122,6 +122,7 @@ public class FileService {
 		p1.setUp_fileName(up_fileName);
 		p1.setUp_userId(up_userId);
 		p1.setUp_postId(up_postId);
+		p1.setUp_tabId(tabId);
 
 		try {
 			inputStream = Resources.getResourceAsStream(resource);

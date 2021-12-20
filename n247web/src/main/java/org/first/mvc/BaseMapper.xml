@@ -10,15 +10,15 @@
   </select>
   
   <insert id="insertFile" parameterType="org.first.mvc.entity.Upload">
-    insert into hong.N247_up (hong.N247_up.create,hong.N247_up.lastModified,up_fileName,up_isDel,up_userId,up_postId) values (now(),now(),#{up_fileName},0,#{up_userId},#{up_postId})
+    insert into hong.N247_up (hong.N247_up.create,hong.N247_up.lastModified,up_fileName,up_isDel,up_userId,up_postId,up_tabId) values (now(),now(),#{up_fileName},0,#{up_userId},#{up_postId},#{up_tabId})
   </insert>
   
   <insert id="insertPost" parameterType="org.first.mvc.entity.Post">
-    insert into hong.N247 (hong.N247.create,postTitle,description,tabId,isDel,hong.N247.lastUpdate, userNum) values (now(),#{postTitle},#{description},#{tabId},0,now(),#{userNum})
+    insert into hong.N247 (hong.N247.create,postTitle,description,tabId,isDel,hong.N247.lastUpdate, userNum, dueDay) values (now(),#{postTitle},#{description},#{tabId},0,now(),#{userNum},#{dueDay})
   </insert>
   
   <insert id="insertTab" parameterType="org.first.mvc.entity.Post">
-    insert into hong.N247_tab (hong.N247_tab.create,hong.N247_tab.lastUpdate,tabTitle,isDel,userNum) values (now(),now(),#{tabTitle},0,#{userNum})
+    insert into hong.N247_tab (hong.N247_tab.create,hong.N247_tab.lastUpdate,tabTitle,isDel,userNum,tab_intro,tab_dueDay) values (now(),now(),#{tabTitle},0,#{userNum},#{tab_intro},#{tab_dueDay})
   </insert>
   <insert id="insertMember" parameterType="org.first.mvc.entity.Member">
     insert into hong.member (hong.member.create,id,nickName,password,passwordConfirm,role,hong.member.modified) values (now(),#{id},#{nickName},#{password},#{passwordConfirm},#{role},now())
@@ -30,21 +30,28 @@
     insert into hong.N247_ft (hong.N247_ft.create,ft_tabId,ft_userId,ft_isDel,hong.N247_ft.lastModified) values (now(),#{ft_tabId},#{ft_userId},0,now());
   </insert>
   <insert id="insertReply" parameterType="org.first.mvc.entity.Post">
-    INSERT INTO hong.N247_re (N247_rePoId,N247_reUsId,N247_reDes,hong.N247_re.create,hong.N247_re.lastModified,N247_reIsDel) VALUE (#{n247_rePoId},#{n247_reUsId},#{n247_reDes},now(),now(),0);
+    INSERT INTO hong.N247_re (N247_rePoId,N247_reUsId,N247_reDes,hong.N247_re.create,hong.N247_re.lastModified,N247_reIsDel,N247_reTabId) VALUE (#{n247_rePoId},#{n247_reUsId},#{n247_reDes},now(),now(),0,#{N247_reTabId});
   </insert>
   
   
   <select id="getFriImgList" resultType="org.first.mvc.entity.Post">
   	select N247_reUsId from hong.N247_re where N247_rePoId = #{N247_rePoId} AND N247_reDu = 1
   </select>
+  <select id="getFriendList" resultType="org.first.mvc.entity.Fn247">
+  	SELECT * FROM hong.N247_f Where myId = #{myId} AND f_isDel=0 OR fUserId = #{myId} AND f_isDel=0
+  </select>
   <select id="getPostList" resultType="org.first.mvc.entity.Post">
-    select * from hong.N247 where tabId = #{tabId} AND isDel = 0 order by lastUpdate desc
+    select * from hong.N247 where tabId = #{tabId} AND isDel = 0 OR tabId = #{tabId} AND isDel = 3 order by lastUpdate desc
   </select>
   <select id="getPostId" resultType="org.first.mvc.entity.Post">
     select id from hong.N247 where tabId = #{tabId} AND isDel = 0 order by lastUpdate desc
   </select>
   <select id="getReplyList" resultType="org.first.mvc.entity.Post">
     SELECT * FROM hong.N247_re WHERE N247_rePoId = #{N247_rePoId} AND N247_reIsDel = 0 order by lastModified desc
+  </select>
+  
+  <select id="getReplyListToTabId" resultType="org.first.mvc.entity.Post">
+   SELECT * FROM hong.N247_re WHERE N247_reTabId = #{tabId} AND N247_reIsDel = 0 order by lastModified desc 
   </select>
   <select id="getUserImg" resultType="String">
     SELECT up_fileName FROM hong.N247_up Where up_userId = #{userNum} and up_isDel = 0 and up_postId = 0 
@@ -84,13 +91,15 @@
   	SELECT count(*) from hong.N247_up Where up_postId = #{up_postId} and up_isDel = 0 
   </select>
   
+  <select id="getPostFileToTabId" resultType="org.first.mvc.entity.Upload">
+  	SELECT * FROM hong.N247_up WHERE up_tabId = #{tabId} and up_isDel = 0 order by lastModified desc
+  </select>
   <select id="getFriList" resultType="org.first.mvc.entity.Fn247">
   	select * FROM hong.N247_f Where myId = #{myId} and f_isDel = 0 and adm = #{adm}
   </select>
     <select id="getFriAdmList" resultType="org.first.mvc.entity.Fn247">
   	select * FROM hong.N247_f Where fUserId = #{myId} and f_isDel = 0 and adm = #{adm}
   </select>
-  
   <select id="getFriAdmTabId" resultType="org.first.mvc.entity.Fn247">
   	SELECT * FROM hong.N247_ft Where ft_tabId = #{ft_tabId} and ft_isDel = 0
   </select>
@@ -114,10 +123,16 @@
     select count(*) from hong.member where nickName = #{nickName}
   </select>
   <select id="countTab" resultType="Integer">
-  	select count(*) from hong.N247_tab where userNum = #{userNum}
+  	select count(*) from hong.N247_tab where userNum = #{userNum} AND isDel = 0
+  </select>
+   <select id="countFriTab" resultType="Integer">
+  	select count(*) from hong.N247_ft where ft_userId = #{userNum} AND ft_isDel = 0
   </select>
   <select id="countFriId" resultType="Integer">
   	select count(*) from hong.N247_ft where ft_userId = #{ft_userId} AND ft_tabId = #{ft_tabId} AND ft_isDel = 0 
+  </select>
+  <select id="countFt" resultType="Integer">
+  	select count(*) from hong.N247_ft where ft_tabId = #{ft_tabId} AND ft_isDel = 0 
   </select>
 
  
@@ -131,6 +146,12 @@
   <select id="getIdToUserNum" resultType="String">
   	select id from hong.member where userId = #{userNum}
   </select>
+  <select id="getMember" resultType="org.first.mvc.entity.Member">
+  	select id,nickName,mb_introduce,userImg,userId from hong.member where userId = #{userId}
+  </select>
+  <select id="getMemberToId" resultType="org.first.mvc.entity.Member">
+  	select id,nickName,mb_introduce,userImg,userId from hong.member where id = #{id}
+  </select>
   <select id="getUserNum" resultType="Integer">
   	select userId from hong.member where id = #{id}
   </select>
@@ -143,6 +164,18 @@
   </select>
   <select id="getTab" resultType="org.first.mvc.entity.Post">
     select * from hong.N247_tab where tabId = #{tabId}
+  </select>
+  <select id="getTabLastUpdate" resultType="org.first.mvc.entity.Post">
+    select lastUpdate from hong.N247_tab where tabId = #{tabId}
+  </select>
+  <select id="getTabDueDay" resultType="org.first.mvc.entity.Post">
+    select tab_dueDay from hong.N247_tab where tabId = #{tabId}
+  </select>
+  <select id="getTabInfor" resultType="org.first.mvc.entity.Post">
+    select * from hong.N247_tab where tabId = #{tabId}
+  </select>
+  <select id="getPostLastUpdate" resultType="org.first.mvc.entity.Post">
+    select lastUpdate from hong.N247 where tabId = #{tabId} order by lastUpdate desc
   </select>
   <select id="getTabTitleToTabId" resultType="String">
     select tabTitle from hong.N247_tab where tabId = #{tabId}
@@ -168,10 +201,19 @@
 
 
   <update id="updateTabTitle" parameterType="org.first.mvc.entity.Post">
-    update hong.N247_tab set tabTitle=#{tabTitle} where tabId=#{tabId}
+    update hong.N247_tab set tabTitle=#{tabTitle},hong.N247_tab.lastUpdate=now() where tabId=#{tabId}
   </update>
   <update id="updateIsDelPost" parameterType="org.first.mvc.entity.Post">
-    update hong.N247 set isDel=1 where id=#{id}
+    update hong.N247 set isDel=1 , hong.N247.lastUpdate = now() where id=#{id}
+  </update>
+  <update id="updateCompletePost" parameterType="org.first.mvc.entity.Post">
+    update hong.N247 set isDel=#{isDel} , hong.N247.lastUpdate = now() where id=#{id}
+  </update>
+  <update id="updateTabIntro" parameterType="org.first.mvc.entity.Post">
+    update hong.N247_tab set tab_intro=#{tab_intro},hong.N247_tab.lastUpdate=now() where tabId=#{tabId}
+  </update>
+  <update id="updateTabDueDay" parameterType="org.first.mvc.entity.Post">
+    update hong.N247_tab set tab_dueDay=#{tab_dueDay},hong.N247_tab.lastUpdate=now() where tabId=#{tabId}
   </update>
    <update id="updateIsDelPostfile" parameterType="org.first.mvc.entity.Post">
     update hong.N247_up set up_isDel=1 where up_postId=#{id}
@@ -182,9 +224,11 @@
    <update id="updatePostTabTitle" parameterType="org.first.mvc.entity.Post">
     update hong.N247 set tabId=#{tabId} where tabId=#{moveOn}
   </update>
-  
+  <update id="updateAllPostIsDeltoTabId" parameterType="org.first.mvc.entity.Post">
+    update hong.N247 set isDel=1 where tabId=#{tabId}
+  </update>
    <update id="updatePost" parameterType="org.first.mvc.entity.Post">
-    update hong.N247 set hong.N247.lastUpdate = now(), postTitle = #{postTitle} , description = #{description} , tabId = #{tabId} , rePerson = #{rePerson} where id = #{id}
+    update hong.N247 set hong.N247.lastUpdate = now(), postTitle = #{postTitle} , description = #{description} , tabId = #{tabId} , dueDay = #{dueDay} where id = #{id}
   </update>
    <update id="updateFriAdm" parameterType="org.first.mvc.entity.Fn247">
     UPDATE hong.N247_f set adm = 1 where idN247_f = #{idN247_f}; 
