@@ -68,7 +68,7 @@
 		           <div class="mb-3 row">
 		   			<label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
 		   			 <div class="col-sm-10">
-		     			 <input type="text" name="id" class="form-control" id="staticEmail" value="email@example.com">
+		     			 <input type="text" name="id" class="form-control" id="staticEmail" placeholder="email@example.com">
 		   		  	 </div>
 		 	       </div>
 				   <div class="mb-3 row">
@@ -100,7 +100,7 @@
 		           <div class="mb-3 row">
 		   			<label for="staticEmail-signUp" class="col-sm-2 col-form-label">이메일</label>
 		   			 <div class="col-sm-10">
-		     			 <input type="text" name="id" class="form-control" id="staticEmail" value="email@example.com">
+		     			 <input type="text" name="id" class="form-control" id="staticEmail" placeholder="email@example.com">
 		   		  	 </div>
 		 	       </div>
 		 	       <div class="mb-3 row">

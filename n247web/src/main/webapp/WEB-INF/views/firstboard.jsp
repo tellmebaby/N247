@@ -36,7 +36,7 @@
 			  </div>
 			  <div class="row justify-content-md-center">
 			    <div class="col-md-auto">
-			       <small>반갑습니다. ${userSet.nickName }</small>
+			       <small>${userIdTabId.nickName }님 반갑습니다. </small>
 			    </div>
 			  </div>
 			  <div class="row justify-content-md-center">
@@ -45,16 +45,13 @@
 			  	</div>
 			  </div>
 			  <div class="row justify-content-md-center">
-	    		<div class="dropdown">
-              <button class="btn btn-primary btn-block" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+			  <div class="col-md-auto">
+	    		
+              <button class="btn btn-primary btn-block" type="button" data-bs-toggle="modal" data-bs-target="#project-create-modal" aria-expanded="false">
                 New
               </button>
-              <ul class="dropdown-menu dropdown-menu-right">
-	              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#project-create-modal">새로운 프로젝트</a></li>             
-			  </ul>
-            </div>
-	    		
-	    		
+
+	    		</div>
    			 </div>
    			 
    			 
@@ -93,10 +90,10 @@
            </div>
 		   <div class="modal-footer">
 		     <button role="button" class="btn btn-primary" type="submit">
-               프로젝트 만들기
+               프로젝트 만들기 
              </button>
- 	 		<input type="hidden" name="userNum" value="${userInformation.userId }">
- 	 		<input type="hidden" name="id" value="${userInformation.id }">
+ 	 		<input type="hidden" name="userNum" value="${userIdTabId.userId }">
+ 	 		
 		   </div>
 		  </div>	     
 		</div>

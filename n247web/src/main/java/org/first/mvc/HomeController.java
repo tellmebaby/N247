@@ -49,9 +49,11 @@ public class HomeController {
 		model.addAttribute("serverTime", formattedDate );
 		return "home";
 	}
+	
 	@RequestMapping(value = "loginAction", method = RequestMethod.POST)
 	public String loginAction(Locale locale, Model model, String id, String password, HttpServletRequest request ) {
-	
+		
+		//System.out.println("받아온 아이디는 : " + id);
 		Integer count = DAO.checkLoginMember(id,password);
 		String em = "Email이나 비밀번호를 다시 확인하세요. ";
 		
@@ -60,214 +62,80 @@ public class HomeController {
 			return "home";
 		}
 			//로그인 성공시 
-			System.out.println("로그인 체크 결과 성공하셨습니다.");
+			//System.out.println("로그인 체크 결과 성공하셨습니다.");
 			HttpSession session = request.getSession();
-			//유저정보를 id로 불러온다.
-			Member userInformation = DAO.getMemberToId(id);
-			//친구목록을 유저번호로 불러온다.
-			Fn247 friendAllList = DAO.getFriendAllList(userInformation.getUserId());
-			//사용자의 유형을 탭목록의 정보로 1,2,3으로 체크한다.
-			Integer tabCheck = DAO.getCountTab(userInformation.getUserId());
-			System.out.println("탭체크결과 : "+tabCheck);
-			//불러온 정보를 세션으로 보낸다.
-			session.setAttribute("userInformation", userInformation); 
-			session.setAttribute("friendAllList", friendAllList);
-			session.setAttribute("tabCheck", tabCheck);
-			//친구목록에 자신의 번호를 넣어 유저정보를 입력해준다.
-			Fn247 friendTest = DAO.getFriendAllList(userInformation.getUserId());
-			Member friendsInformationList = new Member();
-			List<Member> t1 = new ArrayList<Member>();
-			Member friendsInformation = new Member();
-			//모든친구 목록에 유저정보를 입력해준다.
-			for (int i=0 ; i<friendTest.getFriendAllList().size() ; i++) {
-				//친구목록의 myId가 내꺼면 fuserId()의 정보를 넣어준다 
-				if(friendTest.getFriendAllList().get(i).getMyId() == userInformation.getUserId()) {
-					friendsInformation=DAO.getMember(friendTest.getFriendAllList().get(i).getfUserId());
-				//아니면 myId 의 정보를 넣어준다.	
-				}else {
-					friendsInformation=DAO.getMember(friendTest.getFriendAllList().get(i).getMyId());
-				}
-				 t1.add(friendsInformation);
+			//유저번호와 가장최근 탭아이디 및 탭이없을시 텝체크0 를 id를 넣어 리턴한다.
+			List<Member> loginSucceedGetUserInfo = DAO.loginSucceedGetUserInfo(id);
+			Member userIdTabId = DAO.getUserIdTabId(loginSucceedGetUserInfo,id);
+			//System.out.println("하하하 급하게 하지말자 처음 받아온거 "+userIdTabId.getUserId());
+			if(userIdTabId.getUserId() == null) {
+				userIdTabId = DAO.getMemberToId(id);
+				//System.out.println("하하하 급하게 하지말자 아래 "+userIdTabId.getUserId() +userIdTabId.getNickName());
 			}
-			friendsInformationList.setFriendInformationList(t1);
-			//입력된 정보를 세션으로 보낸다.
-			session.setAttribute("friendsInformationList", friendsInformationList);
-			
-			for (int i=0 ; i<friendsInformationList.getFriendInformationList().size() ; i++) {
-				System.out.println("친구들 정보를 세션으로 보냅니다. : getId :"+friendsInformationList.getFriendInformationList().get(i).getId()
-														+" , getNickName :"+friendsInformationList.getFriendInformationList().get(i).getNickName()
-														+" , getMb_introduce :"+friendsInformationList.getFriendInformationList().get(i).getMb_introduce()
-														+" , getUserImg :"+friendsInformationList.getFriendInformationList().get(i).getUserImg()
-						                                +" , getUserId :"+friendsInformationList.getFriendInformationList().get(i).getUserId());
-			}
-			
+			session.setAttribute("userIdTabId", userIdTabId); 
+
 			//사용자의 탭유형이 0 : 아무것도 없으면 탭을 만들 수 있는 페이지로 이동 
-			if(tabCheck == 0 ) {
+			if(userIdTabId.getTabCheck() == 0 ) {
+				
+				
+				//System.out.println("오니 : "+ userIdTabId.getUserId() + userIdTabId.getNickName());
+				if(userIdTabId.getUserId() == null) {
+					return "home";
+				}
+				
+				System.out.println("게임을 시작해볼까 ");
+				userIdTabId = DAO.getMember(userIdTabId.getUserId());
+				session.setAttribute("userIdTabId", userIdTabId); 
+				model.addAttribute("userIdTabId",userIdTabId);
 				
 				return "firstboard";
-			//사용자의 탭유형이 2 : 자신의 탭은 없고 공유탭이 있으면 보드로 이동 	
-			}else if (tabCheck == 2){
-				//사용자정보에 탭목록을 넣어준다.
-				userInformation.setFriTabList(DAO.readFriTabListAction(userInformation.getUserId()));
-				return "redirect:board?tabId="+userInformation.getFriTabList().get(0).getTabId();
-			//사용자의 탭유형이 1 : 자신의 탭만 있거나 공유탭도 있으면 보드로 이동 
 			}else {
-				//마지막으로 사용한 탭의 번호를 찾는다.
-				Post tabId = new Post(); 
-				tabId = DAO.getSecondTabIdAction(userInformation.getUserId());
-				//사용자정보에 탭목록을 받아서 넣어준다.
-				userInformation.setTabList(DAO.readTabListAction(userInformation.getUserId()));
-				//사용자정보에 공유탭목록을 받아서 넣어준다.
-				userInformation.setFriTabList(DAO.readFriTabListAction(userInformation.getUserId()));
-				System.out.println("userInformation에공유탭목록 집어넣었니 : "+userInformation.getFriTabList().size());
-
-				return "redirect:board?tabId="+tabId.getTabId();
+				return "redirect:board?tabId="+userIdTabId.getTabId();
 			}
 		
 	}
+	
+	
+	
+	
+	
 	@RequestMapping(value = "board", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
 	public String board(Locale locale, Model model, HttpServletRequest request, Integer tabId ) {
 			
 			HttpSession session = request.getSession();
-			Fn247 friendAllList = (Fn247) session.getAttribute("friendAllList");
-			//member 정보보내기 연습중
-			Member friendsInformationList = (Member) session.getAttribute("friendsInformationList");
-			if(friendsInformationList.getFriendInformationList().size() != 0) {
-				System.out.println("친구정보를모두 받아왔어요 "+friendsInformationList.getFriendInformationList().size()+"개");
+			Member userIdTabId = (Member) session.getAttribute("userIdTabId");
+			if(userIdTabId == null) {
+				//System.out.println("탭주인 체크 결과 실패  ");
+				return "home";	
 			}
-			Member userInformation = (Member) session.getAttribute("userInformation");
-			session.setAttribute("userInformation", userInformation); 
-			Integer tabCheck = (Integer) session.getAttribute("tabCheck");
-			Integer tabCheck2 = DAO.getCountTab(userInformation.getUserId());
-			if(tabCheck != tabCheck2) {
-				tabCheck = tabCheck2;
-				System.out.println("보드로 바로 접근해서 탭유형을 다시정의한다." + tabCheck +" != "+ tabCheck2);
-			}
-			//탭번호가 공유에 있는지 판단 
-			Integer friCheck = DAO.getCheckFriId(userInformation.getUserId(), tabId);
-			Post thisTab = new Post();
-			Post cards = new Post();
-			//접근승인
-			if(userInformation.getUserId() == DAO.getUserNumToTabId(tabId) || tabCheck != 0 ) {
-				// 1번유형 자신의 탭만 있거나 공유된 탭도 가지고 있다.
-				if (tabCheck == 1) {
-					System.out.println("반가워요 "+userInformation.getNickName()+
-							"님 프로젝트가 " + userInformation.getTabList().size() + "개 있네요");
 
-					//탭번호가 공유껀지 아닌지 판단
-					if(friCheck != 1) {
-						//나의 탭목록중 현재탭의 정보를 불러온다.
-						System.out.println("공유 체크 결과 1번 진행 ");
-						thisTab = DAO.getTabInforAction(tabId,userInformation.getTabList());
-						//탭삭제시 현재탭은 선택제외할 체크파라미터를 유저인포에 넣어준다.
-						userInformation.setTabList(DAO.getSelectionList(tabId, userInformation.getTabList()));
-						for (int i=0 ; i<userInformation.getTabList().size(); i++) {
-							System.out.println(userInformation.getTabList().get(i).getTabId()+"번 탭의 체크결과1는 : "+userInformation.getTabList().get(i).getCheck());
-						}
-					}else {
-						//공유 탭목록중 현재탭의 정보를 불러온다.
-						thisTab = DAO.getTabInforAction(tabId,userInformation.getFriTabList());
-					}
-				// 2번 유형 자신의 탭은 없고 공유된탭이 있다
-				}else if(tabCheck == 2) {
-					System.out.println("반가워요 "+userInformation.getNickName()+
-							"님 공유된 프로젝트가 " + userInformation.getFriTabList().size() + "개 있네요 공유탭 진행 ");
-					//공유탭 목록 중 현재 탭의 정보를 불러온다.
-					thisTab = DAO.getTabInforAction(tabId,userInformation.getFriTabList());
-					if(userInformation.getFriTabList() != null) {
-						for (int i=0 ; i<userInformation.getFriTabList().size(); i++) {
-							System.out.println("없나봐  " + userInformation.getFriTabList().get(i).getTab_dueDay());
-						}
-					}
-				}
-				if(userInformation.getFriTabList() != null) {
-					System.out.println("$$$$$$$$$$$$$$$$여기 실행 됐어요 ");
+			//접근승인 세션에서 받아온 유저번호와 입력된 탭아이디의 유저번호 (탭을 새로만들어서 들어올시 리로딩해야함) 가 맞는지 확인 하거나 탭체크가 0이 아닐때 true. @
+			if(userIdTabId.getUserId() == DAO.getUserNumToTabId(tabId) || userIdTabId.getTabCheck() != 0 ) {
+					userIdTabId.setTabId(tabId);
+				//나포함친구들의 정보를 가져온다.@
+					System.out.println("getMembertList 사용하기 위해 파라미터 : " + userIdTabId.getUserId());
+				//유저의 정보를 세팅해준다.	
+					Member userInformation = (DAO.userInformation(userIdTabId));
+
+					Post cards = (DAO.cardsSet(userIdTabId, userInformation));
+
 					
-					userInformation=(DAO.sideBarAdmTabimgSet(userInformation,friendsInformationList));
-					System.out.println("$$$$$$$$$$$$$$$$여기 실행 됐어요 ");
-				}
-				
-				
-				//친구목록 세션에서 받아와서 분류해서 모델로 JSP에 보
-				Fn247 friendSet = new Fn247();
-				friendSet = DAO.friendListClassification(friendAllList.getFriendAllList(),userInformation.getUserId(),tabId, friendsInformationList);
-				if(friendSet.getiApproveAdmList() != null) {
-					for(int i=0 ; i<friendSet.getiApproveAdmList().size() ; i++) {
-						System.out.println("@#$@#$@#$@#$@#$@#$@#$"+friendSet.getiApproveAdmList().get(i).getF_name() + "님 의 "
-								+"정보가 friendSet.getiApproveAdmList() 에 들어있어요 사진이름은 : " 
-								+ friendSet.getiApproveAdmList().get(i).getF_imgName());
-					}
-				}
-				
-				//friendSet = DAO.friendListClassification(friendAllList.getFriendAllList(),userInformation.getUserId(),tabId);
-				cards = DAO.readPostListAction(tabId,userInformation);
-				//카드별로 댓글달고 댓글 쓴사람들 정보 주기
-				cards.setPostList(DAO.replyListSetUserInfo(cards.getPostList() , userInformation.getUserId(), friendsInformationList, userInformation.getNickName()));
-				cards.setCompletePostList(DAO.replyListSetUserInfo(cards.getCompletePostList() , userInformation.getUserId(), friendsInformationList, userInformation.getNickName()));
- 
-		        //프로젝트 카드에 뭐들은지 보자 (진행중)
-		          for(int i=0 ; i<cards.getPostList().size() ; i++) {
-						System.out.println(cards.getPostList().get(i).getId()+"번 포스트의 내용은 : "				
-										+ " PostTitle():" +cards.getPostList().get(i).getPostTitle()
-										+ " getDescription():" +cards.getPostList().get(i).getDescription()
-										+ " getCreate():" +cards.getPostList().get(i).getCreate()
-										+ " getTabId():" +cards.getPostList().get(i).getTabId()
-										+ " getIsDel():" +cards.getPostList().get(i).getIsDel()
-										+ " getLastUpdate():" +cards.getPostList().get(i).getLastUpdate()
-										+ " getUserNum():" +cards.getPostList().get(i).getUserNum()
-										+ " getDueDay():" +cards.getPostList().get(i).getDueDay()
-										+ " getUp_fileName():" +cards.getPostList().get(i).getUp_fileName()
-										+ " getCheck():" +cards.getPostList().get(i).getCheck()
-										+ " getTime():" +cards.getPostList().get(i).getTime()
-										+ " getCompareTime():" +cards.getPostList().get(i).getCompareTime()
-										+ " getCompareMessage():" +cards.getPostList().get(i).getCompareMessage()
-										+ " getProgress():" +cards.getPostList().get(i).getProgress()
-										+ " getProgressBg():" +cards.getPostList().get(i).getProgressBg()
-										+" getImgName() :"+cards.getPostList().get(i).getImgName());
-					}  
-				
-
-				//이탭이 공유탭인지 판단해서 공유시 막야될 기능들을 꺼준다. 1이 공유 
-				thisTab.setTabAdmCheck(friCheck);
-				String tabLastUpdate = null;
-				//프로젝트의 마지막 업데이트에 포스트가 없을경우 탭의 마지막 수정시간을 가져와서 넣어준다. 
-				System.out.println("2 thisTab의 탭이름은: " + thisTab.getTabTitle());
-				if(cards.getPostList().size() == 0) {
-					tabLastUpdate = DAO.readTabLastUpdateAction(tabId);
-				}else if(cards.getPostList().size() == 1){
-					tabLastUpdate = DAO.getPostLastUpdateAction(tabId);
-				}else {
-					tabLastUpdate = DAO.readTabLastUpdateAction(tabId);
-					System.out.println("가져온 라스트 업데이트 시간 : " + tabLastUpdate);	
-				}
-				System.out.println("3 thisTab의 탭이름은: " + thisTab.getTabTitle());
-				//탭삭제시 포스트가 있으면 탭을 선택하게 하지만 다른탭이 없을경우 그냥 삭제하게 해준다.
-				if(thisTab.getTabSelectCheck()==0 || tabCheck==0) {
-					thisTab.setTabSelectCheck(0);
-				}else {
-					thisTab.setTabSelectCheck(1);
-				}
-				
-				//공유탭 사이드바 사진체크 
-				if(userInformation.getFriTabList() != null) {
-					for (int i=0 ; i<userInformation.getFriTabList().size(); i++) {
-						System.out.println("&&&&&&&&&&&userInformation.getFriTabList() != null 이라서 확인좀 할게 : "+userInformation.getFriTabList().get(i).getImgName());
-					}	
-				}
-				
-				
-				System.out.println("3 thisTab의 탭이름은: " + thisTab.getTabTitle());
-				model.addAttribute("cards",cards);
-				model.addAttribute("userInformation",userInformation);
-				model.addAttribute("friendSet",friendSet);
-				model.addAttribute("thisTab",thisTab);
-				model.addAttribute("tabCheck",tabCheck);
-				model.addAttribute("tabLastUpdate",tabLastUpdate);
-
-		    // 접근실패	
+					//System.out.println("카드있는지 봐야돼 home : "+ cards.getCompletePostList().size());
+					
+					
+					Post thisTab = DAO.setThisTab(tabId, userInformation, cards);
+						//tabId,tabAdmCheck,tabSelectCheck,nick,tabTitle,tab_intro,tabProgressBg,tabProgress,dueMessage,maxDay,minDay
+					
+					session.setAttribute("thisTab", thisTab); 
+					session.setAttribute("userInformation", userInformation); 
+					model.addAttribute("userInformation", userInformation);
+					model.addAttribute("thisTab",thisTab);
+					model.addAttribute("cards",cards);
+					
+			// 접근실패	
 			}else {
 				
-				System.out.println("탭주인 체크 결과 실패  ");
+				//System.out.println("탭주인 체크 결과 실패  ");
 				return "home";	
 			}
 		return "board";
@@ -281,17 +149,36 @@ public class HomeController {
 	public String firstboard(Locale locale, Model model, HttpServletRequest request ) {
 		
 		HttpSession session = request.getSession();
-		Integer userNum = (Integer) session.getAttribute("userNum");
-		String nickName = (String) session.getAttribute("nickName");
+		Member userIdTabId = (Member) session.getAttribute("userIdTabId");
 		
-		if(userNum != null) {
+		System.out.println("오니 : "+ userIdTabId.getUserId() + userIdTabId.getNickName());
+		if(userIdTabId.getUserId() != null) {
 			return "home";
 		}
-		Post userSet = new Post();
-		userSet.setUserNum(userNum);
-		userSet.setNick(nickName);
-		model.addAttribute("userSet",userSet);
+		session.setAttribute("userIdTabId", userIdTabId); 
+		model.addAttribute("userIdTabId",userIdTabId);
 		return "firstboard";
+	}
+	
+	@RequestMapping(value = "searchPostNickAction", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+	public String searchPostNickAction (Locale locale, Model model, String search, HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		Member userIdTabId = (Member) session.getAttribute("userIdTabId");
+		Member userInformation = (Member) session.getAttribute("userInformation");
+		Post thisTab = (Post) session.getAttribute("thisTab");
+		
+		//System.out.println("검색어 받아왔어 : " + search);
+		List<Post> searchResult = DAO.searchPostNick(search, userIdTabId.getUserId());
+		
+		session.setAttribute("userIdTabId", userIdTabId); 
+		
+		model.addAttribute("thisTab",thisTab);
+		model.addAttribute("searchResult",searchResult);
+		model.addAttribute("search",search);
+		model.addAttribute("userIdTabId",userIdTabId);
+		model.addAttribute("userInformation",userInformation);
+		
+		return "searchBoard";
 	}
 	
 	@RequestMapping(value = "userInfoUpdateAction", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
@@ -395,10 +282,11 @@ public class HomeController {
 	
 	
 	@RequestMapping(value = "searchFriendError", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
-	public String searchFriendError(Locale locale, Model model, Integer userNum, Integer tabId ) {
-	
+	public String searchFriendError(Locale locale, Model model, Integer tabId, HttpServletRequest request ) {
+		HttpSession session = request.getSession();
+		Member userIdTabId = (Member) session.getAttribute("userIdTabId");
 		
-		model.addAttribute("userNum",userNum);
+		session.setAttribute("userIdTabId", userIdTabId); 
 		model.addAttribute("selectTab", tabId);
 		return "searchFriendError";
 	}
@@ -417,16 +305,8 @@ public class HomeController {
 	}
 //CRUD
 	
-
-	@RequestMapping(value = "createMemberAction", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
-		public RedirectView createMemberAction(Locale locale, Model model, String email, String name, String pass, String passcon ) {
-	
-			DAO.createMember(email,name,pass,passcon);
-			
-			return new RedirectView("/mvc/");
-		}
 	@RequestMapping(value = "memberAction", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
-	public String memberAction(Locale locale, Model model, String id, String nickName, String password, String passwordConfirm , String role) {
+	public String memberAction(Locale locale, Model model, String id, String nickName, String password, String passwordConfirm , String role, HttpServletRequest request) {
 		String resource = "org/first/mvc/mybatis_config.xml";
 		InputStream inputStream;		
 		Member member = new Member();
@@ -469,6 +349,10 @@ public class HomeController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		HttpSession session = request.getSession();
+		Member userIdTabId = DAO.getMemberToId(id);
+		session.setAttribute("userIdTabId", userIdTabId); 
+		model.addAttribute("userIdTabId",userIdTabId);
 		return "firstboard";
 	}
 	@RequestMapping(value = "boardAction", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
@@ -504,44 +388,41 @@ public class HomeController {
 		}
 	
 	 @RequestMapping(value = "updatePostAction", method = RequestMethod.POST)
-		public RedirectView updatePostAction(Locale locale, Model model, Integer id, String postTitle, String description, Integer tabId , @DateTimeFormat(pattern="yyyy-MM-dd") Date dueDay) {
-		 	DAO.updatePost(id, postTitle, description, tabId, dueDay);
-			return new RedirectView("board?tabId="+tabId);
+		public RedirectView updatePostAction(Locale locale, Model model, Integer id, String postTitle, String description, @DateTimeFormat(pattern="yyyy-MM-dd") Date dueDay, HttpServletRequest request) {
+		 HttpSession session = request.getSession();
+		 Member userIdTabId = (Member) session.getAttribute("userIdTabId");
+		 DAO.updatePost(id, postTitle, description, userIdTabId.getTabId(), dueDay);
+		 session.setAttribute("userIdTabId", userIdTabId); 
+			return new RedirectView("board?tabId="+userIdTabId.getTabId());
 		}
 	 
-	 @RequestMapping(value = "updateCompletePostAction", method = RequestMethod.GET)
-		public RedirectView completePostAction(Locale locale, Model model, Integer id, Integer isDel, Integer tabId, HttpServletRequest request) {
-		 	DAO.completePost(id,isDel);
+	 @RequestMapping(value = "updateIsDelPostAction", method = RequestMethod.GET)
+		public RedirectView completePostAction(Locale locale, Model model, Integer id, Integer isDel, HttpServletRequest request) {
 		 	HttpSession session = request.getSession();
-			Member userInformation = (Member) session.getAttribute("userInformation");
-			session.setAttribute("userInformation", userInformation); 
-			
-			userInformation.setTabList(DAO.readTabListAction(userInformation.getUserId()));
-			userInformation.setFriTabList(DAO.readFriTabListAction(userInformation.getUserId()));
-			return new RedirectView("board?tabId="+tabId);
+		 	Member userIdTabId = (Member) session.getAttribute("userIdTabId");
+		 	DAO.completePost(id,isDel);
+			session.setAttribute("userIdTabId", userIdTabId); 
+			return new RedirectView("board?tabId="+userIdTabId.getTabId());
 		}
 	 
 	 @RequestMapping(value = "updateTabIntroAction", method = RequestMethod.POST)
 		public RedirectView updateTabIntro(Locale locale, Model model, Integer tabId, String tab_intro, HttpServletRequest request ) {
 		 	DAO.updateTabIntro(tabId, tab_intro);
 		 	HttpSession session = request.getSession();
-			Member userInformation = (Member) session.getAttribute("userInformation");
-			session.setAttribute("userInformation", userInformation); 
+			Member userIdTabId = (Member) session.getAttribute("userIdTabId");
 			
-			userInformation.setTabList(DAO.readTabListAction(userInformation.getUserId()));
-			userInformation.setFriTabList(DAO.readFriTabListAction(userInformation.getUserId()));
-			return new RedirectView("board?tabId="+tabId);
+			session.setAttribute("userIdTabId", userIdTabId); 
+		
+			return new RedirectView("board?tabId="+userIdTabId.getTabId());
 		}
 	 @RequestMapping(value = "updateTabDueDayAction", method = RequestMethod.POST)
 		public RedirectView updateTabDueDayAction(Locale locale, Model model, Integer tabId, @DateTimeFormat(pattern="yyyy-MM-dd") Date tab_dueDay, HttpServletRequest request ) {
 		 	DAO.updateTabDueDay(tabId, tab_dueDay);
 		 	HttpSession session = request.getSession();
-			Member userInformation = (Member) session.getAttribute("userInformation");
-			session.setAttribute("userInformation", userInformation); 
-
-			userInformation.setTabList(DAO.readTabListAction(userInformation.getUserId()));
-			userInformation.setFriTabList(DAO.readFriTabListAction(userInformation.getUserId()));
-			return new RedirectView("board?tabId="+tabId);
+			Member userIdTabId = (Member) session.getAttribute("userIdTabId");
+			
+			session.setAttribute("userIdTabId", userIdTabId); 
+			return new RedirectView("board?tabId="+userIdTabId.getTabId());
 		}
 	 @RequestMapping(value = "updatePostAction2", method = RequestMethod.POST)
 		public RedirectView updatePostAction2(Locale locale, Model model, Integer id, String postTitle, String description, Integer tabId, @DateTimeFormat(pattern="yyyy-MM-dd") Date dueDay ,Integer userNum ) {
@@ -561,32 +442,89 @@ public class HomeController {
 			Member userInformation = (Member) session.getAttribute("userInformation");
 			session.setAttribute("userInformation", userInformation); 
 
-			userInformation.setTabList(DAO.readTabListAction(userInformation.getUserId()));
-			userInformation.setFriTabList(DAO.readFriTabListAction(userInformation.getUserId()));
 			return new RedirectView("board?tabId="+ft_tabId);
 		}
 	 
 	@RequestMapping(value = "updateDelFriAction", method = RequestMethod.GET)
-		public RedirectView updateDelFriAction(Locale locale, Model model, Integer idN247_f, Integer userNum, Integer tabId, Integer ft_userId ) {
+		public RedirectView updateDelFriAction(Locale locale, Model model, Integer idN247_f, Integer tabId, Integer ft_userId ) {
 	 		if(DAO.getCheckFriId(ft_userId,tabId)==0) {
 	 			DAO.updateDelFri(idN247_f);
 	 		}else {
 	 			DAO.updateDelFriToTab(DAO.getFriAdmIdN247_ft(ft_userId, tabId));
 	 			DAO.updateDelFri(idN247_f);
 	 		}
-			return new RedirectView("friendBook?userNum="+userNum+"&&tabId="+tabId);
+			return new RedirectView("board?tabId="+tabId);
 		}
-
+	@RequestMapping(value = "updateDelFriIWaitAction", method = RequestMethod.GET)
+	public RedirectView updateDelFriIWaitAction(Locale locale, Model model, Integer fUserId, HttpServletRequest request ) {
+		HttpSession session = request.getSession();
+		Member userIdTabId = (Member) session.getAttribute("userIdTabId");
+		
+		session.setAttribute("userIdTabId", userIdTabId); 
+ 			DAO.updateDelFri2(userIdTabId.getUserId(),fUserId);
+ 	
+		return new RedirectView("board?tabId="+userIdTabId.getTabId());
+	}
+	@RequestMapping(value = "updateDelFriWaitAction", method = RequestMethod.GET)
+	public RedirectView updateDelFriWaitAction(Locale locale, Model model, Integer myId, HttpServletRequest request ) {
+		HttpSession session = request.getSession();
+		Member userIdTabId = (Member) session.getAttribute("userIdTabId");
+		
+		session.setAttribute("userIdTabId", userIdTabId); 
+ 			DAO.updateDelFri2(myId,userIdTabId.getUserId());
+ 	
+		return new RedirectView("board?tabId="+userIdTabId.getTabId());
+	}
+	@RequestMapping(value = "updateFriAdmAction", method = RequestMethod.GET)
+	public RedirectView updateFriAdmAction(Locale locale, Model model, Integer myId, Integer tabId, HttpServletRequest request ) {
+		HttpSession session = request.getSession();
+		Member userIdTabId = (Member) session.getAttribute("userIdTabId");
+		
+		session.setAttribute("userIdTabId", userIdTabId); 
+		
+ 			DAO.updateFriAdm(userIdTabId.getUserId(),myId);
+ 	
+		return new RedirectView("board?tabId="+userIdTabId.getTabId());
+	}
+	@RequestMapping(value = "updateUserInfoAction", method = RequestMethod.POST)
+	public RedirectView updateUserInfoAction(Locale locale, Model model, String nickName, String mb_introduce, HttpServletRequest request ) {
+	HttpSession session = request.getSession();
+	Member userIdTabId = (Member) session.getAttribute("userIdTabId");
+	
+	session.setAttribute("userIdTabId", userIdTabId); 
+	
+	DAO.updateUserInfo(userIdTabId.getUserId(), nickName, mb_introduce);
+	
+		return new RedirectView("board?tabId="+userIdTabId.getTabId());
+	}
+	
 	@RequestMapping(value = "updateReplyAction", method = RequestMethod.POST)
-		public RedirectView updateReplyAction(Locale locale, Model model, Integer idN247_re, Integer tabId, String n247_reDes ) {
-	 		DAO.updateReply(idN247_re, n247_reDes);
-			return new RedirectView("board?tabId="+tabId);
+		public RedirectView updateReplyAction(Locale locale, Model model, Integer idN247_re, String n247_reDes, HttpServletRequest request ) {
+		HttpSession session = request.getSession();
+		Member userIdTabId = (Member) session.getAttribute("userIdTabId");
+		
+		session.setAttribute("userIdTabId", userIdTabId); 
+		
+		DAO.updateReply(idN247_re, n247_reDes);
+			return new RedirectView("board?tabId="+userIdTabId.getTabId());
 		}
-	 	
+	@RequestMapping(value = "deleteReplyAction", method = RequestMethod.GET)
+	public RedirectView deleteReplyAction(Locale locale, Model model, Integer idN247_re, HttpServletRequest request ) {
+	HttpSession session = request.getSession();
+	Member userIdTabId = (Member) session.getAttribute("userIdTabId");
+	
+	session.setAttribute("userIdTabId", userIdTabId); 
+	//System.out.println("가져오긴 한거야? 너무 삭제 하고 싶다. : " + idN247_re);
+	DAO.deleteReply(idN247_re);
+		return new RedirectView("board?tabId="+userIdTabId.getTabId());
+	}	
 	@RequestMapping(value = "updateDelFriToTabAction", method = RequestMethod.GET)
-		public RedirectView updateDelFriToTabAction(Locale locale, Model model, Integer idN247_ft, Integer tabId ) {
-	 		DAO.updateDelFriToTab(idN247_ft);
-			return new RedirectView("board?tabId="+tabId);
+		public RedirectView updateDelFriToTabAction(Locale locale, Model model, Integer idN247_ft, HttpServletRequest request ) {
+		HttpSession session = request.getSession();
+		Member userIdTabId = (Member) session.getAttribute("userIdTabId");	
+		DAO.updateDelFriToTab(idN247_ft);
+		session.setAttribute("userIdTabId", userIdTabId); 
+			return new RedirectView("board?tabId="+userIdTabId.getTabId());
 		}
 
 	@RequestMapping(value = "deletePostAction", method = RequestMethod.GET)
@@ -596,18 +534,22 @@ public class HomeController {
 		}
 	
 	@RequestMapping(value = "searchFriendAction", method = RequestMethod.GET)
-		public String searchFriendAction (Locale locale, Model model, String search, Integer userNum, Integer tabId ) {
-			
+		public String searchFriendAction (Locale locale, Model model, String search, Integer userNum, Integer tabId, HttpServletRequest request ) {
+			HttpSession session = request.getSession();
+			Member userIdTabId = (Member) session.getAttribute("userIdTabId");
+		
+			session.setAttribute("userIdTabId", userIdTabId); 
 			int count = DAO.searchFriend(search);
+			
 			String errormessage = "";
 				if(count == 0) {
 					errormessage = "회원을 찾을 수 없습니다. 이메일을 확인해주세요. ";
 				    model.addAttribute("em",errormessage);
-					model.addAttribute("userNum",userNum);
 					model.addAttribute("selectTab", tabId);
 					return "searchFriendError";
 				}else {
 					int reCount = DAO.searchFriend2(search, userNum);
+					
 					if(reCount == 0) {
 						model.addAttribute("search",search);
 						model.addAttribute("userNum",userNum);
@@ -617,7 +559,6 @@ public class HomeController {
 					}
 					errormessage = "친구신청을 이미 했습니다. 이메일을 확인해주세요. ";
 				    model.addAttribute("em",errormessage);
-					model.addAttribute("userNum",userNum);
 					model.addAttribute("selectTab", tabId);
 					return "searchFriendError";
 				}
@@ -628,15 +569,14 @@ public class HomeController {
 		public RedirectView createTabAction(Locale locale, Model model, String tabTitle, Integer userNum, String tab_intro, @DateTimeFormat(pattern="yyyy-MM-dd") Date tab_dueDay, String id, HttpServletRequest request ) {
 			
 			HttpSession session = request.getSession();
-			Member userInformation = DAO.getMemberToId(id);
-			session.setAttribute("userInformation", userInformation); 
-			
+			Member userIdTabId = (Member) session.getAttribute("userIdTabId");
 			DAO.createTab(tabTitle, userNum,tab_intro,tab_dueDay);
-			Post getTabId = new Post();
-			getTabId.setTabId(DAO.getTabIdAction(tabTitle).get(0).getTabId());
-			userInformation.setTabList(DAO.readTabListAction(userInformation.getUserId()));
-			userInformation.setFriTabList(DAO.readFriTabListAction(userInformation.getUserId()));
-			return new RedirectView("board?tabId="+getTabId.getTabId());
+			userIdTabId.setTabId(DAO.getTabIdAction(tabTitle).get(0).getTabId());
+			//System.out.println("뭘주길래 실패란거야 : "+getTabId.getTabId());
+			
+			session.setAttribute("userIdTabId", userIdTabId); 
+			model.addAttribute("userIdTabId",userIdTabId);
+			return new RedirectView("board?tabId="+userIdTabId.getTabId());
 		}
 
 	@RequestMapping(value = "createReplyAction", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
@@ -647,79 +587,63 @@ public class HomeController {
 		Member userInformation = DAO.getMember(n247_reUsId);
 		session.setAttribute("userInformation", userInformation); 
 
-		userInformation.setTabList(DAO.readTabListAction(userInformation.getUserId()));
-		userInformation.setFriTabList(DAO.readFriTabListAction(userInformation.getUserId()));
+		
 			return new RedirectView("board?tabId="+tabId);
 		}
 	
-	@RequestMapping(value = "friendSubscriptionAction", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
-		public String friendSubscriptionAction(Locale locale, Model model, Integer fUserId, Integer myId , Integer tabId ) {
+	@RequestMapping(value = "friendSubscriptionAction", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+		public String friendSubscriptionAction(Locale locale, Model model, Integer fUserId , HttpServletRequest request) {
+			HttpSession session = request.getSession();
+			Member userIdTabId = (Member) session.getAttribute("userIdTabId");
+			DAO.friendSubscription(fUserId, userIdTabId.getUserId());
 			
-			DAO.friendSubscription(fUserId, myId, tabId);
-	
-			Fn247 p1 = new Fn247();
-			p1.setfUserId(fUserId);
-			p1.setMyId(myId);
+			System.out.println(userIdTabId.getTabId()+"번 탭아이디와 유저아이디 : "+userIdTabId.getUserId());
 			
-			List<Fn247> friList1 = new ArrayList<Fn247>();
-			List<Fn247> friList2 = new ArrayList<Fn247>();
-			List<Fn247> friList3 = new ArrayList<Fn247>();
-			List<Fn247> friAdmList = new ArrayList<Fn247>();
-			
-			friList1 = DAO.readFriListAction(myId,1,tabId);
-			friAdmList = DAO.readFriAdmList(myId,1,tabId);
-			friList2 = DAO.readFriListAction(myId,0,tabId);
-			friList3 = DAO.readReFriListAction(myId);
-			
-			model.addAttribute("userNum",myId);
-			model.addAttribute("selectTab", tabId);
-			model.addAttribute("friendList1",friList1);
-			model.addAttribute("friendList2",friList2);
-			model.addAttribute("friendList3",friList3);
-			model.addAttribute("friendAdmList",friAdmList);
-			
-			return "friendBook";
+			session.setAttribute("userIdTabId", userIdTabId); 
+			return "redirect:board?tabId="+userIdTabId.getTabId();
 		}
 
 
-	@RequestMapping(value = "deleteTabTitleAction", method = RequestMethod.GET)
-		public RedirectView deleteTabTitleAction(Locale locale, Model model, Integer tabId, Integer userNum ) {
-			DAO.deleteTabTitle(tabId, userNum);
-			return new RedirectView("updateTab?tabId="+DAO.getSecondTabIdAction(userNum).getTabId());
+	@RequestMapping(value = "deleteTabAction", method = RequestMethod.GET)
+		public RedirectView deleteTabTitleAction(Locale locale, Model model, Integer tabId, HttpServletRequest request ) {
+			DAO.deleteTab(tabId);
+			HttpSession session = request.getSession();
+			Member userIdTabId = (Member) session.getAttribute("userIdTabId");
+			
+			session.setAttribute("userIdTabId", userIdTabId); 
+			
+			return new RedirectView("board?tabId="+userIdTabId.getTabId());
 		}
 	
 	@RequestMapping(value = "updateTabTitleAction", method = RequestMethod.GET)
 		public RedirectView replyUpdateAction(Locale locale, Model model, Integer tabId, String tabTitle, HttpServletRequest request ) {
 			DAO.tabTitleUpdate(tabId, tabTitle);
 			HttpSession session = request.getSession();
-			Member userInformation = (Member) session.getAttribute("userInformation");
-			session.setAttribute("userInformation", userInformation); 
+			Member userIdTabId = (Member) session.getAttribute("userIdTabId");
 			
-			userInformation.setTabList(DAO.readTabListAction(userInformation.getUserId()));
-			userInformation.setFriTabList(DAO.readFriTabListAction(userInformation.getUserId()));
-			return new RedirectView("board?tabId="+tabId);
+			
+			session.setAttribute("userIdTabId", userIdTabId); 
+			
+			return new RedirectView("board?tabId="+userIdTabId.getTabId());
 		}
 	
 	@RequestMapping(value = "updatePostTabTitleAction", method = RequestMethod.POST)
 		public String updatePostTabTitleAction(Locale locale, Model model, Integer tabId, Integer moveOn, Integer isDelCheck, String id, HttpServletRequest request ) {
 		HttpSession session = request.getSession();
-		Member userInformation = (Member) session.getAttribute("userInformation");
-		session.setAttribute("userInformation", userInformation); 
+		Member userIdTabId = (Member) session.getAttribute("userIdTabId");
 
 		DAO.updatePostTabTitle(tabId, moveOn, isDelCheck);
-		userInformation.setTabList(DAO.readTabListAction(userInformation.getUserId()));
-		userInformation.setFriTabList(DAO.readFriTabListAction(userInformation.getUserId()));	
 		
-			if(DAO.getCountTab(userInformation.getUserId()) == 0) {
+		
+			if(DAO.getCountTab(userIdTabId.getUserId()) == 0) {
 				
 				return "firstboard";
 					
 			}else {
 				//System.out.println("너 맞구나 들어와 ");
 				Post tabId2 = new Post(); 
-				tabId2 = DAO.getSecondTabIdAction(userInformation.getUserId());
-				userInformation.setTabList(DAO.readTabListAction(userInformation.getUserId()));
-				userInformation.setFriTabList(DAO.readFriTabListAction(userInformation.getUserId()));
+				tabId2 = DAO.getSecondTabIdAction(userIdTabId.getUserId());
+
 				return "redirect:board?tabId="+tabId2.getTabId();
 			}
 		

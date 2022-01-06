@@ -35,20 +35,252 @@ public class Member {
 	
 	private String mb_introduce;
 	
+	private Integer tabId;
+	
 	private List<Post> tabList;
 
 	private List<Post> friTabList;
 	
-	private List<Member> friendInformationList;
+	private List<Post> allTabList;
+	
+	private List<Member> friendsInformationList;
+	
+	private List<Member> userInformation;
+	
+	private int tabCheck;
+	
+	private Integer ft_tabId;
+	
+	private Integer isDel;
+	
+	private Integer ft_isDel;
+	
+	private Date modified;
+	
+	private List <Member> friendAdmList;
+	
+	private List <Member> iWaitAdmList;
+	
+	private List <Member> waitingAdmList;
+	
+	private List <Member> iApproveAdmList;
+	
+	private List <Member> friendApproveAdmList;
+	
+	private Integer myId;
+	
+	private Integer adm;
+	
+	private Integer fUserId;
+	
+	private Integer ft_userId;
+	
+	private Integer idN247_ft;
+	
+	private int check;
+	
+	private Double progress;
+	
+	private String progressBg;
+
+	private int friCheck;
+	
+	private String lastModified;
 	
 	
 	
-	public List<Member> getFriendInformationList() {
-		return friendInformationList;
+	
+	
+	public String getLastModified() {
+		return lastModified;
 	}
 
-	public void setFriendInformationList(List<Member> friendInformationList) {
-		this.friendInformationList = friendInformationList;
+	public void setLastModified(String lastModified) {
+		this.lastModified = lastModified;
+	}
+
+	public int getFriCheck() {
+		return friCheck;
+	}
+
+	public void setFriCheck(int friCheck) {
+		this.friCheck = friCheck;
+	}
+
+	public List<Post> getAllTabList() {
+		return allTabList;
+	}
+
+	public void setAllTabList(List<Post> allTabList) {
+		this.allTabList = allTabList;
+	}
+
+	public Double getProgress() {
+		return progress;
+	}
+
+	public void setProgress(Double progress) {
+		this.progress = progress;
+	}
+
+	public String getProgressBg() {
+		return progressBg;
+	}
+
+	public void setProgressBg(String progressBg) {
+		this.progressBg = progressBg;
+	}
+
+	public int getCheck() {
+		return check;
+	}
+
+	public void setCheck(int check) {
+		this.check = check;
+	}
+
+	public Integer getIdN247_ft() {
+		return idN247_ft;
+	}
+
+	public void setIdN247_ft(Integer idN247_ft) {
+		this.idN247_ft = idN247_ft;
+	}
+
+	public Integer getFt_userId() {
+		return ft_userId;
+	}
+
+	public void setFt_userId(Integer ft_userId) {
+		this.ft_userId = ft_userId;
+	}
+
+	public Integer getMyId() {
+		return myId;
+	}
+
+	public void setMyId(Integer myId) {
+		this.myId = myId;
+	}
+
+	public Integer getAdm() {
+		return adm;
+	}
+
+	public void setAdm(Integer adm) {
+		this.adm = adm;
+	}
+
+	public Integer getfUserId() {
+		return fUserId;
+	}
+
+	public void setfUserId(Integer fUserId) {
+		this.fUserId = fUserId;
+	}
+
+	public List<Member> getFriendAdmList() {
+		return friendAdmList;
+	}
+
+	public void setFriendAdmList(List<Member> friendAdmList) {
+		this.friendAdmList = friendAdmList;
+	}
+
+	public List<Member> getiWaitAdmList() {
+		return iWaitAdmList;
+	}
+
+	public void setiWaitAdmList(List<Member> iWaitAdmList) {
+		this.iWaitAdmList = iWaitAdmList;
+	}
+
+	public List<Member> getWaitingAdmList() {
+		return waitingAdmList;
+	}
+
+	public void setWaitingAdmList(List<Member> waitingAdmList) {
+		this.waitingAdmList = waitingAdmList;
+	}
+
+	public List<Member> getiApproveAdmList() {
+		return iApproveAdmList;
+	}
+
+	public void setiApproveAdmList(List<Member> iApproveAdmList) {
+		this.iApproveAdmList = iApproveAdmList;
+	}
+
+	public List<Member> getFriendApproveAdmList() {
+		return friendApproveAdmList;
+	}
+
+	public void setFriendApproveAdmList(List<Member> friendApproveAdmList) {
+		this.friendApproveAdmList = friendApproveAdmList;
+	}
+
+	public Date getModified() {
+		return modified;
+	}
+
+	public void setModified(Date modified) {
+		this.modified = modified;
+	}
+
+	public List<Member> getUserInformation() {
+		return userInformation;
+	}
+
+	public void setUserInformation(List<Member> userInformation) {
+		this.userInformation = userInformation;
+	}
+
+	public Integer getIsDel() {
+		return isDel;
+	}
+
+	public void setIsDel(Integer isDel) {
+		this.isDel = isDel;
+	}
+
+	public Integer getFt_isDel() {
+		return ft_isDel;
+	}
+
+	public void setFt_isDel(Integer ft_isDel) {
+		this.ft_isDel = ft_isDel;
+	}
+
+	public Integer getFt_tabId() {
+		return ft_tabId;
+	}
+
+	public void setFt_tabId(Integer ft_tabId) {
+		this.ft_tabId = ft_tabId;
+	}
+
+	public int getTabCheck() {
+		return tabCheck;
+	}
+
+	public void setTabCheck(int tabCheck) {
+		this.tabCheck = tabCheck;
+	}
+
+	public Integer getTabId() {
+		return tabId;
+	}
+
+	public void setTabId(Integer tabId) {
+		this.tabId = tabId;
+	}
+
+	public List<Member> getFriendsInformationList() {
+		return friendsInformationList;
+	}
+
+	public void setFriendsInformationList(List<Member> friendsInformationList) {
+		this.friendsInformationList = friendsInformationList;
 	}
 
 	public List<Post> getFriTabList() {

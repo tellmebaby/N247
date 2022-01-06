@@ -75,8 +75,8 @@
           	<ul class="nav nav-small flex-column mt-2">
           	  <c:forEach items="${userInformation.friTabList }" var="friTab" begin="0" >	
 			    <li class="nav-item">
-			      <a href="/mvc/board?tabId=${friTab.tabId }" class="nav-link" aria-current="page">
-			        <img src="/images/${friTab.imgName }" alt="" width="16" height="16" class="rounded-circle me-2">
+			      <a href="/mvc/board?tabId=${friTab.tabId }" class="nav-link" aria-current="page" title="${friTab.nick }님의 ${friTab.tabTitle } 프로젝트">
+			        <img src="/images/${friTab.imgName }" alt="" width="16" height="16" class="rounded-circle me-2" >
 			        ${friTab.tabTitle }
 			      </a>
 			    </li>
@@ -87,16 +87,18 @@
             <hr>
           </div>
           <div>
-            <form>
+          
+            <form action="searchPostNickAction" id="search" class="form-inline" method="get">
               <div class="input-group input-group-dark input-group-round">
                 <div class="input-group-prepend">
                   <span class="input-group-text">
-                    <i class="material-icons">search</i>
+                    <i class="material-icons" >search</i>
                   </span>
                 </div>
-                <input type="search" class="form-control form-control-dark" placeholder="Search" aria-label="Search app">
+                <input name="search" type="search" class="form-control form-control-dark" placeholder="Search" aria-label="Search app">
               </div>
             </form>
+            
             <div class="dropdown">
               <button class="btn btn-primary btn-block" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 New
@@ -110,7 +112,7 @@
         </div>
         <div class="d-none d-lg-block">
           <div class="dropdown">
-		      <a href="#" class="d-flex align-items-center text-white text-decoration-none" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+		      <a href="#" class="d-flex align-items-center text-white text-decoration-none" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false" title="${userInformation.nickName}">
 		        <img src="/images/${userInformation.userImg }" alt="" width="32" height="32" class="rounded-circle me-2">	        
 		      </a>
 		      <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
@@ -187,7 +189,7 @@
 			     <h5 class="card-title">${userInformation.nickName }</h5>
 				 <p class="card-text">${userInformation.id }</p>
 				 <p class="card-text">${userInformation.mb_introduce }</p>
-				 <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+				 <p class="card-text"><small class="text-muted">Last updated ${userInformation.lastModified }</small></p>
 			  
 			  </div>
 			  </div>
@@ -213,17 +215,15 @@
 		      </div>
 		      <div class="modal-body">
 		          <div class="mb-3">
-		           	<input class="form-control" type="text" name="nickName" placeholder="${userInformation.nickName }" aria-label="postTitle">
+		           	<input class="form-control" type="text" name="nickName" value="${userInformation.nickName }" maxlength="10" aria-label="postTitle">
 		          </div>
 		          <div class="mb-3">      
-		            <textarea name="description" class="form-control" id="message-text">${userInformation.mb_introduce }</textarea>
+		            <input class="form-control" type="text" name="mb_introduce" value="${userInformation.mb_introduce }" maxlength="45" aria-label="postTitle">
 		          </div>
 		      </div>
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
 		        <button type="submit" class="btn btn-primary">입력</button>
-		        <input type="hidden" name="userId" value="${userInformation.userId }">
-		 	 	<input type="hidden" name="tabId" value="${thisTab.tabId }">
 		      </div>
 		    </div>
 		  </div>
@@ -231,7 +231,7 @@
 		</div>
 	  	
 	  	<div class="modal fade" id="userImgUpdate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-		  <form action="updateUserImgAction" id="myForm" class="form-inline" method="post" accept-charset="UTF-8">
+		  <form id="frm" name="frm" method="post" action="/mvc/register/userImgUpdateAction" enctype="multipart/form-data">
 		  <div class="modal-dialog">     
 		    <div class="modal-content">
 		      <div class="modal-header">
@@ -249,8 +249,7 @@
 		      <div class="modal-footer">
 		        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
 		        <button type="submit" class="btn btn-primary">입력</button>
-		        <input type="hidden" name="userId" value="${userInformation.userId }">
-		 	 	<input type="hidden" name="tabId" value="${thisTab.tabId }">
+		        
 		      </div>
 		    </div>
 		  </div>
@@ -284,17 +283,24 @@
 	   	     	<div class="tab-pane fade" id="task-add-members1" role="tabpanel">
 	                <div class="users-manage" data-filter-list="form-group-users">
 	                	<h6>새로운 친구</h6>
-	                      <div class="input-group mb-3">
-							  <input type="text" class="form-control" name="id" placeholder="friends@email.com" aria-label="friendsEmail" aria-describedby="button-addon2">
-							  <button class="btn btn-outline-secondary" type="button" id="button-addon2">검색</button>
+	                      <div class="mb-3">
+	                       <form action="searchFriendAction" id="myForm" class="form-inline" method="get" accept-charset="UTF-8">
+							  <input type="text" class="form-control" name="search" placeholder="friends@email.com" aria-label="friendsEmail" aria-describedby="button-addon2">
+							  <button type="submit" class="btn btn-outline-secondary" type="button" id="button-addon2">검색</button>
+							  <input type="hidden" name="tabId" value="${thisTab.tabId }">
+							  <input type="hidden" name="userNum" value="${userInformation.userId }">
+							  </form>
 						  </div>
+						  
 	                  	<hr>
 	                    <h6>보낸 친구 요청</h6>
 		                  <div class="mb-3">
 		                    <ul class="avatars text-center">
-		                      <c:forEach items="${friendSet.iWaitAdmList }" var="iWait" begin="0" >	
+		                      <c:forEach items="${userInformation.iWaitAdmList }" var="iWait" begin="0" >	
 		                      <li>
-		                        <img alt="${iWait.f_name }" src="/images/${iWait.f_imgName }" class="avatar" data-toggle="tooltip" data-title="${iWait.f_name }">
+		                      	<a href="/mvc/updateDelFriIWaitAction?fUserId=${iWait.userId }">
+		                        <img alt="${iWait.nickName }" src="/images/${iWait.userImg }" class="avatar" data-toggle="tooltip" data-title="${iWait.nickName }에게 보낸 친구신청 취소하기">
+		                        </a>
 		                      </li>
 		                      </c:forEach>
 		                    </ul>
@@ -302,19 +308,25 @@
 	                </div>
 	            </div>
 
+
+
                <div class="tab-pane fade" id="task-add-members2" role="tabpanel">
                 <div class="users-manage" data-filter-list="form-group-users">
                   <h6>현재 친구들</h6>
                   <div class="mb-3">
                     <ul class="avatars text-center">
-                      <c:forEach items="${friendSet.iApproveAdmList }" var="friAdm1" begin="0" >	
+                      <c:forEach items="${userInformation.iApproveAdmList }" var="friAdm1" begin="0" >	
 	                      <li>
-	                        <img alt="${friAdm1.f_name }" src="/images/${friAdm1.f_imgName }" class="avatar" data-toggle="tooltip" data-title="${friAdm1.f_name }">
+	                        <a href="/mvc/updateDelFriIWaitAction?fUserId=${friAdm1.userId }">
+	                        <img alt="${friAdm1.nickName }" src="/images/${friAdm1.userImg }" class="avatar" data-toggle="tooltip" data-title="${friAdm1.nickName }님과 친구 취소하기">
+	                        </a>
 	                      </li>
                       </c:forEach>
-                      <c:forEach items="${friendSet.friendApproveAdmList }" var="friAdm2" begin="0" >	
+                      <c:forEach items="${userInformation.friendApproveAdmList }" var="friAdm2" begin="0" >	
 	                      <li>
-	                        <img alt="${friAdm2.f_name }" src="/images/${friAdm2.f_imgName }" class="avatar" data-toggle="tooltip" data-title="${friAdm2.f_name }">
+	                        <a href="/mvc/updateDelFriWaitAction?myId=${friAdm2.userId }"">
+	                        <img alt="${friAdm2.nickName }" src="/images/${friAdm2.userImg }" class="avatar" data-toggle="tooltip" data-title="${friAdm2.nickName }님과 친구 취소하기">
+	                        </a>
 	                      </li>
                       </c:forEach>
                     </ul>
@@ -324,9 +336,13 @@
                   <div class="alert alert-warning text-small" role="alert">
 	                 <div class="mb-3">
 	                    <ul class="avatars text-center">
+	                    <c:forEach items="${userInformation.waitingAdmList }" var="waitFri" begin="0" >	
 	                      <li>
-	                        <img alt="Claire Connors" src="/images/gucci.png" class="avatar" data-toggle="tooltip" data-title="관리자">
+	                        <a href="/mvc/updateFriAdmAction?myId=${waitFri.userId }">
+	                        <img alt="${waitFri.nickName }" src="/images/${waitFri.userImg }" class="avatar" data-toggle="tooltip" data-title="${waitFri.nickName }님과 친구 맺기">
+	                        </a>
 	                      </li>
+	                      </c:forEach>
 	                    </ul>
 	                  </div>
 	                  <span>사진을 클릭해 친구 요청을 수락해 주세요. </span>
@@ -388,7 +404,7 @@
 				     </div>
 					 <div class="modal-body">
 					   <div class="mb-3">
-						 <input class="form-control" type="text" name="tabTitle" value="${thisTab.tabTitle }" aria-label="tabTitleUpdate" >
+						 <input class="form-control" type="text" name="tabTitle" value="${thisTab.tabTitle }" maxlength="45" aria-label="tabTitleUpdate" >
 					   </div>
 					 </div>
 					 <div class="modal-footer">
@@ -435,7 +451,7 @@
 				      </div>
 				      <div class="modal-body">
 					    <div class="mb-3">
-						  <input class="form-control" type="text" name="tab_intro" value="${thisTab.tab_intro }" aria-label="tabIntroUpdate" >
+						  <input class="form-control" type="text" name="tab_intro" value="${thisTab.tab_intro }" maxlength="250" aria-label="tabIntroUpdate" >
 					    </div>
 				      </div>
 				      <div class="modal-footer">
@@ -450,7 +466,7 @@
 <!-- 						삭제시 두가지 모달이 필요함  -->
 
 			 <div class="modal fade" id="project-del-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">		    
-			   <form action="updateTabTitleAction" id="myForm" class="form-inline" method="get">
+			   <form action="deleteTabAction" id="myForm" class="form-inline" method="get">
 				  <div class="modal-dialog">	      
 				    <div class="modal-content">
 					  <div class="modal-header">
@@ -459,7 +475,7 @@
 				      </div>
 				      <div class="modal-body">
 					    <div class="mb-3">
-						  <input class="form-control" type="text" name="tabTitle" value="${thisTab.tabTitle }" aria-label="tabTitleUpdate" readonly>
+						  <input class="form-control" type="text" value="${thisTab.tabTitle }" aria-label="tabTitleUpdate" readonly>
 					    </div>
 				      </div>
 				      <div class="modal-footer">
@@ -517,11 +533,11 @@
                 <h1>${thisTab.tabTitle} </h1>
                 <p class="lead">${thisTab.tab_intro }</p>
                 <div class="d-flex align-items-center">
-                  <c:forEach items="${friendSet.friendAdmList }" var="fri" begin="0" >
+                  <c:forEach items="${userInformation.friendAdmList }" var="fri" begin="0" >
 	                  <ul class="avatars">				
 					    <li class="nav-item">
-							<a href="#" data-bs-toggle="modal" data-bs-target="#userInfo${fri.idN247_ft }" data-placement="top" title="${fri.f_name }">
-							 <img alt="Claire Connors" class="avatar" src="/images/${fri.f_imgName }" />
+							<a href="#" data-bs-toggle="modal" data-bs-target="#userInfo${fri.idN247_ft }" data-placement="top" title="${fri.nickName }">
+							 <img alt="Claire Connors" class="avatar" src="/images/${fri.userImg }" />
 							</a>
 						</li>									  
 	                  </ul>
@@ -529,20 +545,19 @@
 						  <div class="modal-dialog">	      
 						    <div class="modal-content">
 						      <div class="modal-header">
-						        <h5 class="modal-title" id="exampleModalLabel">${fri.f_name }</h5>
+						        <h5 class="modal-title" id="exampleModalLabel">${fri.nickName }</h5>
 						        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 						      </div>
 						      <div class="modal-body">
 						          <div class="mb-3">
-						            <input class="form-control" type="text" value="${fri.email }" aria-label="readonly input example" readonly>
+						            <input class="form-control" type="text" value="${fri.id }" aria-label="readonly input example" readonly>
 						          </div>
 						      </div>
 						      <form action="updateDelFriToTabAction" id="myForm" class="form-inline" method="get" accept-charset="UTF-8">
-							      <div class="modal-footer">
+							      <div class="modal-footer" style="<c:out value="${fri.check == 0 ? '' : 'display:none' }"/>">
 							        <button type="submit" class="btn btn-secondary">공유취소</button>
 							        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
 							        <input type="hidden" name="idN247_ft" value="${fri.idN247_ft }">
-						            <input type="hidden" name="tabId" value="${selectedTabId }">
 							      </div>
 						      </form>
 						    </div>
@@ -550,44 +565,15 @@
 						</div>
                   </c:forEach>
                   <div Style="<c:out value="${thisTab.tabAdmCheck == 0 ? '' : 'display:none' }"/>">
-                  <button class="btn btn-round flex-shrink-0" data-bs-toggle="modal" data-bs-target="#ProjectAdm1">
+                  <button class="btn btn-round flex-shrink-0" data-bs-toggle="modal" data-bs-target="#ProjectAdm">
                     <i class="material-icons">add</i>
                   </button>
                   </div>
 <!--                   친구추가 모달 시작부 -->
                    
-                   
-                   
-                   <div class="modal fade" id="ProjectAdm" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">		    
-					<form action="createFriTabAdd" id="myForm" class="form-inline" method="get" accept-charset="UTF-8">
-					 <div class="modal-dialog">	
-					  <div class="modal-content">
-					   <div class="modal-header">
-					    <h5 class="modal-title">프로젝트를 공유할 친구 선택</h5>
-			              <button type="button" class="close btn btn-round" data-bs-dismiss="modal" aria-label="Close">
-			                <i class="material-icons">close</i>
-			              </button>  
-					   </div>
-						<select class="form-select" name="ft_userId" multiple aria-label="multiple select example">
-				            <c:forEach items="${friendSet.iApproveAdmList }" var="fri1" begin="0" >
-				               <option value=${fri1.fUserId } <c:out value="${fri1.check == 0 ? '' : 'disabled' }"/>> ${fri1.f_name }</option>
-				            </c:forEach>
-				            <c:forEach items="${friendSet.friendApproveAdmList }" var="fri2" begin="0" >
-				              <option value=${fri2.myId } <c:out value="${fri2.check == 0 ? '' : 'disabled' }"/>>${fri2.f_name }</option>
-				            </c:forEach>
-						</select>
-					   <div class="modal-footer">
-				        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-				        <button type="submit" class="btn btn-primary">추가</button>
-				 	 	<input type="hidden" name="ft_tabId" value="${thisTab.tabId }">
-					   </div>
-				      </div>
-				    </div>
-				   </form>
-				  </div>
+
 				  
-				  
-				  <div class="modal fade" id="ProjectAdm1" tabindex="-1" aria-labelledby="member-edit-modal" aria-hidden="true">  
+				  <div class="modal fade" id="ProjectAdm" tabindex="-1" aria-labelledby="member-edit-modal" aria-hidden="true">  
 				   <div class="modal-dialog">
 					 <div class="modal-content">
 					   <div class="modal-header">
@@ -601,17 +587,17 @@
 			                  <h6>현재 친구들</h6>
 			                  <div class="mb-3">
 			                    <ul class="avatars text-center">
-			                      <c:forEach items="${friendSet.iApproveAdmList }" var="friAdm1" begin="0" >	
+			                      <c:forEach items="${userInformation.iApproveAdmList }" var="friAdm1" begin="0" >	
 			                             <li style="<c:out value="${friAdm1.check == 0 ? '' : 'display:none' }"/>">
-									       <a href="/mvc/createFriTabAdd?ft_userId=${friAdm1.fUserId }&&ft_tabId=${thisTab.tabId }">
-									        <img alt="${friAdm1.f_name }" src="/images/${friAdm1.f_imgName }" class="avatar" data-toggle="tooltip" data-title="${friAdm1.f_name }님과 공유하기">     
+									       <a href="/mvc/createFriTabAdd?ft_userId=${friAdm1.userId }&&ft_tabId=${thisTab.tabId }">
+									        <img alt="${friAdm1.nickName }" src="/images/${friAdm1.userImg }" class="avatar" data-toggle="tooltip" data-title="${friAdm1.nickName }님과 공유하기">     
 									       </a>
 									      </li>
 			                      </c:forEach>
-			                      <c:forEach items="${friendSet.friendApproveAdmList }" var="friAdm2" begin="0" >	
+			                      <c:forEach items="${userInformation.friendApproveAdmList }" var="friAdm2" begin="0" >	
 			                      		<li style="<c:out value="${friAdm2.check == 0 ? '' : 'display:none' }"/>">
-									      <a href="/mvc/createFriTabAdd?ft_userId=${friAdm2.fUserId }&&ft_tabId=${thisTab.tabId }" >
-									        <img alt="${friAdm2.f_name }" src="/images/${friAdm2.f_imgName }" class="avatar" data-toggle="tooltip" data-title="${friAdm2.f_name }님과 공유하기 ">     
+									      <a href="/mvc/createFriTabAdd?ft_userId=${friAdm2.userId }&&ft_tabId=${thisTab.tabId }" >
+									        <img alt="${friAdm2.nickName }" src="/images/${friAdm2.userImg }" class="avatar" data-toggle="tooltip" data-title="${friAdm2.nickName }님과 공유하기 ">     
 									      </a>
 									    </li>
 				                     </c:forEach>
@@ -643,7 +629,7 @@
                   <div class="d-flex justify-content-between text-small">
                     <div class="d-flex align-items-center">
                       
-                      <span>${tabLastUpdate } 마지막 업데이트</span>
+                      <span>${thisTab.tabLastUpdate } 마지막 업데이트</span>
                     </div>
                     <span>${thisTab.dueMessage }</span>
                   </div>
@@ -655,10 +641,11 @@
                   <div class="row content-list-head">
                     <div class="col-auto">
                       <h3>Cards</h3>
+                      <div style="<c:out value="${thisTab.dueCheck == 0 ? '' : 'display:none' }"/>">
                       <button class="btn btn-round" data-bs-toggle="modal" data-bs-target="#cardAddModal">
                         <i class="material-icons">add</i>
                       </button>
-                      
+                      </div>
 <!--                       카드 추가 모달 시작부분  -->
 
 			 	   <div class="modal fade" id="cardAddModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">		    
@@ -705,8 +692,6 @@
 					     <button role="button" class="btn btn-primary" type="submit">
 			               카드 만들기
 			             </button>
-					    <input type="hidden" name="tabId" value="${thisTab.tabId }">
-						<input type="hidden" name="userNum" value="${userInformation.userId }">
 					   </div>
 					  </div>	     
 					</div>
@@ -744,32 +729,33 @@
                               <a data-bs-toggle="modal" data-bs-target="#modal-${post.id }">
                               <h6 data-filter-by="text">${post.postTitle }</h6>
                               <span class="text-small">${post.description}</span>
+                              <span class="text-small" style="color:green">${post.compareMessage} </span>
                               </a>
                             </div>
                             <div class="card-meta">
 
                               <ul class="avatars">
                                 <li>
-                                  <a data-toggle="tooltip" title="${post.imgName }">
-                                    <img alt="${post.imgName }" class="avatar" src="/images/${post.imgName }" />
+                                  <a data-toggle="tooltip" title="${post.nickName }">
+                                    <img alt="${post.nickName }" class="avatar" src="/images/${post.userImg }" />
                                   </a>
                                 </li>
                               </ul>
 
                               <div class="d-flex align-items-center">
                                 <i class="material-icons" style="<c:out value="${post.check == 0 ? 'display:none' : '' }"/>">attach_file</i>
-                                <span>${post.compareMessage} </span>
+                                
                               </div>
                               
                               <div class="dropdown card-options">
                                 <button class="btn-options" type="button"  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                  <i class="material-icons">more_vert</i>
+                                  <i class="material-icons" style="<c:out value="${post.postAdmCheck == 0 ? 'display:none' : '' }"/>">more_vert</i>
                                 </button>
                                  <ul class="dropdown-menu dropdown-menu-right">
 			  	 					<li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modal-${post.id }update">수정</a></li>
-						            <li><a class="dropdown-item" href="/mvc/updateCompletePostAction?id=${post.id }&&isDel=3&&tabId=${thisTab.tabId }">완료</a></li>
+						            <li><a class="dropdown-item" href="/mvc/updateIsDelPostAction?id=${post.id }&&isDel=3">완료</a></li>
 						            <li><hr class="dropdown-divider"></li>
-						            <li><a class="dropdown-item text-danger" href="#">삭제</a></li> 
+						            <li><a class="dropdown-item text-danger" href="/mvc/updateIsDelPostAction?id=${post.id }&&isDel=1">삭제</a></li> 
 								    <!-- Dropdown menu links -->
 						    	 </ul>
                               </div>
@@ -792,40 +778,64 @@
 									</div>
 								    <h5 class="card-title">${post.postTitle }</h5>
 								    <p class="card-text">${post.description }</p>
+								    <span class="text-small" style="color:green">${post.compareMessage} </span>
 								<hr>
 								<c:forEach items="${post.replyList }" var="re" begin="0" > 
 						          <div class="mb-3"> 
 									    <div class="row">
-										    <div class="col-2">
-										      <small>${re.nick }</small>
-										    </div>
-										    <div class="col-7">
-										      <a data-bs-toggle="modal" data-bs-target="#modal-${re.idN247_re }update"><small>${re.n247_reDes }</small></a>
+										    <div class="col-9">
+										      <a data-bs-toggle="modal" data-bs-target="#modal-${re.idN247_re }update"><small> ${re.n247_reDes } </small><small style="color:red">${re.krCreate }</small></a>
 										    </div>
 										    <div class="col-3">
-										      <small>${re.krCreate }</small>
+										      <p class="card-text">${re.nickName }</p>
 										    </div>
 										</div>
 								   </div>
 								 </c:forEach> 
 								 <hr>
 								 <form action="createReplyAction" id="myForm" class="form-inline" method="post" accept-charset="UTF-8">
-									   <input type="text" class="form-control col" name="n247_reDes" placeholder="댓글을 입력해주세요" aria-label="Recipient's username" aria-describedby="button-addon2">
+									   <input type="text" class="form-control col" name="n247_reDes" placeholder="댓글을 입력해주세요" maxlength="45" aria-label="Recipient's username" aria-describedby="button-addon2">
 									   <button type="submit" class="btn btn-outline-secondary" type="button" id="button-addon2">댓글</button>
 									   <input type="hidden" name="n247_reUsId" value="${userInformation.userId }">
 									   <input type="hidden" name="n247_rePoId" value="${post.id }">
 									   <input type="hidden" name="tabId" value="${thisTab.tabId }">
 									 </form>
 						         </div>
-						         
-						         	
-						      <div class="modal-footer">
-						        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-						        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-${post.id }update">수정</button>
-						      </div>
 						    </div>
 						  </div>
 						</div>	 
+						
+						<c:forEach items="${post.replyList }" var="re" begin="0" > 
+						<div class="modal fade" id="modal-${re.idN247_re }update" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+						  	<form action="updateReplyAction" id="myForm" class="form-inline" method="post" accept-charset="UTF-8">
+							  <div class="modal-dialog">     
+							    <div class="modal-content">
+							      <div class="modal-header">
+							        <h5 class="modal-title" id="exampleModalLabel">댓글 수정</h5>
+							        <button type="button" class="close btn btn-round" data-bs-dismiss="modal" aria-label="Close">
+	                				<i class="material-icons">close</i>
+	              					</button> 
+							      </div>
+							      <div class="modal-body">
+							          <div class="mb-3">    
+							            	<input class="form-control" type="text" name="n247_reDes" value="${re.n247_reDes }" maxlength="45" aria-label="reDes">  
+							          </div>
+							      </div>
+							      <div class="modal-footer">
+							        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+							        <button type="submit" class="btn btn-primary">수정</button>
+							        <a href="/mvc/deleteReplyAction?idN247_re=${re.idN247_re }">
+							        <button type="button" class="btn btn-primary">삭제</button>
+							        </a>
+							        <input type="hidden" name="idN247_re" value="${re.idN247_re }">
+							      </div>
+							    </div>
+							  </div>
+							 </form>
+							</div>	
+							</c:forEach>					
+						
+						
 <!-- 								카드관련 모달 시작부분  -->
                         		<div class="modal fade" id="modal-${post.id }update" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 								  <form action="updatePostAction" id="myForm" class="form-inline" method="post" accept-charset="UTF-8">
@@ -837,20 +847,19 @@
 								      </div>
 								      <div class="modal-body">
 								          <div class="mb-3">
-								           	<input class="form-control" type="text" name="postTitle" placeholder="${post.postTitle }" aria-label="postTitle">
+								           	<input class="form-control" type="text" name="postTitle" value="${post.postTitle }" aria-label="postTitle">
 								          </div>
 								          <div class="mb-3">      
 								            <textarea name="description" class="form-control" id="message-text">${post.description }</textarea>
 								          </div>
 								          <div class="mb-3">      
-								             <input class="form-control col flatpickr-input" type="date" name="dueDay" id="date">
+								             <input class="form-control col flatpickr-input" type="date" name="dueDay" id="date" min="${thisTab.minDay }" max="${thisTab.maxDay }">
 								          </div>
 								      </div>
 								      <div class="modal-footer">
 								        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
 								        <button type="submit" class="btn btn-primary">입력</button>
 								        <input type="hidden" name="id" value="${post.id }">
-								 	 	<input type="hidden" name="tabId" value="${post.tabId }">
 								      </div>
 								    </div>
 								  </div>
@@ -873,26 +882,27 @@
                               <a data-bs-toggle="modal" data-bs-target="#modal-${cpost.id }">
                               <h6 data-filter-by="text">${cpost.postTitle }</h6>
                               <span class="text-small">${cpost.description}</span>
+                              <span class="text-small" style="color:green">${cpost.compareMessage}</span>
                               </a>
                             </div>
                             <div class="card-meta">
                               <ul class="avatars">
                                 <li>
-                                  <a data-toggle="tooltip" title="${cpost.imgName }">
-                                    <img alt="${cpost.imgName }" class="avatar" src="/images/${cpost.imgName }" />
+                                  <a data-toggle="tooltip" title="${cpost.nickName }">
+                                    <img alt="${cpost.nickName }" class="avatar" src="/images/${cpost.userImg }" />
                                   </a>
                                 </li>
                               </ul>
                              <div class="d-flex align-items-center">
                                 <i class="material-icons" style="<c:out value="${cpost.check == 0 ? 'display:none' : '' }"/>">attach_file</i>
-                                <span>${cpost.compareMessage}</span>
+                                
                               </div>
                               <div class="dropdown card-options">
                                 <button class="btn-options" type="button"  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                  <i class="material-icons">more_vert</i>
+                                  <i class="material-icons" style="<c:out value="${cpost.postAdmCheck == 0 ? 'display:none' : '' }"/>">more_vert</i>
                                 </button>
                                  <ul class="dropdown-menu dropdown-menu-right">
-						            <li><a class="dropdown-item text-danger" href="/mvc/updateCompletePostAction?id=${cpost.id }&&isDel=0&&tabId=${thisTab.tabId }">완료 해제</a></li> 
+						            <li><a class="dropdown-item text-danger" href="/mvc/updateIsDelPostAction?id=${cpost.id }&&isDel=0">완료 해제</a></li> 
 								    <!-- Dropdown menu links -->
 						    	 </ul>
                               </div>
@@ -917,11 +927,14 @@
 								
 								    <h5 class="card-title">${cpost.postTitle }</h5>
 								    <p class="card-text">${cpost.description }</p>
+								    <span class="text-small" style="color:green">${cpost.compareMessage}</span>
+								    <hr>
+								    
 								<c:forEach items="${cpost.replyList }" var="re" begin="0" > 
 						          <div class="mb-3"> 
 									    <div class="row">
 										    <div class="col">
-										      <small>${re.nick }</small>
+										      <small>${re.nickName }</small>
 										    </div>
 										    <div class="col-6">
 										      <a data-bs-toggle="modal" data-bs-target="#modal-${re.idN247_re }update"><small>${re.n247_reDes }</small></a>
@@ -932,19 +945,16 @@
 										</div>
 								   </div>
 								 </c:forEach> 
-					     	 <form action="createReplyAction" id="myForm" class="form-inline" method="post" accept-charset="UTF-8">
-							  <div class="input-group mb-3">
-							   <input type="text" class="form-control" name="n247_reDes" placeholder="댓글을 입력해주세요" aria-label="Recipient's username" aria-describedby="button-addon2">
-							   <button type="submit" class="btn btn-outline-secondary" type="button" id="button-addon2">댓글</button>
-							   <input type="hidden" name="n247_reUsId" value="${userInformation.userId }">
-							   <input type="hidden" name="n247_rePoId" value="${cpost.id }">
-							   <input type="hidden" name="tabId" value="${thisTab.tabId }">
-							  </div>
-							 </form>
+					     	 <hr>
+								 <form action="createReplyAction" id="myForm" class="form-inline" method="post" accept-charset="UTF-8">
+									   <input type="text" class="form-control col" name="n247_reDes" placeholder="댓글을 입력해주세요" aria-label="Recipient's username" aria-describedby="button-addon2">
+									   <button type="submit" class="btn btn-outline-secondary" type="button" id="button-addon2">댓글</button>
+									   <input type="hidden" name="n247_reUsId" value="${userInformation.userId }">
+									   <input type="hidden" name="n247_rePoId" value="${cpost.id }">
+									   <input type="hidden" name="tabId" value="${thisTab.tabId }">
+									 </form>
 				         </div>
-					      <div class="modal-footer">
-					        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>	        
-					      </div>
+					     
 					    </div>
 					    
 					  </div>

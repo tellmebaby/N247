@@ -20,14 +20,12 @@
     <h1>friendBook</h1>
 	<hr>
 	<a>${search }님에게 친구신청 하시겠습니까? </a>
-        	<form action="friendSubscriptionAction" id="myForm" class="form-inline" method="get" accept-charset="UTF-8">
+        	<form action="friendSubscriptionAction" id="myForm" class="form-inline" method="post" accept-charset="UTF-8">
         	   <button type="submit" class="btn btn-secondary">Yes</button>
         	   <input type="hidden" name="fUserId" value="${fUserId }">
-        	   <input type="hidden" name="myId" value="${userNum }">
-        	   <input type="hidden" name="tabId" value="${selectTab}">
         	</form>
 
-    <a href="/mvc/friendBook?userNum=${userNum }&&tabId=${selectTab }"> 취소 </a>
+    <a href="redirect:/mvc/board?tabId=${selectTab }"> 취소 </a>
     <!-- Optional JavaScript; choose one of the two! -->   
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>

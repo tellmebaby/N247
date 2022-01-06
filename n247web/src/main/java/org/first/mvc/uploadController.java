@@ -4,7 +4,10 @@ import java.util.Date;
 import java.util.Locale;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
+import org.first.mvc.entity.Member;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -21,91 +24,48 @@ public class uploadController {
     @Resource(name = "fileService")
     FileService fileService;
     
-//    @PostMapping("/register/action2")
-//    public void boardRegisterAction(MultipartHttpServletRequest multiRequest,Integer up_userId,Integer up_postId) {
-//    	try {
-//    		//파일업로드
-//    		fileService.uploadFile(multiRequest,up_userId,up_postId,tabId);
-//    		
-//    	}catch(Exception e) {
-//    		if (logger.isErrorEnabled()) {
-//    			logger.error("#Exception Message : {}",e.getMessage());
-//    		}
-//    	}
-//    	
-//    }
-//    
-//	@RequestMapping(value = "/register/action", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
-//	public String uploadTest(Locale locale, Model model, MultipartHttpServletRequest multiRequest, Integer up_userId, Integer up_postId) {
-//		System.out.print("왜또 안돼");
-//		
-//		try {
-//    		//파일업로드
-//    		fileService.uploadFile(multiRequest,up_userId,up_postId,tabId);
-//			
-//    		
-//    	}catch(Exception e) {
-//    		if (logger.isErrorEnabled()) {
-//    			logger.error("#Exception Message : {}",e.getMessage());
-//    		}
-//    	}
-//		return "uploadTest";
-//	}
-
-	
-	@RequestMapping(value = "/register/userImgUpdateAction2", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
-	public String userInfoUpdate2(Locale locale, Model model, MultipartHttpServletRequest multiRequest, Integer up_userId, Integer up_postId, Integer tabId) {
-		
-		try {
-    		//기존 파일 삭제처리 후 파일업로드
-			DAO.deleteUserImg(DAO.getIdn247_up(up_userId));
-    		fileService.uploadFile(multiRequest,up_userId,up_postId,tabId);
-    		
-    	}catch(Exception e) {
-    		if (logger.isErrorEnabled()) {
-    			logger.error("#Exception Message : {}",e.getMessage());
-    		}
-    	}
-		return "board?tabId="+tabId ;
-	}
-	
-	
 	
 	@RequestMapping(value = "/register/userImgUpdateAction", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
-	public RedirectView userInfoUpdate(Locale locale, Model model, MultipartHttpServletRequest multiRequest, Integer up_userId, Integer up_postId, Integer tabId) {
-			
+	public RedirectView userImgUpdate(Locale locale, Model model, MultipartHttpServletRequest multiRequest, HttpServletRequest request ) {
+		System.out.println("/register/userImgUpdateAction 돌아가는 중입니다.");
+		HttpSession session = request.getSession();
+		Member userIdTabId = (Member) session.getAttribute("userIdTabId");
 		
-			
+		session.setAttribute("userIdTabId", userIdTabId); 	
+	
 		try {
-    		//기존 파일 삭제처리 후 파일업로드
-			if(DAO.getIdn247_up(up_userId)==null) {
-				fileService.uploadFile(multiRequest,up_userId,up_postId,tabId);
-			}else {
-				DAO.deleteUserImg(DAO.getIdn247_up(up_userId));
-	    		fileService.uploadFile(multiRequest,up_userId,up_postId,tabId);
-			}
+	    		fileService.uploadFile2(multiRequest,userIdTabId.getUserId());
     	}catch(Exception e) {
     		if (logger.isErrorEnabled()) {
     			logger.error("#Exception Message : {}",e.getMessage());
     		}
     	}
-		return new RedirectView ("/mvc/board?tabId="+tabId) ;
+		return new RedirectView ("/mvc/board?tabId="+userIdTabId.getTabId()) ;
 	}
 	
 	@RequestMapping(value = "/register/createPostAction", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
-	public RedirectView createPostAction (Locale locale, Model model, String postTitle, String description, Integer tabId, Integer userNum, @DateTimeFormat(pattern="yyyy-MM-dd") Date dueDay, MultipartHttpServletRequest multiRequest ) {
+	public RedirectView createPostAction (Locale locale, Model model, String postTitle, String description, @DateTimeFormat(pattern="yyyy-MM-dd") Date dueDay, MultipartHttpServletRequest multiRequest,  HttpServletRequest request ) {
+		System.out.println("/register/createPostAction 돌아가는 중입니다.");
+		HttpSession session = request.getSession();
+		Member userIdTabId = (Member) session.getAttribute("userIdTabId");
 		
+		session.setAttribute("userIdTabId", userIdTabId); 	
 		
 		try {
-		DAO.createPost(postTitle,description,tabId,userNum,dueDay);
-		Integer postId = DAO.getPostId(tabId);
-		fileService.uploadFile(multiRequest,userNum,postId,tabId);
+		Date date_now = new Date(System.currentTimeMillis());
+		Date dueDayPara = dueDay;
+		if(dueDay == null) {
+			dueDayPara = date_now;
+		}
+		DAO.createPost(postTitle,description,userIdTabId.getTabId(),userIdTabId.getUserId(),dueDayPara);
+		Integer postId = DAO.getPostId(userIdTabId.getTabId());
+		fileService.uploadFile(multiRequest,userIdTabId.getUserId(),postId,userIdTabId.getTabId());
 		}catch(Exception e) {
 			if (logger.isErrorEnabled()) {
     			logger.error("#Exception Message : {}",e.getMessage());
 			}
 		}
-		return new RedirectView("/mvc/board?tabId="+tabId);
+		return new RedirectView("/mvc/board?tabId="+userIdTabId.getTabId());
 	}
 	
 }

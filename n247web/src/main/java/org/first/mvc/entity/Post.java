@@ -82,6 +82,8 @@ public class Post {
 	
 	private Date dueDay;
 	
+	private String dueDayString;
+	
 	private List <Post> friImgList;
 	
 	private String minDay;
@@ -98,18 +100,105 @@ public class Post {
 	
 	private List <Post> friTabList;
 	
+	private List <Post> allTabList;
+	
 	private List <Post> postFileNameList;
 	
 	private String dueMessage;
 	
 	private long tabDueDay;
-	
-	
+
 	private Integer tabAdmCheck;
 	
+	private Integer postAdmCheck;
+
+	private int dueCheck;
+	
+	private String search;
+
+	private String nickName;
+	
+	private Integer userId;
+	
+	private String userImg;
+	
+	private String mb_introduce;
 	
 	
 	
+	
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public String getUserImg() {
+		return userImg;
+	}
+
+	public void setUserImg(String userImg) {
+		this.userImg = userImg;
+	}
+
+	public String getMb_introduce() {
+		return mb_introduce;
+	}
+
+	public void setMb_introduce(String mb_introduce) {
+		this.mb_introduce = mb_introduce;
+	}
+
+	public String getSearch() {
+		return search;
+	}
+
+	public void setSearch(String search) {
+		this.search = search;
+	}
+
+	public String getDueDayString() {
+		return dueDayString;
+	}
+
+	public void setDueDayString(String dueDayString) {
+		this.dueDayString = dueDayString;
+	}
+
+	public int getDueCheck() {
+		return dueCheck;
+	}
+
+	public void setDueCheck(int dueCheck) {
+		this.dueCheck = dueCheck;
+	}
+
+	public Integer getPostAdmCheck() {
+		return postAdmCheck;
+	}
+
+	public void setPostAdmCheck(Integer postAdmCheck) {
+		this.postAdmCheck = postAdmCheck;
+	}
+
+	public List<Post> getAllTabList() {
+		return allTabList;
+	}
+
+	public void setAllTabList(List<Post> allTabList) {
+		this.allTabList = allTabList;
+	}
+
 	public Integer getTabAdmCheck() {
 		return tabAdmCheck;
 	}
