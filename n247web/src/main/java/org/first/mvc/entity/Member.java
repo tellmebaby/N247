@@ -41,11 +41,15 @@ public class Member {
 
 	private List<Post> friTabList;
 	
+	private List<Post> completeTabList;
+	
 	private List<Post> allTabList;
 	
 	private List<Member> friendsInformationList;
 	
 	private List<Member> userInformation;
+	
+	private List<Member> loginSucceedGetUserInfo;
 	
 	private int tabCheck;
 	
@@ -87,10 +91,45 @@ public class Member {
 	
 	private String lastModified;
 	
+	private int f_isDel;
+	
+	private Integer userNum;
 	
 	
 	
 	
+	public Integer getUserNum() {
+		return userNum;
+	}
+
+	public void setUserNum(Integer userNum) {
+		this.userNum = userNum;
+	}
+
+	public List<Member> getLoginSucceedGetUserInfo() {
+		return loginSucceedGetUserInfo;
+	}
+
+	public void setLoginSucceedGetUserInfo(List<Member> loginSucceedGetUserInfo) {
+		this.loginSucceedGetUserInfo = loginSucceedGetUserInfo;
+	}
+
+	public int getF_isDel() {
+		return f_isDel;
+	}
+
+	public void setF_isDel(int f_isDel) {
+		this.f_isDel = f_isDel;
+	}
+
+	public List<Post> getCompleteTabList() {
+		return completeTabList;
+	}
+
+	public void setCompleteTabList(List<Post> completeTabList) {
+		this.completeTabList = completeTabList;
+	}
+
 	public String getLastModified() {
 		return lastModified;
 	}

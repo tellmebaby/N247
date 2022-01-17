@@ -1,6 +1,7 @@
 package org.first.mvc;
 
 
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -24,6 +25,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.view.RedirectView;
 import org.first.mvc.entity.Fn247;
 import org.first.mvc.entity.Member;
@@ -65,13 +68,15 @@ public class HomeController {
 			//System.out.println("로그인 체크 결과 성공하셨습니다.");
 			HttpSession session = request.getSession();
 			//유저번호와 가장최근 탭아이디 및 탭이없을시 텝체크0 를 id를 넣어 리턴한다.
-			List<Member> loginSucceedGetUserInfo = DAO.loginSucceedGetUserInfo(id);
-			Member userIdTabId = DAO.getUserIdTabId(loginSucceedGetUserInfo,id);
+			Member login = new Member();
+			login.setLoginSucceedGetUserInfo(DAO.loginSucceedGetUserInfo(id));
+			Member userIdTabId = DAO.getUserIdTabId(login.getLoginSucceedGetUserInfo(),id);
 			//System.out.println("하하하 급하게 하지말자 처음 받아온거 "+userIdTabId.getUserId());
 			if(userIdTabId.getUserId() == null) {
 				userIdTabId = DAO.getMemberToId(id);
 				//System.out.println("하하하 급하게 하지말자 아래 "+userIdTabId.getUserId() +userIdTabId.getNickName());
 			}
+			session.setAttribute("login", login); 
 			session.setAttribute("userIdTabId", userIdTabId); 
 
 			//사용자의 탭유형이 0 : 아무것도 없으면 탭을 만들 수 있는 페이지로 이동 
@@ -83,13 +88,13 @@ public class HomeController {
 					return "home";
 				}
 				
-				System.out.println("게임을 시작해볼까 ");
 				userIdTabId = DAO.getMember(userIdTabId.getUserId());
 				session.setAttribute("userIdTabId", userIdTabId); 
 				model.addAttribute("userIdTabId",userIdTabId);
 				
 				return "firstboard";
 			}else {
+				System.out.println("아이디는 뭐냐 " + userIdTabId.getId());
 				return "redirect:board?tabId="+userIdTabId.getTabId();
 			}
 		
@@ -104,38 +109,50 @@ public class HomeController {
 			
 			HttpSession session = request.getSession();
 			Member userIdTabId = (Member) session.getAttribute("userIdTabId");
+			Member login = (Member) session.getAttribute("login");
+			Integer boardCheck = 0;
 			if(userIdTabId == null) {
 				//System.out.println("탭주인 체크 결과 실패  ");
+				String em = "잘못된 접근 입니다. 로그인 해주세요.";
+				model.addAttribute("errorMessage",em);
 				return "home";	
+			}else {
+				boardCheck = DAO.boardCheck(login.getLoginSucceedGetUserInfo(), tabId);
+				System.out.println("보드로 바로접근 탭번호 : " + tabId +"체크결과는 : " + boardCheck);
 			}
-
 			//접근승인 세션에서 받아온 유저번호와 입력된 탭아이디의 유저번호 (탭을 새로만들어서 들어올시 리로딩해야함) 가 맞는지 확인 하거나 탭체크가 0이 아닐때 true. @
-			if(userIdTabId.getUserId() == DAO.getUserNumToTabId(tabId) || userIdTabId.getTabCheck() != 0 ) {
+//			if(userIdTabId.getUserId() == DAO.getUserNumToTabId(tabId) || userIdTabId.getTabCheck() != 0 ) {
+			if(boardCheck != 0 ) {
 					userIdTabId.setTabId(tabId);
 				//나포함친구들의 정보를 가져온다.@
 					System.out.println("getMembertList 사용하기 위해 파라미터 : " + userIdTabId.getUserId());
 				//유저의 정보를 세팅해준다.	
 					Member userInformation = (DAO.userInformation(userIdTabId));
 
-					Post cards = (DAO.cardsSet(userIdTabId, userInformation));
+//					Post cards = (DAO.cardsSet(userIdTabId));
 
 					
 					//System.out.println("카드있는지 봐야돼 home : "+ cards.getCompletePostList().size());
 					
 					
-					Post thisTab = DAO.setThisTab(tabId, userInformation, cards);
+//					Post thisTab = DAO.setThisTab(tabId, userInformation, cards);
 						//tabId,tabAdmCheck,tabSelectCheck,nick,tabTitle,tab_intro,tabProgressBg,tabProgress,dueMessage,maxDay,minDay
 					
-					session.setAttribute("thisTab", thisTab); 
+//					session.setAttribute("thisTab", thisTab); 
+					System.out.println("현재 내친구 수 : " + userInformation.getiApproveAdmList().size());
 					session.setAttribute("userInformation", userInformation); 
 					model.addAttribute("userInformation", userInformation);
-					model.addAttribute("thisTab",thisTab);
-					model.addAttribute("cards",cards);
+//					model.addAttribute("thisTab",thisTab);
+//					model.addAttribute("cards",cards);
 					
 			// 접근실패	
 			}else {
 				
 				//System.out.println("탭주인 체크 결과 실패  ");
+				
+				session.invalidate();
+				String em = "잘못된 접근 입니다. 로그인 해주세요.";
+				model.addAttribute("errorMessage",em);
 				return "home";	
 			}
 		return "board";
@@ -303,6 +320,8 @@ public class HomeController {
 		model.addAttribute("fUserId", friId);
 		return "searchFriend";
 	}
+	
+	
 //CRUD
 	
 	@RequestMapping(value = "memberAction", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
@@ -361,6 +380,7 @@ public class HomeController {
 		return "redirect:board?tabId?="+tabId;
 	}
 	
+	
 	@RequestMapping(value = "logOutAction", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
 	public RedirectView logOutAction(Locale locale, Model model, HttpServletRequest request) {
 
@@ -401,6 +421,16 @@ public class HomeController {
 		 	HttpSession session = request.getSession();
 		 	Member userIdTabId = (Member) session.getAttribute("userIdTabId");
 		 	DAO.completePost(id,isDel);
+			session.setAttribute("userIdTabId", userIdTabId); 
+			return new RedirectView("board?tabId="+userIdTabId.getTabId());
+		}
+	 
+	 @RequestMapping(value = "completeTabAction", method = RequestMethod.GET)
+		public RedirectView completeTabAction(Locale locale, Model model, Integer isDel, HttpServletRequest request) {
+		 	HttpSession session = request.getSession();
+		 	Member userIdTabId = (Member) session.getAttribute("userIdTabId");
+		 	DAO.completeTab(userIdTabId.getTabId(),isDel);
+		 	
 			session.setAttribute("userIdTabId", userIdTabId); 
 			return new RedirectView("board?tabId="+userIdTabId.getTabId());
 		}
@@ -596,6 +626,9 @@ public class HomeController {
 			HttpSession session = request.getSession();
 			Member userIdTabId = (Member) session.getAttribute("userIdTabId");
 			DAO.friendSubscription(fUserId, userIdTabId.getUserId());
+			System.out.println("userIdTabId.getId()" + userIdTabId.getId());
+			List<Member> loginSucceedGetUserInfo = DAO.loginSucceedGetUserInfo(userIdTabId.getId());
+			userIdTabId = DAO.getUserIdTabId(loginSucceedGetUserInfo,userIdTabId.getId());
 			
 			System.out.println(userIdTabId.getTabId()+"번 탭아이디와 유저아이디 : "+userIdTabId.getUserId());
 			
@@ -609,9 +642,10 @@ public class HomeController {
 			DAO.deleteTab(tabId);
 			HttpSession session = request.getSession();
 			Member userIdTabId = (Member) session.getAttribute("userIdTabId");
-			
+			List<Member> loginSucceedGetUserInfo = DAO.loginSucceedGetUserInfo(userIdTabId.getId());
+			userIdTabId = DAO.getUserIdTabId(loginSucceedGetUserInfo,userIdTabId.getId());
+
 			session.setAttribute("userIdTabId", userIdTabId); 
-			
 			return new RedirectView("board?tabId="+userIdTabId.getTabId());
 		}
 	
@@ -649,4 +683,209 @@ public class HomeController {
 		
 		}
 	
+	//Ajax
+	
+	@RequestMapping(value = "idCheck", method = {RequestMethod.POST})
+	public @ResponseBody Integer idCheck(@RequestParam("id") String id){
+		
+		
+		String resource = "org/first/mvc/mybatis_config.xml";
+		InputStream inputStream;
+		Integer result = 0;
+		System.out.println("id = "+id);
+		System.out.println("resurt = "+result);
+		
+		
+		try {
+			
+			inputStream = Resources.getResourceAsStream(resource);
+			SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+			SqlSession session = sqlSessionFactory.openSession();
+
+			Integer count = session.selectOne("org.first.mvc.BaseMapper.countId", id);
+			
+			if(count==0) {
+				result = count ;
+			}else {
+				result = 1 ;
+			}
+		
+			System.out.println("resurt = "+result);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("id check error in sql");
+			
+		}
+		
+	 return result;
+	}
+	
+	@RequestMapping(value = "nickCheck", method = {RequestMethod.POST})
+	public @ResponseBody Integer nickCheck(@RequestParam("nickName") String nickName){
+		
+		
+		String resource = "org/first/mvc/mybatis_config.xml";
+		InputStream inputStream;
+		Integer result = 0;
+		System.out.println("nick = "+nickName);
+		System.out.println("resurt = "+result);
+		
+		
+		try {
+			
+			inputStream = Resources.getResourceAsStream(resource);
+			SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+			SqlSession session = sqlSessionFactory.openSession();
+
+			Integer count = session.selectOne("org.first.mvc.BaseMapper.countNick", nickName);
+			
+			if(count==0) {
+				result = count ;
+			}else {
+				result = 1 ;
+			}
+		
+			System.out.println("resurt = "+result);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("nick check error in sql");
+			
+		}
+		
+	 return result;
+	}
+	
+
+	
+	@RequestMapping(value = "passwordCheck", method = {RequestMethod.POST})
+	public @ResponseBody Integer passwordCheck(@RequestParam("password") String password){
+
+		Integer result = 0;
+		System.out.println("nick = "+password);
+		System.out.println("resurt = "+result);
+
+			if(Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", password)) {
+				result = 0 ;
+			}else {
+				result = 1 ;
+			}
+		
+			System.out.println("resurt = "+result);
+
+	 return result;
+	}
+	
+//	@RequestMapping(value = "getCardsListAjax", method = {RequestMethod.POST})
+//	public @ResponseBody List<Post> getCardsListAjax(Model model,@RequestParam("tabId") Integer tabId, Integer userId){
+//		Member userIdTabId = new Member();
+//		userIdTabId.setTabId(tabId);
+//		userIdTabId.setUserId(userId);
+//		
+//		List<Post> result = DAO.getPostList(userIdTabId);
+//		
+//		
+//		System.out.println("ajax 잘 작동하고 있어요 getPostListAjax 탭번호 :" + userIdTabId.getTabId() +" 유저번호 :"+userIdTabId.getUserId());
+//		
+//		//여기다 작성해서 넘겨보자
+//		
+//		 List<Post> p1 = (result);
+//		
+//		 
+//		 //postList부분
+//		 List<Post> postAllList = new ArrayList<Post>();
+//		 Integer postCheck = 0;
+//		 for(int i=0 ; i<p1.size() ; i++) {
+//			 Integer p4 = p1.get(i).getId();
+//			 List<Post> p2 = new ArrayList<Post>();
+//			 if(postCheck.equals(p4)) {
+//			 }else if(p1.get(i).getUserId() == p1.get(i).getUserNum()) {
+//				 postCheck = p1.get(i).getId();
+//				 p2.add(p1.get(i)); 
+//			 }
+//			 postAllList.addAll(p2);
+//		 }
+//		System.out.println("ajax 잘 작동하고 있어요 getPostListAjax postAllList.size() :" + postAllList.size());
+//
+//		 result = (DAO.postSet(postAllList,userIdTabId));	
+//		 for(int i=0 ; i<result.size(); i++) {
+//			 System.out.println("getCheck : "+result.get(i).getCheck()+"  getPostAdmCheck :"+result.get(i).getPostAdmCheck());
+//		 }
+//		
+//	 return result;
+//	}
+	
+	@RequestMapping(value = "getAllListAjax", method = {RequestMethod.POST})
+	public @ResponseBody List<Post> getAllListAjax(Model model,@RequestParam("tabId") Integer tabId, Integer userId){
+		Member userIdTabId = new Member();
+		userIdTabId.setTabId(tabId);
+		userIdTabId.setUserId(userId);
+		
+		List<Post> result = DAO.getPostList(userIdTabId);
+		
+		result = (DAO.postSet(result,userIdTabId));	
+		
+	 return result;
+	}
+	
+	@RequestMapping(value = "ajax_createReplyAction2", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+	public @ResponseBody List<Post> ajax_createReplyAction2(Model model,@RequestParam("n247_reDes") String n247_reDes, Integer n247_reUsId , Integer n247_rePoId , Integer tabId) {
+		DAO.createReply(n247_reDes, n247_reUsId, n247_rePoId, tabId );
+		Member userIdTabId = new Member();
+		userIdTabId.setTabId(tabId);
+		userIdTabId.setUserId(n247_reUsId);
+		
+		List<Post> result = DAO.getPostList(userIdTabId);
+		
+		result = (DAO.postSet(result,userIdTabId));	
+		
+		return result;
+	}
+	
+	
+	@RequestMapping(value = "ajax_createReplyAction", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+	public @ResponseBody List<Post> ajax_createReplyAction(Model model,@RequestParam("n247_reDes") String n247_reDes, Integer n247_reUsId , Integer n247_rePoId, Integer tabId) {
+		System.out.println("ajax_createReplyAction 작동중 ");
+		DAO.createReply(n247_reDes, n247_reUsId, n247_rePoId, tabId );
+		
+		List<Post> result = DAO.getReplyListCard(n247_rePoId);
+
+		return result;
+	}
+	
+	@RequestMapping(value = "getOneCardAjax", method = {RequestMethod.POST})
+	public @ResponseBody List<Post> getOneCardAjax(Model model,@RequestParam("id") Integer id){
+		System.out.println("getOneCardAjax 작동중 ");
+		List<Post> result = DAO.getReplyListCard(id);
+		System.out.println(id+"받아서 보낸다.");
+	 return result;
+	}
+	
+	// 탭이동시 현재탭에 공유된 친구와 친구맺기 완료된 친구목록과 정보
+	
+	@RequestMapping(value = "getProjectAdmFriendsAjax", method = {RequestMethod.POST})
+	public @ResponseBody List<Member> getProjectAdmFriendsAjax(Model model,@RequestParam("tabId") Integer tabId){
+		System.out.println("getUserInfoAjax 작동중 ");
+		List<Member> result = DAO.getFriTabList(tabId);
+	if(result != null) {
+		for (int i=0 ; i<result.size(); i++) {
+			System.out.println("받아온 친구는 " + result.size() +"명 이고 이름은 : " + result.get(i).getNickName());
+		}
+	}
+		
+	 return result;
+	}
+	
+	@RequestMapping(value = "getAdmFriendsAjax", method = {RequestMethod.POST})
+	public @ResponseBody List<Member> getAdmFriendsAjax(Model model,@RequestParam("userId") Integer userId){
+		System.out.println("getUserInfoAjax 작동중 ");
+		List<Member> result = DAO.getFriendsAdmList(userId);
+
+	 return result;
+	}
+	
+	@RequestMapping(value = "insertProjectAdm", method = {RequestMethod.POST})
+	public @ResponseBody void insertProjectAdm(Model model,@RequestParam("userId") Integer userId, Integer tabId){
+		System.out.println("getUserInfoAjax 작동중 ");
+		DAO.createFriTabAdd(userId, tabId);
+	}
 }

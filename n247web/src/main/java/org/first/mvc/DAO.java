@@ -90,11 +90,17 @@ public class DAO {
 				String resource = "org/first/mvc/mybatis_config.xml";
 				InputStream inputStream;
 				Post tab = new Post();
+				Date date_now = new Date(System.currentTimeMillis());
 				tab.setTabTitle(tabTitle);
 				//System.out.println("유저번호 잘왔니 : " + userNum);
 				tab.setUserNum(userNum);
 				tab.setTab_intro(tab_intro);
-				tab.setTab_dueDay(tab_dueDay);
+				if(tab_dueDay != null) {
+					tab.setTab_dueDay(tab_dueDay);
+				}else {
+					tab.setTab_dueDay(date_now);
+				}
+				
 				try {
 					inputStream = Resources.getResourceAsStream(resource);
 					SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
@@ -568,7 +574,23 @@ public class DAO {
 				}
 				return result ;
 			}
-    
+		    
+	    	public static List<Post> getReplyListCard(Integer id) {
+				
+				List<Post> result = new ArrayList<Post>();
+				String resource = "org/first/mvc/mybatis_config.xml";
+				InputStream inputStream;
+				try {
+					inputStream = Resources.getResourceAsStream(resource);
+					SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+					SqlSession session = sqlSessionFactory.openSession();
+					result = session.selectList("org.first.mvc.BaseMapper.getReplyListCard", id);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return result ;
+			}
+
 	        public static Integer getLastUseTabId(String arg) {
 				Integer result = 0;
 				Post p1 = new Post();
@@ -1586,7 +1608,6 @@ public class DAO {
 						e.printStackTrace();
 					}
 				}
-			
 				
 				public static void updateTabDueDay (Integer tabId, Date tab_dueDay ) {
 					String resource = "org/first/mvc/mybatis_config.xml";
@@ -1607,6 +1628,7 @@ public class DAO {
 						e.printStackTrace();
 					}
 				}
+				
 				public static void deletePost (Integer id, Integer tabId ) {
 					String resource = "org/first/mvc/mybatis_config.xml";
 					InputStream inputStream;
@@ -1640,7 +1662,25 @@ public class DAO {
 						e.printStackTrace();
 					}
 				}
-
+				
+				public static void completeTab (Integer tabId, Integer isDel) {
+					String resource = "org/first/mvc/mybatis_config.xml";
+					InputStream inputStream;
+					Post p1 = new Post();
+					p1.setTabId(tabId);
+					p1.setIsDel(isDel);
+					try {
+						inputStream = Resources.getResourceAsStream(resource);
+						SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+						SqlSession session = sqlSessionFactory.openSession();
+						session.update("org.first.mvc.BaseMapper.updateCompleteTab", p1);
+						session.commit();
+						session.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				
 				public static void deleteTab (Integer tabId) {
 					String resource = "org/first/mvc/mybatis_config.xml";
 					InputStream inputStream;
@@ -1651,7 +1691,7 @@ public class DAO {
 						inputStream = Resources.getResourceAsStream(resource);
 						SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
 						SqlSession session = sqlSessionFactory.openSession();
-						session.update("org.first.mvc.BaseMapper.updateIsDelTab", tabId);
+						session.update("org.first.mvc.BaseMapper.updateIsDelTab", p1);
 						session.commit();
 						session.close();
 					} catch (IOException e) {
@@ -1873,12 +1913,6 @@ public class DAO {
 							SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
 							SqlSession session = sqlSessionFactory.openSession();
 							result = session.selectList("org.first.mvc.BaseMapper.getUserIdTabId", id);
-							if(result != null) {
-								for(int i=0 ; i<result.size() ; i++) {
-									//System.out.println(i+"번째 결과 로그중" + result.get(i).getUserId());
-								}
-							}
-							
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -1920,6 +1954,7 @@ public class DAO {
 									if(loginSucceedGetUserInfo.get(i).getTabId() == null && loginSucceedGetUserInfo.get(i).getUserId() != null) {
 										//System.out.println("여기야 "+ loginSucceedGetUserInfo.get(i).getUserId() );
 										userId=loginSucceedGetUserInfo.get(i).getUserId();
+										
 									
 									}else if(loginSucceedGetUserInfo.get(i).getTabId() != null && loginSucceedGetUserInfo.get(i).getIsDel() == 0) {
 										//System.out.println("내탭이 있어서 여기로왔어요 : "+ loginSucceedGetUserInfo.get(i).getTabId() +"번 탭아이디가 있네요");
@@ -1927,7 +1962,7 @@ public class DAO {
 										userId = myTab.get(0).getUserId();
 										tabId = myTab.get(0).getTabId();
 										tabCheck = 1;
-										if(loginSucceedGetUserInfo.get(i).getfUserId() == null) {
+										if(loginSucceedGetUserInfo.get(i).getfUserId() == null || loginSucceedGetUserInfo.get(i).getF_isDel() == 1) {
 											friCheck = 0;
 										}
 										break;
@@ -1937,7 +1972,7 @@ public class DAO {
 										userId = friTab.get(0).getUserId();
 										tabId = friTab.get(0).getFt_tabId();
 										tabCheck = 2;
-										if(loginSucceedGetUserInfo.get(i).getfUserId() == null) {
+										if(loginSucceedGetUserInfo.get(i).getfUserId() == null || loginSucceedGetUserInfo.get(i).getF_isDel() == 1) {
 											friCheck = 0;
 										}
 									    break;
@@ -1949,7 +1984,7 @@ public class DAO {
 								tabId = unTabMember.getFt_tabId();
 								tabCheck = 0;
 							}
-
+								result.setId(id);
 								result.setUserId(userId);
 								result.setTabId(tabId);
 								result.setTabCheck(tabCheck);
@@ -1994,6 +2029,7 @@ public class DAO {
 										if(userIdTabId.getUserId() == memberList.get(i).getUserId()) {
 											//System.out.println(userIdTabId.getUserId() +"userIdTabId.getUserId() == memberList.get(i).getUserId()"+ memberList.get(i).getUserId());
 											result.setUserId(memberList.get(i).getUserId());
+											result.setTabId(userIdTabId.getTabId());
 											//System.out.println("result.getUserId()"+result.getUserId());
 											result.setId(memberList.get(i).getId());
 											result.setNickName(memberList.get(i).getNickName());
@@ -2010,6 +2046,7 @@ public class DAO {
 											break;
 										}
 									} 
+								 
 							 userInformation = result;
 							 userInformation.setFriendsInformationList(friendsInformationList(memberList,userInformation).getFriendsInformationList()); 
 							 friends = friendsTypeSet(userInformation,userIdTabId);
@@ -2019,6 +2056,7 @@ public class DAO {
 							 result.setWaitingAdmList(friends.getWaitingAdmList());
 							 result.setFriendAdmList(friends.getFriendAdmList());
 						 }else {
+							 System.out.println("여기로와야지" + userIdTabId.getUserId() +"번 아이디");
 							 result = getMember(userIdTabId.getUserId());
 							 result.setLastModified(dateToString(dateChangeAction2(result.getModified())));
 						 }
@@ -2029,6 +2067,7 @@ public class DAO {
 
 						 result.setTabList(tabs.getTabList());
 						 result.setFriTabList(tabs.getFriTabList());
+						 result.setCompleteTabList(tabs.getCompleteTabList());
 						 result.setAllTabList(projectList);
 						 
 						 return result;
@@ -2178,18 +2217,25 @@ public class DAO {
 						
 						 List<Post> tabList = new ArrayList<Post>();
 							List<Post> friTabList = new ArrayList<Post>();
+							List<Post> completeTabList = new ArrayList<Post>();
+							
 								for(int i=0 ; i<projectList.size(); i++) {
 									List<Post> p1 = new ArrayList<Post>();
 									p1 = projectList;
-									if(p1.get(i).getUserNum() == userIdTabId.getUserId()) {
+									if(p1.get(i).getUserNum() == userIdTabId.getUserId() && p1.get(i).getIsDel() == 0) {
 										
 										if(p1.get(i).getTabId() == userIdTabId.getTabId()) {
 											p1.get(i).setCheck(1);
 										}
 										//System.out.println("tabList.add(p1.get(i)); 이거하러옴.");
 										tabList.add(p1.get(i));
+									}else if(p1.get(i).getUserNum() == userIdTabId.getUserId() && p1.get(i).getIsDel() == 3){
+										if(p1.get(i).getTabId() == userIdTabId.getTabId()) {
+											p1.get(i).setCheck(1);
+										}
+										completeTabList.add(p1.get(i));
 									}else {
-										if(friends != null) {
+										if(friends.getiApproveAdmList() != null) {
 											//탭주인들의 얼굴이미지 주소를 넣어줘야한다.
 											for(int j=0 ; j<friends.getiApproveAdmList().size() ; j++) {
 												//여기서 저 리스트안에 없는 이탭에 공유가 안된친구의 얼굴이다. 근데 있긴 있지 
@@ -2202,6 +2248,8 @@ public class DAO {
 													}
 												}
 											}
+										}
+										if(friends.getFriendApproveAdmList() != null) {
 											for(int j=0 ; j<friends.getFriendApproveAdmList().size() ; j++) {
 													if(p1.get(i).getUserNum() == friends.getFriendApproveAdmList().get(j).getUserId()) {
 													
@@ -2223,6 +2271,9 @@ public class DAO {
 						 
 						 result.setTabList(tabList);
 						 //System.out.println("리스트 띄어야해 있냐 : " + result.getTabList().size());
+						 if(completeTabList != null) {
+							 result.setCompleteTabList(completeTabList);
+						 }
 						 if(friends != null) {
 							 result.setFriTabList(friTabList); 
 						 }
@@ -2245,7 +2296,8 @@ public class DAO {
 								//System.out.println("받아온 탭아이디 : " + tabId);
 							//현재탭이 공유탭인지 판단	
 								int tabAdmCheck = 0;
-								
+								int tabCompCheck = 0;
+								System.out.println("체크중 : " + tabCompCheck);
 									if(userInformation.getTabList() != null) {
 										//System.out.println("내탭중 찾고있음. userInformation.getTabList().size() =  " + userInformation.getTabList().size());
 										
@@ -2266,6 +2318,31 @@ public class DAO {
 										}
 										
 									}
+									
+									if(userInformation.getCompleteTabList() != null) {
+										//System.out.println("내탭중 찾고있음. userInformation.getTabList().size() =  " + userInformation.getTabList().size());
+										
+										for(int i=0 ; i<userInformation.getCompleteTabList().size(); i++) {
+											List<Post> p1 = new ArrayList<Post>();
+											p1 = userInformation.getCompleteTabList();
+											
+											if(p1.get(i).getTabId() == tabId) {
+												System.out.println("탭이 여기로 왔어 :" + p1.get(i).getTabId() +"보는중" + tabId);
+												tabAdmCheck = 0;
+												tabCompCheck = 1;
+												System.out.println("체크중 : " + tabCompCheck);
+												tabTitle = p1.get(i).getTabTitle();
+												//System.out.println("tabTitle = p1.get(i).getTabTitle(); 체크 : " + p1.get(i).getTabTitle());
+												tabIntro = p1.get(i).getTab_intro();
+												tab_dueDay = p1.get(i).getTab_dueDay();
+												tab_create = p1.get(i).getCreate();
+												lastUpdate = p1.get(i).getLastUpdate();
+											}
+										}
+										
+									}
+								
+									
 									if(userInformation.getFriTabList() != null) {
 										//System.out.println("공유탭중 찾고 있음. ");
 										for(int i=0 ; i<userInformation.getFriTabList().size(); i++) {
@@ -2285,7 +2362,8 @@ public class DAO {
 										}
 									}
 									
-							
+								thisTab.setTabCompCheck(tabCompCheck);
+								System.out.println("체크중 : " + tabCompCheck + "세팅한건? " + thisTab.getTabCompCheck());
 								thisTab.setTabAdmCheck(tabAdmCheck);
 							//현재탭의 제목입력
 								thisTab.setTabTitle(tabTitle);
@@ -2293,17 +2371,21 @@ public class DAO {
 								thisTab.setTab_intro(tabIntro);
 							//현재탭의 진행률 입력
 									Double tabProgress = 0.0;
-									tabProgress = DAO.tabProgress(tabId,tab_dueDay,tab_create);
+									tabProgress = tabProgress(tabId,tab_dueDay,tab_create);
 								thisTab.setTabProgress(tabProgress);
 							//현재탭의 진행상태 색깔 입력
 									String tabProgressBg = "danger";
-									tabProgressBg = DAO.progressBg(tabProgress);
+									tabProgressBg = progressBg(tabProgress);
 								thisTab.setTabProgressBg(tabProgressBg);
 							//현재탭의 마감일에 대한 정보입력 
 									String tab_dueMessage = "마감일 입력";
-									tab_dueMessage = DAO.tab_dueMessage(tab_dueDay);
+									if(tabCompCheck == 1) {
+										tab_dueMessage = "프로젝트가 완료 되었습니다.";
+									}else {
+										tab_dueMessage = tab_dueMessage(tab_dueDay);
+									}
 								thisTab.setDueMessage(tab_dueMessage);
-								if(tab_dueMessage == "마감일이 지났습니다.") {
+								if(tab_dueMessage == "마감일이 지났습니다." || tab_dueMessage == "프로젝트가 완료 되었습니다.") {
 									thisTab.setDueCheck(1);
 								}else {
 									thisTab.setDueCheck(0);
@@ -2312,10 +2394,10 @@ public class DAO {
 							//탭안의 카드생성시 완료제한날짜를 정해준다.
 									String maxDay = "";
 									String minDay = "";
-									maxDay = DAO.dateChangeMaxAction(tab_dueDay);
+									maxDay = dateChangeMaxAction(tab_dueDay);
 								thisTab.setMaxDay(maxDay);
 								Date date_now = new Date(System.currentTimeMillis());
-									minDay = DAO.dateChangeMaxAction(date_now);
+									minDay = dateChangeMaxAction(date_now);
 								thisTab.setMinDay(minDay);
 							//현재탭 삭제시 포스트가 없거나 이동시킬 나의 프로젝트가 없으면 = 0 (포스트를 함께 삭제 할 수 있게 해준다.)
 								int tabSelectCheck = 0;
@@ -2424,7 +2506,7 @@ public class DAO {
 					
 				 //카드리스트 받아서 분류해준다.
 					 
-					 public static Post cardsSet (Member userIdTabId, Member userInformation) {
+					 public static Post cardsSet (Member userIdTabId) {
 						 Post result = new Post();
 						 List<Post> p1 = (getPostList(userIdTabId));;
 						 Date date_now = new Date(System.currentTimeMillis()); 
@@ -2438,7 +2520,7 @@ public class DAO {
 							 Integer p4 = p1.get(i).getId();
 							 List<Post> p2 = new ArrayList<Post>();
 							 if(postCheck.equals(p4)) {
-							 }else {
+							 }else if(p1.get(i).getUserId() == p1.get(i).getUserNum()){
 								 postCheck = p1.get(i).getId();
 								 p2.add(p1.get(i)); 
 							 }
@@ -2506,18 +2588,155 @@ public class DAO {
 						 return result;
 					 }
 					 
+					 
+					 //Ajax 용 cards
+					 
+					 public static List<Post> cardsList (List<Post> cardsList, Member userIdTabId) {
+						 List<Post> result = new ArrayList<Post>();
+						 List<Post> p1 = (cardsList);
+						 Date date_now = new Date(System.currentTimeMillis()); 
+						 
+					 //postList, replyList 를 분류해준다.
+						 
+					 //postList부분
+						 List<Post> postAllList = new ArrayList<Post>();
+						 Integer postCheck = 0;
+						 for(int i=0 ; i<p1.size() ; i++) {
+							 Integer p4 = p1.get(i).getId();
+							 List<Post> p2 = new ArrayList<Post>();
+							 if(postCheck.equals(p4)) {
+							 }else {
+								 postCheck = p1.get(i).getId();
+								 p2.add(p1.get(i)); 
+							 }
+							 postAllList.addAll(p2);
+						 }
+					 //진행중 카드와 완료카드를 분류해준
+						 List<Post> postList = new ArrayList<Post>();
+						 
+						 for(int i=0 ; i<postAllList.size() ; i++) {
+							 if(postAllList.get(i).getIsDel() == 0) {
+								 postList.add(postAllList.get(i));
+							 }
+						 }
+					 //분류된 카드들을 꾸며줘서 세팅함 .
+						 result = (postSet(postList,userIdTabId));		 
+						 
+					 //replyList부분
+						 List<Post> replyAllList = new ArrayList<Post>();
+						 List<Post> p6 = new ArrayList<Post>();
+						 for(int i=0 ; i<p1.size() ; i++) {
+							 List<Post> p3 = new ArrayList<Post>();
+							 if(p1.get(i).getIdN247_re() != null) {
+								 if(p1.get(i).getUserId().equals(p1.get(i).getN247_reUsId())) {
+									 p3.add(p1.get(i));  
+								 }
+							 }
+							 p6.addAll(p3);
+						 }
+						 replyAllList.addAll(p6);
+						 
+					 //각 포스트별로 리플라이 리스트를 넣어준다.
+						 //유저정보 함께 있음 (nickName,userImg)
+						 if(replyAllList != null) {
+							 
+							 for(int i=0 ; i<result.size(); i++) {
+								 List<Post> p4 = new ArrayList<Post>();
+								 for(int j=0 ; j<replyAllList.size(); j++) {
+									 List<Post> replyList = new ArrayList<Post>();
+									 if(result.get(i).getId().equals(replyAllList.get(j).getN247_rePoId())) {
+										 replyAllList.get(j).setKrCreate(calCardDueDate(dateChangeAction2(replyAllList.get(j).getLastModified()),date_now));
+										 replyList.add(replyAllList.get(j));
+									 }
+									 p4.addAll(replyList);
+								 }
+								 result.get(i).setReplyList(p4);
+							 }
+						 }
+
+						 return result;
+					 }
+					 
+					 public static List<Post> compCardsList (Member userIdTabId) {
+						 List<Post> result = new ArrayList<Post>();
+						 List<Post> p1 = (getPostList(userIdTabId));;
+						 Date date_now = new Date(System.currentTimeMillis()); 
+						 
+					 //postList, replyList 를 분류해준다.
+						 
+					 //postList부분
+						 List<Post> postAllList = new ArrayList<Post>();
+						 Integer postCheck = 0;
+						 for(int i=0 ; i<p1.size() ; i++) {
+							 Integer p4 = p1.get(i).getId();
+							 List<Post> p2 = new ArrayList<Post>();
+							 if(postCheck.equals(p4)) {
+							 }else {
+								 postCheck = p1.get(i).getId();
+								 p2.add(p1.get(i)); 
+							 }
+							 postAllList.addAll(p2);
+						 }
+					 //진행중 카드와 완료카드를 분류해준
+						 
+						 List<Post> completePostList = new ArrayList<Post>();
+						 for(int i=0 ; i<postAllList.size() ; i++) {
+							 if(postAllList.get(i).getIsDel() != 0) {
+								 completePostList.add(postAllList.get(i));
+							 }
+						 }
+					 //분류된 카드들을 꾸며줘서 세팅함 .
+						 
+						 result = (postSet(completePostList,userIdTabId));
+						 
+					 //replyList부분
+						 List<Post> replyAllList = new ArrayList<Post>();
+						 List<Post> p6 = new ArrayList<Post>();
+						 for(int i=0 ; i<p1.size() ; i++) {
+							 List<Post> p3 = new ArrayList<Post>();
+							 if(p1.get(i).getIdN247_re() != null) {
+								 if(p1.get(i).getUserId().equals(p1.get(i).getN247_reUsId())) {
+									 p3.add(p1.get(i));  
+								 }
+							 }
+							 p6.addAll(p3);
+						 }
+						 replyAllList.addAll(p6);
+						 
+					 //각 포스트별로 리플라이 리스트를 넣어준다.
+						 //유저정보 함께 있음 (nickName,userImg)
+						 if(replyAllList != null) {
+							 
+							 for(int i=0 ; i<result.size(); i++) {
+								 List<Post> p4 = new ArrayList<Post>();
+								 for(int j=0 ; j<replyAllList.size(); j++) {
+									 List<Post> replyList = new ArrayList<Post>();
+									 if(result.get(i).getId().equals(replyAllList.get(j).getN247_rePoId())) {
+										 replyAllList.get(j).setKrCreate(calCardDueDate(dateChangeAction2(replyAllList.get(j).getLastModified()),date_now));
+										 replyList.add(replyAllList.get(j));
+									 }
+									 p4.addAll(replyList);
+								 }
+								 result.get(i).setReplyList(p4);
+							 }
+						 }
+
+						 return result;
+					 }
+					 
 					 public static List<Post> postSet(List<Post> p1, Member userId){
 						 
 						 List<Post> result = new ArrayList<Post>();
 						 Date date_now = new Date(System.currentTimeMillis()); 
 						 List<Post> postList = p1;
 						 for (int i=0 ; i<postList.size(); i++) {
+							 
 							 postList.get(i).setProgress(progress(postList.get(i).getCreate(),postList.get(i).getDueDay()));
 							 postList.get(i).setProgressBg(progressBg(postList.get(i).getProgress()));
 							 postList.get(i).setCompareMessage(calCardDueDate(dateChangeAction2(postList.get(i).getLastUpdate()),date_now));	
 							 //System.out.println("일단 postAdmCheck 를 0으로 넣었어 ");
 							 postList.get(i).setPostAdmCheck(0);
-							 postList.get(i).setDueDayString(dateToString(postList.get(i).getDueDay()));
+							 postList.get(i).setDueDayString(dateToString3(postList.get(i).getDueDay()));
 							
 							 if(postList.get(i).getUp_fileName() != null) {
 								 postList.get(i).setCheck(1);
@@ -2528,6 +2747,37 @@ public class DAO {
 							 if(postList.get(i).getUserNum() == userId.getUserId()) {
 								 postList.get(i).setPostAdmCheck(1);
 							 } 
+							//현재탭의 진행률 입력
+								Double tabProgress = 0.0;
+								tabProgress = tabProgress(postList.get(i).getTabId(),postList.get(i).getTab_dueDay(),dateChangeAction2(postList.get(i).getCreate()));
+								postList.get(i).setTabProgress(tabProgress);
+								
+							//현재탭의 진행상태 색깔 입력
+								String tabProgressBg = "danger";
+								tabProgressBg = progressBg(tabProgress);
+								postList.get(i).setTabProgressBg(tabProgressBg);
+								
+							//현재탭의 마감일에 대한 정보입력 
+								String tab_dueMessage = "마감일 입력";
+								if(postList.get(i).getTabCompCheck() == 3) {
+									tab_dueMessage = "프로젝트가 완료 되었습니다.";
+								}else {
+									tab_dueMessage = tab_dueMessage(postList.get(i).getTab_dueDay());
+								}
+								postList.get(i).setDueMessage(tab_dueMessage);
+								
+							//탭안의 카드생성시 완료제한날짜를 정해준다.
+								String maxDay = "";
+								maxDay = dateChangeMaxAction(postList.get(i).getTab_dueDay());
+								postList.get(i).setMaxDay(maxDay);
+								
+							//마지막 업데이트시간을 정해주자
+								//탭마지막 업데이트시간 넣어, 포스트1번 애들 마지막시간 넣어 ,진행,완료 , 계산해서 오늘과의 차이가 가장작은아이를 마직막업데이트로 만든다.
+								if(postList.get(i).getTab_LastUpdate() != null) {
+									String tabLastUpdate = dateToString(postList.get(i).getTab_LastUpdate());
+									postList.get(i).setTabLastUpdate(tabLastUpdate);
+								}
+								
 						 }
 						 
 						 result.addAll(postList);
@@ -2702,6 +2952,29 @@ public class DAO {
 							return result ;
 						}
 					 
+					 
+					 public static String dateToString2(Date p1) {
+					    	
+					    	SimpleDateFormat sdformat = new SimpleDateFormat("yyyyMMddHHmmss");
+							String result = null;
+							Calendar cal = Calendar.getInstance();
+							cal.setTime(p1);
+							result = sdformat.format(cal.getTime());
+
+							return result ;
+						}
+					 
+					 public static String dateToString3(Date p1) {
+					    	
+					    	SimpleDateFormat sdformat = new SimpleDateFormat("yy.MM.dd");
+							String result = null;
+							Calendar cal = Calendar.getInstance();
+							cal.setTime(p1);
+							result = sdformat.format(cal.getTime());
+
+							return result ;
+						}
+					 
 					    //카드에 수정된지 얼마돼었는가 보여주는 계산기 
 					    public static String calCardDueDate (Date p1, Date p2){
 					    	String result = "";
@@ -2747,4 +3020,48 @@ public class DAO {
 
 							return result ;
 						}
+					    
+					    public static Integer boardCheck(List<Member> p1, Integer tabId) {
+					    	Integer result = 0;
+					    	for(int i=0;i<p1.size(); i++) {
+					    		if(p1.get(i).getTabId() == tabId && p1.get(i).getIsDel() == 0) {
+					    			result = 1;
+					    		}else if(p1.get(i).getFt_tabId()==tabId && p1.get(i).getFt_isDel() == 0) {
+					    			result = 1;
+					    		}
+					    	}
+					    	return result;
+					    }
+					    
+					    public static List<Member> getFriTabList (Integer tabId){
+					    	System.out.println("친구받아오기 실행해서 탭아이디 받아왔어요 : " + tabId);
+							List<Member> result = new ArrayList<Member>();
+							String resource = "org/first/mvc/mybatis_config.xml";
+							InputStream inputStream;
+							try {
+								inputStream = Resources.getResourceAsStream(resource);
+								SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+								SqlSession session = sqlSessionFactory.openSession();
+								result = session.selectList("org.first.mvc.BaseMapper.getFriTabList", tabId);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							 return result;
+						 }
+					    
+					    public static List<Member> getFriendsAdmList (Integer userId){
+					    	System.out.println("내 친구 아이디 받아왔어요 : " + userId);
+							List<Member> result = new ArrayList<Member>();
+							String resource = "org/first/mvc/mybatis_config.xml";
+							InputStream inputStream;
+							try {
+								inputStream = Resources.getResourceAsStream(resource);
+								SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+								SqlSession session = sqlSessionFactory.openSession();
+								result = session.selectList("org.first.mvc.BaseMapper.getFriendsAdmList", userId);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							 return result;
+						 }
 }

@@ -10,7 +10,7 @@
   </select>
   
   <insert id="insertFile" parameterType="org.first.mvc.entity.Upload">
-    insert into hong.N247_up (hong.N247_up.create,hong.N247_up.up_lastModified,up_fileName,up_isDel,up_userId,up_postId,up_tabId) values (now(),now(),#{up_fileName},0,#{up_userId},#{up_postId},#{up_tabId})
+    insert into hong.N247_up (hong.N247_up.create,hong.N247_up.up_lastModified,up_fileName,up_isDel,up_userId,up_postId,up_tabId,up_check,up_orgName) values (now(),now(),#{up_fileName},0,#{up_userId},#{up_postId},#{up_tabId},#{up_check},#{up_orgName})
   </insert>
   
   <insert id="insertPost" parameterType="org.first.mvc.entity.Post">
@@ -198,7 +198,7 @@
     select * hong.N247_tab where nick = #{nick} AND isDel = 0 order by lastUpdate desc
   </select>
   <select id="getSecondTabId" resultType="org.first.mvc.entity.Post">
-    select * from hong.N247_tab Where userNum = #{userNum} AND isDel = 0 order by lastUpdate desc
+    select * from hong.N247_tab Where userNum = #{userId} AND isDel = 0 order by lastUpdate desc
   </select>
 
   <select id="nicktotabId" resultType="org.first.mvc.entity.Post">
@@ -217,6 +217,9 @@
   </update>
   <update id="updateCompletePost" parameterType="org.first.mvc.entity.Post">
     update hong.N247 set isDel=#{isDel} , hong.N247.lastUpdate = now() where id=#{id}
+  </update>
+  <update id="updateCompleteTab" parameterType="org.first.mvc.entity.Post">
+    update hong.N247_tab set isDel=#{isDel} , hong.N247_tab.lastUpdate = now() where tabId=#{tabId}
   </update>
   <update id="updateTabIntro" parameterType="org.first.mvc.entity.Post">
     update hong.N247_tab set tab_intro=#{tab_intro},hong.N247_tab.lastUpdate=now() where tabId=#{tabId}
@@ -278,11 +281,11 @@
   </update>
   
   <select id="getUserIdTabId" resultType="org.first.mvc.entity.Member">
-    SELECT hong.N247_tab.tabId,hong.N247_ft.ft_tabId,ft_userId,hong.N247_ft.ft_isDel,hong.N247_f.fUserId,hong.N247_f.myId,hong.N247_tab.isDel,userId FROM hong.member left join hong.N247_tab on userNum = userId left join hong.N247_ft on ft_userId = userId left join hong.N247_f on myId = userId or fUserId = userId where id = #{id} order by hong.N247_tab.lastUpdate desc
+    SELECT hong.member.id, hong.N247_tab.tabId,hong.N247_ft.ft_tabId,hong.N247_ft.ft_userId,hong.N247_ft.ft_isDel,hong.N247_f.fUserId,hong.N247_f.myId,hong.N247_f.f_isDel,hong.N247_tab.isDel,userId FROM hong.member left join hong.N247_tab on userNum = userId left join hong.N247_ft on ft_userId = userId left join hong.N247_f on myId = userId or fUserId = userId where id = #{id} order by hong.N247_tab.lastUpdate desc
   </select>
   
   <select id="getProjectList" resultType="org.first.mvc.entity.Post">
-    SELECT * FROM hong.N247_tab where (userNum = #{userId} OR tabId in (SELECT ft_tabId FROM hong.N247_ft where ft_userId = #{userId} AND ft_isDel = 0)) AND isDel = 0 order by lastUpdate desc
+    SELECT * FROM hong.N247_tab where (userNum = #{userId} OR tabId in (SELECT ft_tabId FROM hong.N247_ft where ft_userId = #{userId} AND ft_isDel = 0)) AND isDel = 0 OR userNum = #{userId} AND isDel = 3 order by lastUpdate desc
   </select>
   
   <select id="getMemberList" resultType="org.first.mvc.entity.Member">
@@ -293,12 +296,16 @@
     SELECT hong.member.nickName, hong.member.userImg, hong.member.userId,
  	hong.N247_re.idN247_re,hong.N247_re.N247_rePoId,hong.N247_re.N247_reDes,
  	hong.N247_re.N247_reUsId,hong.N247_re.lastModified,hong.N247_re.N247_reIsDel,
- 	hong.N247_up.idN247_up, hong.N247_up.up_fileName, hong.N247_up.up_lastModified, hong.N247_up.up_isDel, hong.N247_up.up_userId,
+ 	hong.N247_up.idN247_up, hong.N247_up.up_fileName, hong.N247_up.up_orgName, hong.N247_up.up_check, hong.N247_up.up_lastModified, hong.N247_up.up_isDel, hong.N247_up.up_userId,
  	hong.N247.id, hong.N247.postTitle, hong.N247.description, hong.N247.isDel, hong.N247.create, hong.N247.lastUpdate,
- 	hong.N247.tabId, hong.N247.userNum, hong.N247.dueDay FROM hong.N247 
+ 	hong.N247.tabId, hong.N247.userNum, hong.N247.dueDay ,hong.N247_tab.tabTitle, hong.N247_tab.tab_intro,
+    hong.N247_tab.tab_dueDay, hong.N247_tab.create, hong.N247_tab.isDel as tabCompCheck,  
+    hong.N247_tab.lastUpdate as tab_LastUpdate, hong.N247_tab.userNum as tab_userNum
+    FROM hong.N247 
  	left join hong.N247_up on up_postId = id 
  	left join hong.N247_re on N247_rePoId = id 
  	left join hong.member on userId = hong.N247_re.N247_reUsId or userId = hong.N247.userNum
+ 	left join hong.N247_tab on hong.N247_tab.tabId = hong.N247.tabId
  	where hong.N247.tabId = #{tabId} AND hong.N247.isDel=0 or hong.N247.tabId = #{tabId} AND hong.N247.isDel=3 
  	order by lastUpdate desc
   </select>
@@ -307,4 +314,36 @@
   	SELECT idN247_ft,ft_userId FROM hong.N247_ft Where ft_tabId = #{tabId} and ft_isDel = 0
   </select>
 
+  <select id="getReplyListCard" resultType="org.first.mvc.entity.Post">
+  	SELECT hong.N247.id, hong.N247.postTitle, hong.N247.description, hong.N247.create, hong.N247.lastUpdate ,
+	hong.N247.dueDay, hong.N247_re.idN247_re, hong.N247_re.N247_rePoId, hong.N247_re.N247_reDes,
+	hong.N247_re.N247_reUsId, hong.N247_re.lastModified, hong.N247_re.N247_reIsDel, 
+	hong.N247_up.idN247_up, hong.N247_up.up_fileName,  hong.N247_up.up_orgName, hong.N247_up.up_isDel,  
+	hong.N247_up.up_postId, hong.N247_up.up_check, hong.member.id, hong.member.nickName, hong.member.userId, hong.member.userImg
+	FROM hong.N247
+	left join hong.N247_re on N247_rePoId = hong.N247.id
+	left join hong.N247_up on up_postId = hong.N247.id
+	left join hong.member on userId = N247_reUsId or userId = hong.N247.userNum
+	WHERE hong.N247.id = #{id}
+  </select>
+  
+  <select id="getFriTabList" resultType="org.first.mvc.entity.Member">
+  	SELECT hong.N247_ft.lastModified, hong.N247_ft.idN247_ft,
+  	hong.member.id, hong.member.nickName, hong.member.userId, hong.member.userImg 
+  	FROM hong.N247_ft
+	left join hong.member on userId = hong.N247_ft.ft_userId
+	WHERE ft_tabId = #{tabId} AND ft_isDel = 0
+  </select>
+  
+  <select id="getFriendsAdmList" resultType="org.first.mvc.entity.Member">
+    SELECT hong.member.nickName, hong.member.userImg, hong.member.userId, hong.member.id, hong.member.mb_introduce,
+ 	hong.N247_f.idN247_f, hong.N247_f.fUserId, hong.N247_f.myId, hong.N247_f.f_isDel, hong.N247_f.adm,
+ 	hong.N247_ft.idN247_ft, hong.N247_ft.ft_tabId, hong.N247_ft.ft_userId, hong.N247_tab.userNum
+ 	FROM hong.N247_f 
+ 	left join hong.N247_ft on ft_userId = myId AND ft_isDel = 0 or ft_userId = fUserId AND ft_isDel = 0
+ 	left join hong.member on userId = myId or userId = fUserId
+ 	left join hong.N247_tab on hong.N247_tab.tabId = ft_tabId
+ 	WHERE myId = #{userId} AND f_isDel = 0 OR fUserId = #{userId} AND f_isDel = 0
+  </select>
+  
 </mapper>

@@ -69,6 +69,8 @@ public class Post {
 	
 	private String TabLastUpdate;
 	
+	private Date tab_LastUpdate;
+	
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date Tab_dueDay;
 	
@@ -124,9 +126,57 @@ public class Post {
 	
 	private String mb_introduce;
 	
+	private int tabCompCheck;
+	
+	private int up_check;
+	
+	private String up_orgName;
+	
+	private Integer tab_userNum;
 	
 	
 	
+	
+	public Integer getTab_userNum() {
+		return tab_userNum;
+	}
+
+	public void setTab_userNum(Integer tab_userNum) {
+		this.tab_userNum = tab_userNum;
+	}
+
+	public Date getTab_LastUpdate() {
+		return tab_LastUpdate;
+	}
+
+	public void setTab_LastUpdate(Date tab_LastUpdate) {
+		this.tab_LastUpdate = tab_LastUpdate;
+	}
+
+	public String getUp_orgName() {
+		return up_orgName;
+	}
+
+	public void setUp_orgName(String up_orgName) {
+		this.up_orgName = up_orgName;
+	}
+
+	public int getUp_check() {
+		return up_check;
+	}
+
+	public void setUp_check(int up_check) {
+		this.up_check = up_check;
+	}
+
+	public int getTabCompCheck() {
+		return tabCompCheck;
+	}
+
+	public void setTabCompCheck(int tabCompCheck) {
+		this.tabCompCheck = tabCompCheck;
+	}
+
 	public String getNickName() {
 		return nickName;
 	}
