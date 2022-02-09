@@ -66,47 +66,19 @@ public class uploadController {
 		return new RedirectView ("/mvc/board?tabId="+tabId) ;
 	}
 	
+	@RequestMapping(value = "/register/updateFileAction", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+	public RedirectView updateFileAction (Locale locale, Model model, MultipartHttpServletRequest multiRequest, Integer up_userId, Integer up_postId, Integer up_tabId) {
+		System.out.println("/register/createPostAction 돌아가는 중입니다.");
+		
+		try {
+		fileService.uploadFile(multiRequest,up_userId,up_postId,up_tabId);
+		}catch(Exception e) {
+			if (logger.isErrorEnabled()) {
+    			logger.error("#Exception Message : {}",e.getMessage());
+			}
+		}
+		return new RedirectView ("/mvc/board?tabId="+up_tabId) ;
+	}
 	
-//	@RequestMapping(value = "/register/createPostAction", method = {RequestMethod.POST})
-//	public @ResponseBody List<Post> createPostAction(Model model,@RequestParam("postTitle") String postTitle, String description, @DateTimeFormat(pattern="yyyy-MM-dd") Date dueDay, MultipartHttpServletRequest multiRequest, Integer userId, Integer tabId){
-//		Member userIdTabId = new Member();
-//		userIdTabId.setTabId(tabId);
-//		userIdTabId.setUserId(userId);
-//		
-//		List<Post> result = DAO.getPostList(userIdTabId);
-//		
-//		result = (DAO.postSet(result,userIdTabId));	
-//	 return result;
-//	}
-	
-	//포스트 업로드는 javascript로 작업 끝나면 아래내용 삭제 
-	
-//	@RequestMapping(value = "/register/createPostAction1", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
-//	public RedirectView createPostAction1(Locale locale, Model model, String postTitle, String description, @DateTimeFormat(pattern="yyyy-MM-dd") Date dueDay, MultipartHttpServletRequest multiRequest,  HttpServletRequest request ) {
-//		System.out.println("/register/createPostAction 돌아가는 중입니다.");
-//		HttpSession session = request.getSession();
-//		Member userIdTabId = (Member) session.getAttribute("userIdTabId");
-//		
-//		session.setAttribute("userIdTabId", userIdTabId); 	
-//		
-//		try {
-//		Date date_now = new Date(System.currentTimeMillis());
-//		Date dueDayPara = dueDay;
-//		if(dueDay == null) {
-//			dueDayPara = date_now;
-//		}
-//		DAO.createPost(postTitle,description,userIdTabId.getTabId(),userIdTabId.getUserId(),dueDayPara);
-//		Integer postId = DAO.getPostId(userIdTabId.getTabId());
-//		fileService.uploadFile(multiRequest,userIdTabId.getUserId(),postId,userIdTabId.getTabId());
-//		}catch(Exception e) {
-//			if (logger.isErrorEnabled()) {
-//    			logger.error("#Exception Message : {}",e.getMessage());
-//			}
-//		}
-//		return new RedirectView("/mvc/board?tabId="+userIdTabId.getTabId());
-//		
-//
-//		
-//	}
 	
 }

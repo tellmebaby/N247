@@ -583,12 +583,41 @@
 		</form>
 	</div>
 	
+	
+	<div class="modal fade" id="modal_card_updateFile" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">		    
+		<form id="frm" name="frm" method="post" action="/mvc/register/updateFileAction" enctype="multipart/form-data">
+			 <div class="modal-dialog">	 
+			  <div class="modal-content">
+			   <div class="modal-header">
+			    <h5 class="modal-title">첨부파일관리</h5>
+		            <button type="button" class="close btn btn-round" data-bs-dismiss="modal" aria-label="Close" id="modal_file_closeButton">
+		              <i class="material-icons">close</i>
+		            </button>  
+			   </div>
+			   <div class="modal-body">
+		          <div class="tab-pane fade show active" id="task-add-details" role="tabpanel">
+		          	  <div class="form-group row" id="modal_card_updateFile_body_deleteFile"></div>
+		              <div class="form-group row" id="modal_card_updateFile_body_fileSelecter"></div>
+		          </div>
+		           <div class="alert alert-warning text-small" role="alert">
+			               <span id="modal_card_updateFile_message"></span>
+			          </div>
+			   </div>
+			   <div class="modal-footer">
+			     <button role="button" class="btn btn-primary" type="submit" id="modal_card_updateFile_footerButton">업로드</button>
+			     <div id="modal_card_updateFile_footer"></div>
+			   </div>
+			  </div>	     
+			</div>
+		</form>
+	</div>
+	
 	<div class="modal fade" id="getCardModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	  <div class="modal-dialog">
 	    <div class="modal-content">
 	      <div class="modal-header">
 	       <h5 class="modal-title" id="cardModalLabel"></h5>
-	        <button type="button" onclick="reload()" class="close btn btn-round" data-bs-dismiss="modal" aria-label="Close">
+	        <button type="button" onclick="reload()" class="close btn btn-round" data-bs-dismiss="modal" aria-label="Close" id="modal_card_closeButton">
 				<i class="material-icons">close</i>
 			</button>
 	      </div>
@@ -623,7 +652,8 @@
 	    </div>
 	  </div>
 	</div>
-	<div id="testModal">
+	
+	<div id="modal_project_addFriends">
 	</div>	
 	
 	
@@ -633,21 +663,19 @@
 		   <div class="modal-header">
 		     <h5 class="modal-title" id="userInfoModal">회원정보</h5>
 		     <button type="button" class="close btn btn-round" data-bs-dismiss="modal" aria-label="Close">
-		     <i class="material-icons">close</i>
+	    	 <i class="material-icons">close</i>
 		     </button>
 		   </div>
 		   <div class="modal-body">
 			 <div class="row g-0">
 			   <div class="col-md-4" id="moal_userInformation_userImg">
 			   </div>
-		      <div class="col-md-8">
-			   
+		     	 <div class="col-md-8">
 			     <h5 class="card-title">${userInformation.nickName }</h5>
 				 <p class="card-text">${userInformation.id }</p>
 				 <p class="card-text">${userInformation.mb_introduce }</p>
 				 <p class="card-text"><small class="text-muted">Last updated ${userInformation.lastModified }</small></p>
-			  
-			  </div>
+				 </div>
 			  </div>
 			</div>
 			<div class="modal-footer">
@@ -658,7 +686,24 @@
 		</div>
 	  </div>
 	
-
+<!-- 	공유취소 모달 -->
+	<div class="modal fade" id="projectUnAdm" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	       <h5 class="modal-title">공유를 취소하시겠습니까?</h5>
+	        <button type="button" class="close btn btn-round" data-bs-dismiss="modal" aria-label="Close">
+				<i class="material-icons">close</i>
+			</button>
+	      </div>
+	      <div class="modal-body">
+	      </div>
+	      <div class="modal-footer" id="projectUnAdm_action_button">
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	
 
     <script type="text/javascript" src="http://code.jquery.com/jquery-3.5.1.min.js"></script>  
     <script>
@@ -668,7 +713,8 @@
  	var userNickName = '${userInformation.nickName }';
  	var replyUser = '${userInformation.nickName }';
    	var allList = [];
-
+   	
+	console.log("로그인 하면 뭘 가져오나 볼게요 :" + p1 + "그리고 :" + p2 );
  	
    	function getAllList(p1,p2){
 		
@@ -680,7 +726,7 @@
 	 	
 		.done(function(data) {
 			allList=data;
-			console.log('모든리스트 받아오기 작동중입니다. allList의 갯수는 :' + allList.length);
+			//console.log('모든리스트 받아오기 작동중입니다. allList의 갯수는 :' + allList.length);
 // 			getProjectAdmFriendsAjax(p1);
 			getAdmFriendsAjax();
 			getCardList2(allList);
@@ -691,13 +737,14 @@
 	getAllList(p1,p2);
    	
    	function getCardList2(allList){
- 		console.log("작동합니다." + allList.length);
+   		
+ 		//console.log("작동합니다." + allList.length);
  		var allCardList = [];
  		var postCheck = 0;
  		var projectInfo = allList;
  		for(var i=0 ; i<allList.length ; i++){
  			if( allList[i].id === postCheck){
- 			}else if(allList[i].userId === allList[i].userNum){
+ 			}else if(allList[i].isDel == 0){
  				postCheck = allList[i].id;
  				allCardList.push(allList[i]);
  			}
@@ -706,13 +753,14 @@
  		
  		var cards_list = allCardList;
 	    var compCards_list = allCardList;
-    
+	
 	   
 	$('#tasks').append(
 		'<div class="list-head"></div>'+
 		'<div class="content-list-body"></div>'
 		);
 	
+	$('#card-add-icon').show();
 
 	$('.list-head').append(
 		'<div class="row content-list-head">'+	
@@ -738,9 +786,12 @@
 		'</form>'+
 		'</div>'
 	);
-	if(cards_list[0].tabCompCheck == 3){
-		$('#card-add-icon').hide();
+	if(cards_list.length != 0){
+		if(cards_list[0].tabCompCheck == 3){
+			$('#card-add-icon').hide();
+		}
 	}
+	
 	
 	$('.content-list-body').append(
 		'<div class="card-list">'+
@@ -753,122 +804,124 @@
 		'</div>'
 		);
 
-
-		for(var i=0 ; i < cards_list.length  ; i++ ) {
-		$("#cardsList").append(
-		'<div class="card card-task" id="card-task'+cards_list[i].id+'" >'+
-		'<div class="progress">' +
-				'<div class="progress-bar bg-'+ cards_list[i].progressBg +'" role="progressbar" style="width: '+cards_list[i].progress+'%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>'+
-				'</div>' +
-		'<div class="card-body"> '+
-			'<div class="card-title">'+
-				'<ul class="avatars">'+
-					'<li>'+
-		       		'<a  onclick="getOneCardAjax(this.id)" data-bs-toggle="modal" data-bs-target="#getCardModal" id="'+cards_list[i].id+'">' +
-		   			'<h6 data-filter-by="text">'+ cards_list[i].postTitle +'<p><small>'+'  '+cards_list[i].dueDayString+' 까지 완료</small></h6><br>'+
-						'<img class="box" id="'+cards_list[i].id+'postUpfile" src="/images/'+cards_list[i].up_fileName +' "/>'+ 
-		   		  	'<span data-filter-by="text" class="text-small">'+'\u00a0\u00a0\u00a0'+cards_list[i].description+'</span>' +
-		   		    '</a>'+
-		       	 	
-		       	 	'</li>'+
-		        '</ul>'+
-		    '</div>'+
-		    '<div class="card-meta">'+
-		        '<ul class="avatars">'+
-		       		'<li>'+
-		       		'<a data-toggle="tooltip" title="'+cards_list[i].nickName+'">'+
-		      		'<img alt="'+ cards_list[i].nickName +'" class="avatar" src="/images/'+ cards_list[i].userImg +'" />'+
-		      		'</a>'+
-		       		'<small>'+'\u00a0\u00a0'+ cards_list[i].nickName +' <span class="text-small" style="color:green"> '+ cards_list[i].compareMessage +'</span></small>'+
-		   		 	'</li>'+
-		       	'</ul>'+
-		       	'<div class="d-flex align-items-center">'+
-		   		    '<a style="color:#666666" data-toggle="tooltip" title="'+ cards_list[i].up_orgName +'" href="/images/'+ cards_list[i].up_fileName+'" download="'+ cards_list[i].up_orgName +'">'+
-		   			'<i id="'+cards_list[i].id+'attachIcon"  class="material-icons">attach_file</i>'+
-		       		'</a>'+
-		   		'</div>'+
-		   		'<div class="dropdown card-options">'+
-		       		'<button class="btn-options" type="button"  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'+
-		   			'<i id="'+cards_list[i].id+'more_verIcon" class="material-icons">more_vert</i>'+	
-		       		'</button>'	  +
-					'<ul class="dropdown-menu dropdown-menu-right">' +
-					'<li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modal-'+ cards_list[i].id +'update">수정</a></li>'+
-		       		'<li><a class="dropdown-item" href="/mvc/updateIsDelPostAction?id='+ cards_list[i].id +'&&isDel=3">완료</a></li>'+
-		       		'<li><hr class="dropdown-divider"></li>'	+
-		       		'<li><a class="dropdown-item text-danger" href="/mvc/updateIsDelPostAction?id='+ cards_list[i].id +'&&isDel=1">삭제</a></li> '+
-					'</ul>'+
-				'</div>'+
-			'</div>'+
-			'</div>'+
-		'</div>');
-		if(cards_list[i].up_fileName == null){
-			$('#'+cards_list[i].id+'postUpfile').hide(); 
-			$('#'+cards_list[i].id+'attachIcon').hide(); 
-		}
-		if(cards_list[i].up_check == 1){
-			$('#'+cards_list[i].id+'postUpfile').hide(); 
-		}
-		if(cards_list[i].postAdmCheck == 0){
-			$('#'+cards_list[i].id+'more_verIcon').hide();
-		}
-		if(cards_list[i].isDel == 3){
-			$('#card-task'+cards_list[i].id).hide();
-		}
-		
-	}
-
-	for(var i=0 ; i < compCards_list.length  ; i++ ) {
-	$("#completeCardsList").append(
-		'<div class="card card-task" id="compCard-task'+cards_list[i].id+'" >'+
-			'<div class="card-body"> '+
-				'<div class="card-title">'+
-	           		'<a onclick="getOneCardAjax(this.id)" data-bs-toggle="modal" data-bs-target="#getCardModal" id="'+compCards_list[i].id+'">' +
-	       			'<h6 data-filter-by="text">'+ compCards_list[i].postTitle +'</h6>'+
-	   				'<img id="'+compCards_list[i].id+'compPostUpfile" class="avatar" src="/images/'+compCards_list[i].up_fileName +' "/>'+ 
-	       		  	'<span class="text-small">'+compCards_list[i].description+'</span>' +
-	       		    '</a>'+
-	           	 	'<small>'+compCards_list[i].dueDayString+' 까지 완료</small>'+ 
-	            '</div>'+
-	            '<div class="card-meta">'+
-	                '<ul class="avatars">'+
-	               		'<li>'+
-	               		'<a data-toggle="tooltip" title="'+compCards_list[i].nickName+'">'+
-	              		'<img alt="'+ compCards_list[i].nickName +'" class="avatar" src="/images/'+ compCards_list[i].userImg +'" />'+
-	              		'</a>'+
-	               		'<small>'+ compCards_list[i].nickName +' <span class="text-small" style="color:green"> '+ compCards_list[i].compareMessage +'</span></small>'+
-	           		 	'</li>'+
-	               	'</ul>'+
-	               	'<div class="d-flex align-items-center">'+
-	           		    '<a style="color:#666666" data-toggle="tooltip" title="'+ compCards_list[i].up_orgName +'" href="/images/'+ compCards_list[i].up_fileName+'" download="'+ compCards_list[i].up_orgName +'">'+
-	           			'<i id="'+compCards_list[i].id+'compAttachIcon"  class="material-icons">attach_file</i>'+
-	               		'</a>'+
-	           		'</div>'+
-	           		'<div class="dropdown card-options">'+
-	               		'<button class="btn-options" type="button"  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'+
-	           			'<i id="'+compCards_list[i].id+'compMore_verIcon" class="material-icons">more_vert</i>'+	
-	               		'</button>'	  +
-						'<ul class="dropdown-menu dropdown-menu-right">' +
-	               		'<li><a class="dropdown-item text-danger" href="/mvc/updateIsDelPostAction?id='+ compCards_list[i].id +'&&isDel=0">완료 해제</a></li>'+
-						'</ul>'+
+		if(cards_list.length != 0){
+			for(var i=0 ; i < cards_list.length  ; i++ ) {
+				$("#cardsList").append(
+				'<div class="card card-task" id="card-task'+cards_list[i].id+'" >'+
+				'<div class="progress">' +
+						'<div class="progress-bar bg-'+ cards_list[i].progressBg +'" role="progressbar" style="width: '+cards_list[i].progress+'%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>'+
+						'</div>' +
+				'<div class="card-body"> '+
+					'<div class="card-title">'+
+						'<ul class="avatars">'+
+							'<li>'+
+				       		'<a  onclick="getOneCardAjax(this.id)" data-bs-toggle="modal" data-bs-target="#getCardModal" id="'+cards_list[i].id+'">' +
+				   			'<h6 data-filter-by="text" id="card_title_'+cards_list[i].id+'">'+ cards_list[i].postTitle +'<p><small>'+'  '+cards_list[i].dueDayString+' 까지 완료</small></h6><br>'+
+								'<img class="box" id="'+cards_list[i].id+'postUpfile" src="/images/'+cards_list[i].up_fileName +' "/>'+ 
+				   		  	'<span data-filter-by="text" class="text-small" id="card_description_'+cards_list[i].id+'">'+'\u00a0\u00a0\u00a0'+cards_list[i].description+'</span>' +
+				   		    '</a>'+
+				       	 	
+				       	 	'</li>'+
+				        '</ul>'+
+				    '</div>'+
+				    '<div class="card-meta">'+
+				        '<ul class="avatars">'+
+				       		'<li>'+
+				       		'<a data-toggle="tooltip" title="'+cards_list[i].nickName+'">'+
+				      		'<img alt="'+ cards_list[i].nickName +'" class="avatar" src="/images/'+ cards_list[i].userImg +'" />'+
+				      		'</a>'+
+				       		'<small>'+'\u00a0\u00a0'+ cards_list[i].nickName +' <span class="text-small" style="color:green"> '+ cards_list[i].compareMessage +'</span></small>'+
+				   		 	'</li>'+
+				       	'</ul>'+
+				       	'<div class="d-flex align-items-center">'+
+				   		    '<a style="color:#666666" data-toggle="tooltip" title="'+ cards_list[i].up_orgName +'" href="/images/'+ cards_list[i].up_fileName+'" download="'+ cards_list[i].up_orgName +'">'+
+				   			'<i id="'+cards_list[i].id+'attachIcon"  class="material-icons">attach_file</i>'+
+				       		'</a>'+
+				   		'</div>'+
+				   		'<div class="dropdown card-options">'+
+				       		'<button class="btn-options" type="button"  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'+
+				   			'<i id="'+cards_list[i].id+'more_verIcon" class="material-icons">more_vert</i>'+	
+				       		'</button>'	  +
+							'<ul class="dropdown-menu dropdown-menu-right">' +
+				       		'<li><a class="dropdown-item" href="/mvc/updateIsDelPostAction?id='+ cards_list[i].id +'&&isDel=3">완료</a></li>'+
+				       		'<li><hr class="dropdown-divider"></li>'	+
+				       		'<li><a class="dropdown-item text-danger" href="/mvc/updateIsDelPostAction?id='+ cards_list[i].id +'&&isDel=1">삭제</a></li> '+
+							'</ul>'+
+						'</div>'+
 					'</div>'+
-				'</div>'+
-	       	'</div>'+
-    	'</div>');
-		if(compCards_list[i].up_fileName == null){
-		$('#'+compCards_list[i].id+'compPostUpfile').hide(); 
-		$('#'+compCards_list[i].id+'compAttachIcon').hide(); 
-		}
-		if(cards_list[i].up_check == 1){
-		$('#'+compCards_list[i].id+'compPostUpfile').hide(); 
-		}
-		if(compCards_list[i].postAdmCheck == 0){
-		$('#'+compCards_list[i].id+'compMore_verIcon').hide();
-		}
-		if(compCards_list[i].isDel == 0){
-		$('#compCard-task'+compCards_list[i].id).hide();
+					'</div>'+
+				'</div>');
+				
+				if(cards_list[i].up_fileName == null || cards_list[i].up_isDel == 1){
+					$('#'+cards_list[i].id+'postUpfile').hide(); 
+					$('#'+cards_list[i].id+'attachIcon').hide(); 
+				}
+				if(cards_list[i].up_check == 1){
+					$('#'+cards_list[i].id+'postUpfile').hide(); 
+				}
+				if(cards_list[i].postAdmCheck == 0){
+					$('#'+cards_list[i].id+'more_verIcon').hide();
+				}
+				if(cards_list[i].isDel == 3){
+					$('#card-task'+cards_list[i].id).hide();
+				}
+				
+			}
+
+			for(var i=0 ; i < compCards_list.length  ; i++ ) {
+			$("#completeCardsList").append(
+				'<div class="card card-task" id="compCard-task'+cards_list[i].id+'" >'+
+					'<div class="card-body"> '+
+						'<div class="card-title">'+
+			           		'<a onclick="getOneCardAjax(this.id)" data-bs-toggle="modal" data-bs-target="#getCardModal" id="'+compCards_list[i].id+'">' +
+			       			'<h6 data-filter-by="text">'+ compCards_list[i].postTitle +'</h6>'+
+			   				'<img id="'+compCards_list[i].id+'compPostUpfile" class="avatar" src="/images/'+compCards_list[i].up_fileName +' "/>'+ 
+			       		  	'<span class="text-small">'+compCards_list[i].description+'</span>' +
+			       		    '</a>'+
+			           	 	'<small>'+compCards_list[i].dueDayString+' 까지 완료</small>'+ 
+			            '</div>'+
+			            '<div class="card-meta">'+
+			                '<ul class="avatars">'+
+			               		'<li>'+
+			               		'<a data-toggle="tooltip" title="'+compCards_list[i].nickName+'">'+
+			              		'<img alt="'+ compCards_list[i].nickName +'" class="avatar" src="/images/'+ compCards_list[i].userImg +'" />'+
+			              		'</a>'+
+			               		'<small>'+ compCards_list[i].nickName +' <span class="text-small" style="color:green"> '+ compCards_list[i].compareMessage +'</span></small>'+
+			           		 	'</li>'+
+			               	'</ul>'+
+			               	'<div class="d-flex align-items-center">'+
+			           		    '<a style="color:#666666" data-toggle="tooltip" title="'+ compCards_list[i].up_orgName +'" href="/images/'+ compCards_list[i].up_fileName+'" download="'+ compCards_list[i].up_orgName +'">'+
+			           			'<i id="'+compCards_list[i].id+'compAttachIcon"  class="material-icons">attach_file</i>'+
+			               		'</a>'+
+			           		'</div>'+
+			           		'<div class="dropdown card-options">'+
+			               		'<button class="btn-options" type="button"  data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'+
+			           			'<i id="'+compCards_list[i].id+'compMore_verIcon" class="material-icons">more_vert</i>'+	
+			               		'</button>'	  +
+								'<ul class="dropdown-menu dropdown-menu-right">' +
+			               		'<li><a class="dropdown-item text-danger" href="/mvc/updateIsDelPostAction?id='+ compCards_list[i].id +'&&isDel=0">완료 해제</a></li>'+
+								'</ul>'+
+							'</div>'+
+						'</div>'+
+			       	'</div>'+
+		    	'</div>');
+				if(compCards_list[i].up_fileName == null){
+				$('#'+compCards_list[i].id+'compPostUpfile').hide(); 
+				$('#'+compCards_list[i].id+'compAttachIcon').hide(); 
+				}
+				if(cards_list[i].up_check == 1){
+				$('#'+compCards_list[i].id+'compPostUpfile').hide(); 
+				}
+				if(compCards_list[i].postAdmCheck == 0){
+				$('#'+compCards_list[i].id+'compMore_verIcon').hide();
+				}
+				if(compCards_list[i].isDel == 0){
+				$('#compCard-task'+compCards_list[i].id).hide();
+				}
+				
+			}
 		}
 		
-	}
 
 	$('#breadcrumb-item-userName').hide();
 		$('#breadcrumb-item-userName').show();
@@ -893,8 +946,6 @@
 					'<button type="button" class="btn btn-round" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">'+
 					'<i class="material-icons">settings</i></button>'+
 					' <ul class="dropdown-menu dropdown-menu-right">'+
-						'<li id="dropDown-reName"><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#project-edit-modal">이름 변경</a></li>'+
-						'<li id="dropDown-reIntro"><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#project-editIntro-modal">소개글 변경</a></li>'+
 						'<li id="dropDown-reDeuDay"><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#project-editDueDay-modal">완료일 변경</a></li>'+
 						'<li id="dropDown-complete"><a class="dropdown-item" href="completeTabAction?isDel=3">프로젝트 완료</a></li>'+
 						'<li id="dropDown-unComplete"><a class="dropdown-item" href="completeTabAction?isDel=0">완료해제</a></li>'+
@@ -931,25 +982,27 @@
 				break;
 			}	
 		}
-		
-		
-		$('#page-projectHeader').append(
+		$('#page-projectHeader').html(
 				'<div id="header_projectTitle"></div>'+
-				'<div id="header_admSet" class="d-flex align-items-center">'+
-				'<ul id="projectAdm_item" class="avatars">	'+
+				'<div class="d-flex align-items-center">'+
+				'<ul class="avatars" id="header_admSetting">'+
 				'</ul>'+
-				'<button id="header_admAdd" onclick="getAdmFriendsAjax()" class="btn btn-round flex-shrink-0" data-bs-toggle="modal" data-bs-target="#ProjectAdm">'+
- 				'</button>'+
+				'<div class="col" id="header_admAddicon"></div>'+
 				'</div>'+
 				'<div id="header_projectProgress"></div>'
 				);
+
 		
-		$('#header_projectTitle').html('<h1>'+projectInfo[0].tabTitle+'</h1><p class="lead">'+projectInfo[0].tab_intro+'</p>');	
 		
 	$('#header_admAdd').hide();	
+	
 	if(projectInfo[0].tab_userNum == p2 && projectInfo[0].tabCompCheck == 0){
+		$('#header_projectTitle').html('<h1 onclick="update_project_title()" id="project_title">'+projectInfo[0].tabTitle+'</h1> <div id="project_titleUpdate_input"></div>'+
+				'<p class="lead" onclick="update_project_intro()" id="projcet_intro">'+projectInfo[0].tab_intro+'</p><div id="project_introUpdate_input"></div>');	
 		$('#header_admSet').show();	
+		getProjectInfor(projectInfo[0].tabTitle,projectInfo[0].tabId,projectInfo[0].tab_intro);
 	}else{
+		$('#header_projectTitle').html('<h1>'+projectInfo[0].tabTitle+'</h1><p class="lead">'+projectInfo[0].tab_intro+'</p>');	
 		$('#header_admSet').hide();	
 	}		
 		$('#header_projectProgress').html(
@@ -957,14 +1010,111 @@
 			'<div class="progress-bar bg-'+projectInfo[0].tabProgressBg+'" style="width:'+projectInfo[0].tabProgress+'%;"></div>'+
 			'</div>'+
 			'<div class="d-flex justify-content-between text-small">'+
-			'<div class="d-flex align-items-center"><span>'+projectInfo[0].tabLastUpdate+'마지막 업데이트</span></div>'+
-			'<span>'+projectInfo[0].dueMessage+'</span><span>'+projectInfo[0].maxDay+' 완료</span>'+
+			'<div class="d-flex align-items-center"><span>'+projectInfo[0].dueMessage+'</span></div>'+
+			'<span>'+projectInfo[0].maxDay+' 완료</span>'+
 			'</div>'+
 			'</div>');	
 		
+	// 020901 탭이 마감일이 지나면 포스트를 작성할 수 없게 한다.
+	if(projectInfo[0].tabProgress > 99.99){
+		console.log("테스트 성공" + projectInfo[0].tabProgress);
+		$('#card-add-icon').hide();
+	}	
+		
 	};
 	
-
+	
+	
+	
+	var update_projcetTitle = '';
+	var update_projectId = 0;
+	var update_projectIntro = '';
+	
+	
+	function getProjectInfor(titlearg,idarg,introarg){
+		update_projcetTitle = titlearg;
+		update_projectId = idarg;
+		update_projectIntro = introarg;
+	}
+	
+	function update_project_title(){
+		$('#project_title').hide();
+		$('#project_titleUpdate_input').show();
+		$('#project_titleUpdate_input').html(
+				'<div class="row" >'+
+				'<div class="col-md-auto">'+
+				'<input type="text" class="form-control" onKeypress="javascript:if(event.keyCode==13) {update_projcet_titleAction(this.value)}" placeholder="'+update_projcetTitle+'" maxlength="45" aria-label="tabTitleUpdate">'+
+				'</div>'+
+				'<div class="col-md-auto">'+
+				'<button type="button" class="close btn btn-round" onclick="updat_project_title_cancle()" ><i class="material-icons">close</i></button>'+
+				'</div>'+
+				'</div>'
+				);
+		$('#project_introUpdate_input').hide();
+		$('#projcet_intro').show();
+	}
+	
+	function update_project_intro(){
+		$('#projcet_intro').hide();
+		$('#project_introUpdate_input').show();
+		$('#project_introUpdate_input').html(
+				'<div class="row" >'+
+				'<div class="col-md-auto">'+
+				'<input class="form-control" type="text" onKeypress="javascript:if(event.keyCode==13) {update_projcet_introAction(this.value)}" placeholder="'+update_projectIntro+'" maxlength="250" aria-label="tabIntroUpdate" >'+
+				'</div>'+
+				'<div class="col-md-auto">'+
+				'<button type="button" class="close btn btn-round" onclick="updat_project_intro_cancle()"><i class="material-icons">close</i></button>'+
+				'</div>'+
+				'</div>'
+				);
+		$('#project_titleUpdate_input').hide();
+		$('#project_title').show();
+	}
+	
+	function updat_project_title_cancle(){
+		console.log("프로젝트 제목 수정 취소 테스트 성공");
+		$('#project_titleUpdate_input').hide();
+		$('#project_title').show();
+		
+	}
+	function updat_project_intro_cancle(){
+		$('#project_introUpdate_input').hide();
+		$('#projcet_intro').show();
+	}
+	
+	
+	function update_projcet_titleAction(insertTitle){
+		 $.ajax({
+	         url: 'updateProjectTitleAjax',
+	    	 method: "POST",
+	 	     data: {'tabTitle': insertTitle, 'tabId' : update_projectId}
+	 	     })
+	 	
+		.done(function() {
+			$('#project_titleUpdate_input').empty();
+			$('#project_title').text(insertTitle);
+			$('#project_title').show();
+			$('#'+update_projectId+'').text(insertTitle);
+			$('#breadcrumb-item-projectName').text(insertTitle);
+		});
+	}
+	
+	function update_projcet_introAction(insertIntro){
+		 $.ajax({
+	         url: 'updateProjectIntroAjax',
+	    	 method: "POST",
+	 	     data: {'tab_intro': insertIntro, 'tabId' : update_projectId}
+	 	     })
+	 	
+		.done(function() {
+			$('#project_introUpdate_input').empty();
+			$('#projcet_intro').text(insertIntro);
+			$('#projcet_intro').show();
+			
+		});
+	}
+	
+	
     var projectNumber = p1;
 	
 	function getProject(id){
@@ -1000,7 +1150,7 @@
 	 	     })
        .done(function(data) {
 	       	$('#modal_projectAdm_body').empty();
-	       	$('#header_admSet').empty();
+
 	       	var allfriendsList = [];
 	       	var iApproveAdmList = [];
 	       	var friendApproveAdmList = [];
@@ -1021,18 +1171,39 @@
 	       			}
 	       		}
 	       	}
-
+	       	
 	       	for(var i=0 ; i<data.length ; i++){
 	       		if( data[i].userId == data[i].ft_userId && data[i].ft_tabId == projectNumber && data[i].ft_userId != tabAdmFriCheck){
-	       			console.log(projectNumber+"번 현재탭의 공유친구 확인 " + data[i].userId + "번친구가 " + data[i].ft_tabId + "번탭에" + tabAdmFriCheck +"번 체크를 통과");
+ 	       			//console.log(projectNumber+"번 현재탭의 공유친구 확인 " + data[i].userId + "번친구가 " + data[i].ft_tabId + "번탭에" );
 	       			projectAdmList.push(data[i]);
+	       			//console.log("이프로젝트에 공유된친구는 누구죠 ? " + data[i].nickName + "통과된 자료번호는 :" + data[i].idN247_ft);
 	       			tabAdmFriCheck = data[i].ft_userId;
+	       			
 	       		}
 	       	}
+			//중복아이디 제거를 위해 아이디 순서대로 정렬해준다.
+	       	projectAdmList.sort(function(a, b) {
+	       	  return a.ft_userId - b.ft_userId;
+	       	});
+			//아이디가 정렬되었으므로 중복된 아이들을 체크해서 빼준다.
+			var dubbleIdCheck  = 0;
+			var afterCheckId = [];
+	       	for(var i=0 ; i<projectAdmList.length ; i++){
+	       		if(projectAdmList[i].ft_userId != dubbleIdCheck){
+	       			//console.log("체크 통과한 아이에요 :" + projectAdmList[i].ft_userId + "번 친구")
+	       			dubbleIdCheck = projectAdmList[i].ft_userId;
+	       			afterCheckId.push(projectAdmList[i]);
+	       		}
+	       	}
+	       	//아이디 중복체크후 다시 넣어준다.
+	       	projectAdmList = afterCheckId;
+	       	
+	       	
 	       	//내가아니고  하나의 유저이며 승인이 완료된 친구 
 	       	for(var i=0 ; i<data.length ; i++){
 	       		if(data[i].userId != p2 && data[i].userId != userIdCheck && data[i].adm == 1){
 	       			allfriendsList.push(data[i]);
+	       			//console.log("왜 친구들이 매번 달라지죠? " + data[i].nickName);
 	       			userIdCheck=data[i].userId;
 	       		}
 	       	}
@@ -1040,10 +1211,21 @@
 	       	// 여기서 탭에 공유시킬 친구를 분류해줘야돼 
 	       	if(projectAdmList.length != 0){
 	       		for(var i=0 ; i<allfriendsList.length ; i++){
+	       			//console.log("내친구 반복중 : " + allfriendsList[i].nickName);
+	       			var addUserCheck = allfriendsList[i].userId;
+	       			
 		       		for(var j=0 ; j<projectAdmList.length ; j++){
-		       			if(allfriendsList[i].userId != projectAdmList[j].userId){
-		       	       		selectProjectAdmFriends.push(allfriendsList[i]);
+		       			//console.log("걸러낼 친구 찾는중 : " + projectAdmList[j].userId);
+		       			if(allfriendsList[i].userId == projectAdmList[j].userId){
+		       				//console.log(projectAdmList[j].nickName+"체크통과못한 친구 : " + allfriendsList[i].nickName);
+		       				addUserCheck = 0;
+		       				break;
 		       			}
+		       		}
+		       		
+		       		if (addUserCheck != 0){
+		       			//console.log(allfriendsList[i].userId+"체크통과한 친구 : " + allfriendsList[i].nickName);
+		       			selectProjectAdmFriends.push(allfriendsList[i]);
 		       		}
 		       	}
 	       	}else{
@@ -1053,44 +1235,45 @@
 	       		
 	       	}
 	       	
-	       	$('#header_admSet').empty();
+	       	$('#header_admSetting').empty();
 	       	if(projectAdmList.length != 0){
 		       	for (var i=0 ; i<projectAdmList.length ; i++){
 		       		console.count("공유친구 반복" + projectAdmList[i].nickName + "님의 정보를 표시중 " );
-					$('#header_admSet').append(
-			 				'<ul class="avatars">	'+
-			 				'<li id="projectAdm_item" class="nav-item">'+
-			 				'<a href="#" data-bs-toggle="modal" data-bs-target="#userInfo'+projectAdmList[i].idN247_ft+'" data-placement="top" title="'+projectAdmList[i].nickName+'">'+
+					$('#header_admSetting').append(
+							'<li>'+
+			 				'<a href="#" onclick="projectUnAdmGetUserId('+ projectAdmList[i].idN247_ft +')" data-bs-toggle="modal" data-bs-target="#projectUnAdm" data-placement="top" title="'+projectAdmList[i].nickName+'">'+
 			 				'<img alt="Claire Connors" class="avatar" src="/images/'+projectAdmList[i].userImg+'" /></a>'+
-			 				'</li>'+
-			 				'</ul>'+
-			 				'<button id="header_admAdd" onclick="getAdmFriendsAjax()" class="btn btn-round flex-shrink-0" data-bs-toggle="modal" data-bs-target="#ProjectAdm">'+
-			 				'<i class="material-icons">add</i></button>');
-	
-					}
-	       	}else{
-				console.log("친구가 없습니다. ");
-				$('#header_admSet').append(
-						'<button id="header_admAdd" onclick="getAdmFriendsAjax()" class="btn btn-round flex-shrink-0" data-bs-toggle="modal" data-bs-target="#ProjectAdm">'+
-						'<i class="material-icons">add</i></button>');
+			 				'</li>');
+					
+					}	
+	       	}else{	
+	       		//console.log("친구가 없습니다. ");	
 			}
 	       	
-	       	$('#header_admAdd').show();
-	       	if(tabMasterCheck == 1){
-	       		$('#header_admAdd').hide();
-	       	}
 	       	
+	       	
+			$('#header_admAddicon').html(
+	   				'<button id="header_admAddicon" onclick="getAdmFriendsAjax()" class="btn btn-round flex-shrink-0" data-bs-toggle="modal" data-bs-target="#ProjectAdm">'+
+	   				'<i class="material-icons">add</i></button>');
+	       	
+	       	
+	       	$('#header_admAddicon').show();
+	       	if(tabMasterCheck == 1){
+	       		$('#header_admAddicon').hide();
+	       	}
+
 	       	for(var i=0 ; i<selectProjectAdmFriends.length ; i++){
 	       			
 	       			$('#modal_projectAdm_body').append(
 	          		       		'<li>'+
-	          		       		'<a data-toggle="tooltip" data-bs-toggle="modal" data-bs-target="#modal_info_'+i+'" title="'+selectProjectAdmFriends[i].nickName+'">'+
+	          		       		'<a data-toggle="tooltip" data-bs-toggle="modal" data-bs-target="#modal_info_'+selectProjectAdmFriends[i].userId+'" title="'+selectProjectAdmFriends[i].nickName+'">'+
 	          		      		'<img alt="'+ selectProjectAdmFriends[i].nickName +'"class="avatar" src="/images/'+ selectProjectAdmFriends[i].userImg +'" />'+
 	          		      		'</a>'+
+	          		      		'<a>'+
 	          		   		 	'</li>'
 	          					);
-	       			$('#testModal').append(
-		       					'<div class="modal fade" id="modal_info_'+i+'" tabindex="-1" aria-labelledby="userInfoModal" aria-hidden="true">'+
+	       			$('#modal_project_addFriends').append(
+		       					'<div class="modal fade" id="modal_info_'+selectProjectAdmFriends[i].userId+'" tabindex="-1" aria-labelledby="userInfoModal" aria-hidden="true">'+
 		          					'<div class="modal-dialog">'+
 			          					'<div class="modal-content">'+
 				          					'<div class="modal-header">'+
@@ -1112,7 +1295,7 @@
 					          					'</div>'+
 					          				'</div>'+
 				          					'<div class="modal-footer">'+
-				          						'<button type="button" onclick="insertProjectAdm('+selectProjectAdmFriends[i].userId+','+projectNumber+')" class="btn btn-secondary" data-bs-dismiss="modal">친구와 공유하기</button>'+
+				          						'<button type="button" onclick="insertProjectAdm('+selectProjectAdmFriends[i].userId+')" class="btn btn-secondary" data-bs-dismiss="modal">친구와 공유하기</button>'+
 				          						'<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>'+
 				          					'</div>'+
 			          					'</div>'+
@@ -1121,23 +1304,73 @@
 		       					);
 
 	       	}
-	       	testtesttest(selectProjectAdmFriends);
+	       	// 아주 좋아 ();
+	       	var admfriends_tabId = projectNumber;
+	       	testtesttest(selectProjectAdmFriends,admfriends_tabId);
+	       	
+	       //console.log("현재 탭번호 이거임1 : " + projectNumber);
 	    })
 	}	
-	function testtesttest(p1){
+	//공유를 취소할 모달을 열었을때 버튼의 유형을 정해준다 유저의 아이디를 가져와 준비시킨다. 
+	function projectUnAdmGetUserId(idN247_ft){
+		$('#projectUnAdm_action_button').html(
+				'<button id="projectUnAdm_action_button" type="button" onclick="projectUnAdmAction('+ idN247_ft +')" class="btn btn-outline-secondary" data-bs-dismiss="modal">예</button>'+
+				'<button type="button" onclick="reload()" class="btn btn-outline-secondary" data-bs-dismiss="modal">아니오</button>');
+	}
+	//공유를 취소할때 유저의 아이디를 넣어주고 리로드 시킨다.
+	function projectUnAdmAction(idN247_ft){
+		
+		console.log("취소시키기 성공 : " + idN247_ft);
+		$.ajax({
+	         url: 'isDelProjectAdm',
+	    	 method: "POST",
+	 	     data: {'idN247_ft': idN247_ft}
+	 	     });
+		location.reload();
+		
+	}
+	
+	
+	//여기에 변수를 만들어 insertProjectAdm 함수안에서 로딩안하고 공유친구사진넣어주길 해보자 
+	var admFriends_body = [];
+	var admTabId = 0;
+	function testtesttest(p1,admfriends_tabId){
 		for(var i=0 ; i<p1.length ; i++){
-			console.count("테스트 성공");
+			
+			admFriends_body.push(p1[i]);
+			//console.log("테스트 성공" + admFriends_body[i].nickName);
+			break;
 		}
+		admTabId = admfriends_tabId;
+		//console.log("현재 탭번호 이거임2 : " + admTabId);
 	 }
+
+	//이제 삭제 만들어야돼 리스트태그에 아이디심어놓고 삭제하면 함수실행하고 화면서 리스트 아이디 꺼주는걸로 하자.
 	
-	
-	function insertProjectAdm(userId,tabId){
-		console.log("insertProjectAdm 실행 됐어요  : " + userId + "번 유저를 탭번호 :" + tabId + "에 공유시켰습니다.");
+	function insertProjectAdm(userId){
+	//console.log("insertProjectAdm 실행 됐어요  : " + userId + "번 유저를 탭번호 :" + admTabId + "에 공유시켰습니다.");
+		for (var i=0 ; i<admFriends_body.length ; i++){
+			if (admFriends_body[i].userId == userId){
+				
+				//console.log("불러와서 찾기 성공" + admFriends_body[i].nickName);
+				$('#header_admSetting').append(
+						'<li>'+
+		 				'<a href="#" data-bs-toggle="modal" data-bs-target="#projectUnAdm" data-placement="top" title="'+admFriends_body[i].nickName+'">'+
+		 				'<img alt="Claire Connors" class="avatar" src="/images/'+admFriends_body[i].userImg+'" /></a>'+
+		 				'</li>');
+				
+				break;
+			}
+		}
+		
+		console.log("받아온거 표시할게요 : userId =" + userId + " , tabId =" + admTabId);
 		$.ajax({
 	         url: 'insertProjectAdm',
 	    	 method: "POST",
-	 	     data: {'userId': userId , 'tabId' : tabId}
+	 	     data: {'userId': userId , 'tabId' : admTabId}
 	 	     });
+		
+		
 	}
 	
 	var cardNumber = "";
@@ -1145,7 +1378,10 @@
 	$(".nav-link").on("click",function(){
 		document.getElementById('navbar-togglerButton').click();
 	});
-
+	
+	
+	
+	
 	function reload(){
 		$('#cardModalLabel').text(''); 
 		$('#modal_card_body').html(''); 
@@ -1162,14 +1398,18 @@
 
 		$("#input_card_reply").val('');
 		
-		console.log("댓글입력 끝나고 카드 모달 다시보여줘야돼 : " + n247_rePoId);
+		//console.log("댓글입력 끝나고 카드 모달 다시보여줘야돼 : " + n247_rePoId);
 		createReplyAction(n247_reDes,p2,n247_rePoId,p1);
 	}
  	
 	
+	var Card_id = 0;
+	var fileUpdateCheck = 0;
+	var upFile_id = 0;
+	var upFile_name = "";
 	function getOneCardAjax2(cardId){
 		
-		 console.log("어디까지 오나1 : " + cardId);
+		 //console.log("어디까지 오나1 : " + cardId);
 		 $.ajax({
 	         url: 'getOneCardAjax',
 	    	 method: "POST",
@@ -1177,15 +1417,16 @@
 	 	     })
 	 	
 		.done(function(data) {
-			
+			var myCardCheck = 0;
 			var oneCardList = [];
+			$('#modal_card_updateFile_body_fileSelecter').empty();
+			$('#modal_card_updateFile_body_deleteFile').empty();
 			for(var i=0 ; i<data.length ; i++){
 				if(data[i].N247_reUsId == data[i].userId || data[i].N247_reUsId == null){
 					oneCardList.push(data[i]);
 				}
 				
 			}
-			$('#modal_card_body').html('<div id="loadingSpinner" style="display:none" class="spinner-border"></div>');
 			$("#input_card_reply").val('');
 			$('#replyInputTest').html('');
 			
@@ -1199,7 +1440,7 @@
 					'<div id="replyInputTest"></div>'
 					);
 			$('#cardImageDiv').hide();
-			if(oneCardList[0].up_fileName != null){
+			if(oneCardList[0].up_fileName != null && oneCardList[0].up_isDel == 0){
 				$('#cardImageDiv').show();
 				$('#cardImageDiv').html('<img src="/images/'+oneCardList[0].up_fileName+'" class="card-img-top" alt="...">');	
 			}
@@ -1207,19 +1448,34 @@
 				$('#cardImageDiv').html('');
 				$('#fileDownLink').html('<a href="/images/'+ oneCardList[0].up_fileName +'" download="'+ oneCardList[0].up_orgName +'">'+ oneCardList[0].up_orgName +'</a>');
 			}
-			$('#cardDescriptionDiv').html('<br><h6>'+ oneCardList[0].description +'</h6>');
+			if(oneCardList[0].description === ""){
+				$('#cardDescriptionDiv').html('<br><h6>내용을 입력해주세요</h6>');
+			}else{
+				$('#cardDescriptionDiv').html('<br><h6>'+ oneCardList[0].description +'</h6>');
+			}
+			
 			$("#replyListDiv").empty();
 			$("#replyLine").empty();
 			$('#replyLine').html('<hr>');
 			
-			
+			var reIdCheck = 0;
 			for(var i=0 ; i<oneCardList.length ; i++){
-				if(oneCardList[i].N247_reDes != null){
+				if(oneCardList[i].N247_reDes != null && oneCardList[i].idN247_re != reIdCheck && oneCardList[i].N247_reUsId == p2 && oneCardList[i].N247_reIsDel == 0){
+					reIdCheck = oneCardList[i].idN247_re;
 					$("#replyListDiv").append(
 							'<div class="row">'+
-								'<div class="col">'+
+								'<div class="col" id="card_reply_'+oneCardList[i].idN247_re+'">'+
 							      '<small style="color:black">'+oneCardList[i].nickName+'</small>'+
-							      '<a onclick=replyUpdat() id="'+oneCardList[i].idN247_re+'"><small>'+' '+oneCardList[i].N247_reDes+'</small></a>'+
+							      '<a><small  onclick="replyUpdate(this.id)" id="'+oneCardList[i].idN247_re+'">'+' '+oneCardList[i].N247_reDes+'</small></a>'+
+							      '</div>'+
+						    '</div>');
+				}else if(oneCardList[i].N247_reDes != null && oneCardList[i].idN247_re != reIdCheck && oneCardList[i].N247_reUsId != p2 && oneCardList[i].N247_reIsDel == 0){
+					reIdCheck = oneCardList[i].idN247_re;
+					$("#replyListDiv").append(
+							'<div class="row">'+
+								'<div class="col" id="card_reply_'+oneCardList[i].idN247_re+'">'+
+							      '<small style="color:black">'+oneCardList[i].nickName+'</small>'+
+							      '<a id="'+oneCardList[i].idN247_re+'"><small>'+' '+oneCardList[i].N247_reDes+'</small></a>'+
 							      '</div>'+
 						    '</div>');
 				}
@@ -1227,10 +1483,176 @@
 			}
 			
 			
-			console.log("카드내용 체크 : " + oneCardList[0].description);	
+			//console.log("카드내용 체크 : " + oneCardList[0].description);	
+
+			if(oneCardList[0].userNum == p2){
+				myCardCheck = 1;
+			}
+			$("#cardModalLabel").on("click",function(){
+				$('#cardModalLabel').empty();
+				if(myCardCheck == 1){
+					$('#cardModalLabel').html(
+							'<input type="text" class="form-control col" onKeypress="javascript:if(event.keyCode==13) {updateCardTitle(this.value,'+oneCardList[0].id+')}" value="'+ oneCardList[0].postTitle +'" id="update_card_title" maxlength="45">'
+							);
+					getOneCardId(oneCardList[0].dueDayString);
+				}else{
+					$('#cardModalLabel').text(oneCardList[0].postTitle);
+				}
+	
+			});
+
+			$("#cardDescriptionDiv").on("click",function(){
+				$('#cardDescriptionDiv').empty();
+				if(myCardCheck == 1){
+					$('#cardDescriptionDiv').html(
+							'<textarea class="form-control col" rows="3"  onKeypress="javascript:if(event.keyCode==13) {updateCardDescription(this.value,'+oneCardList[0].id+')}">'+oneCardList[0].description+'</textarea>'+
+							'<p>'+
+							'<div class="container">'+
+								'<div class="row justify-content-md-center">'+
+									'<div class="col-md-auto">'+
+							   		    '<a style="color:#666666" data-toggle="tooltip" title="파일첨부" onclick="updateCardFile()" data-bs-toggle="modal" data-bs-target="#modal_card_updateFile">'+
+							   			'<i class="material-icons">attach_file</i>'+
+							       		'</a><p>'+
+						       		'</div>'+
+					   			'</div>'+
+				   			'</div>'
+					       		);
+					
+				}else{
+					
+					$('#cardDescriptionDiv').html('<br><h6>'+ oneCardList[0].description +'</h6>');
+					
+				}
+				card_id = oneCardList[0].id;
+				//console.log("up_fileName : " + oneCardList[0].up_fileName);
+				//console.log("oneCardList[0].up_isDel : " + oneCardList[0].up_isDel);
+				//console.log("fileUpdateCheck 1: " + fileUpdateCheck);
+				if(oneCardList[0].up_isDel == 1){
+					fileUpdateCheck = 1;
+					//console.log("fileUpdateCheck 2: " + fileUpdateCheck);
+				}else if(oneCardList[0].up_fileName == null){
+					fileUpdateCheck = 1;
+					//console.log("fileUpdateCheck 3: " + fileUpdateCheck);
+				}else{
+					upFile_id = oneCardList[0].idN247_up;
+					upFile_name = oneCardList[0].up_orgName;
+				}
+			});
 		})
-		console.log("어디까지 오나2 : " + n247_rePoId);
+		//console.log("어디까지 오나2 : " + n247_rePoId);
 		
+	};
+	var dueDay = '';
+	function getOneCardId(dueDayString){
+		dueDay = dueDayString;
+	}
+	
+	//리플레이 업데이트 함수
+	var replyUpdateId = 0;
+	function replyUpdate(replyId){
+		replyUpdateId = replyId;
+		$('#card_reply_'+replyId+'').html(
+				'<div class="input-group">'+
+				'<input type="text" class="form-control col" onKeypress="javascript:if(event.keyCode==13) {replyDesUpdate(this.value)}" placeholder="댓글을 입력해주세요" maxlength="45">'+
+				'<button onclick="deleteReply()" class="btn btn-outline-secondary" type="button">삭제</button>'+
+				'</div>'
+				);
+	}
+	
+	function replyDesUpdate(updateDes){
+		$.ajax({
+	         url: 'updateReplyDesAjax',
+	    	 method: "POST",
+	 	     data: {'n247_reDes': updateDes, 'idN247_re' : replyUpdateId}
+	 	     })
+	 	
+		.done(function() {	
+			
+			$('#card_reply_'+replyUpdateId+'').html(
+					 '<small style="color:black">'+userNickName+'</small>'+
+				      '<a><small  onclick="replyUpdate(this.id)" id="'+replyUpdateId+'">'+' '+updateDes+'</small></a>'
+					);
+			
+		});
+	};
+	
+	function deleteReply(){
+		$.ajax({
+	         url: 'deleteReplyAjax',
+	    	 method: "POST",
+	 	     data: {'idN247_re' : replyUpdateId}
+	 	     })
+	 	
+		.done(function() {	
+			
+			$('#card_reply_'+replyUpdateId+'').empty();
+			
+		});
+	}
+	
+	
+	function updateCardFile(){
+		//console.log("fileUpdateCheck 4: " + fileUpdateCheck);
+		if(fileUpdateCheck == 1){
+			$('#modal_card_updateFile_footerButton').show();
+			$('#modal_card_updateFile_body_fileSelecter').html(
+					'<label class="col-3">Upload</label><input type="file" name=file class="form-control col">'		
+					);
+			$('#modal_card_updateFile_footer').html(
+			'<input type="hidden" name="up_userId" value="'+p2+'">'+
+			'<input type="hidden" name="up_postId" value="'+card_id+'">'+
+			'<input type="hidden" name="up_tabId" value="'+projectNumber+'">'
+			);
+			$('#modal_card_updateFile_message').text('업로드 할 수 있는 파일의 용량은 10Mbyte 이하 입니다.');
+			
+		}else{
+			$('#modal_card_updateFile_body_deleteFile').html('<label class="col-3">현재파일</label><a href="#" onclick="deleteUpFile('+upFile_id+')" >'+upFile_name+' 삭제하기</a>');
+			$('#modal_card_updateFile_footerButton').hide();
+			$('#modal_card_updateFile_message').text('한개의 파일만 업로드 가능합니다. 삭제 후 업로드해주세요.');
+		}
+		
+		
+	}
+	function deleteUpFile(idN247_up){
+		$.ajax({
+	         url: 'deleteUpFileAjax',
+	    	 method: "POST",
+	 	     data: {'idN247_up': idN247_up}
+	 	     })
+	 	
+		.done(function() {	
+			
+			document.getElementById('modal_file_closeButton').click();
+			window.location.reload();
+		});
+	};
+	
+	function updateCardTitle(postTitle,id){
+		
+		 $.ajax({
+	         url: 'updateCardTitleAjax',
+	    	 method: "POST",
+	 	     data: {'postTitle': postTitle, 'id' : id }
+	 	     })
+	 	
+		.done(function() {		
+			$('#cardModalLabel').text(postTitle);	
+			$('#card_title_'+id+'').html('<h6 data-filter-by="text" id="card_title_'+id+'">'+postTitle+'<p><small>'+dueDay+' 까지 완료</small></h6><br>');
+		});
+	};
+	
+	function updateCardDescription(description,id){
+		//console.log("어디까지 오나3 : " + description);
+		 $.ajax({
+	         url: 'updateCardDescriptionAjax',
+	    	 method: "POST",
+	 	     data: {'description': description, 'id' : id }
+	 	     })
+	 	
+		.done(function() {		
+			$('#cardDescriptionDiv').html('<br><h6>'+description+'</h6>');
+			$('#card_description_'+id+'').text('\u00a0\u00a0\u00a0'+description+'');
+		});
 	};
 	
 	document.onkeydown = function(evt) {
@@ -1240,9 +1662,10 @@
 	    }
 	};
 	
+	var insertReplyPreNumber = 1;
 	
 	function createReplyAction(n247_reDes,p2,n247_rePoId,p1){
-		 console.log("댓글창 입력중 :" + n247_reDes +"포스트 번호는? :" + n247_rePoId );
+		// console.log("댓글창 입력중 :" + n247_reDes +"포스트 번호는? :" + n247_rePoId );
 		 $.ajax({
 	         url: 'ajax_createReplyAction',
 	    	 method: "POST",
@@ -1250,12 +1673,13 @@
 	 	     })
 	 	
 		.done(function() {
-			
+			insertReplyPreNumber += 1;
+			//console.log("임시번호 부여하기 어떻게 되가니" + insertReplyPreNumber);
 			$('#replyInputTest').append(
 									'<div class="row">'+
-										'<div class="col">'+
+										'<div class="col" id="reply_reinsert_'+insertReplyPreNumber+'">'+
 									      '<small style="color:black">'+replyUser+'</small>'+
-									      '<a><small>'+' '+n247_reDes+'</small></a>'+
+									      '<a><small  onclick="replyReInsert(this.id)" id="'+n247_reDes+'">'+' '+n247_reDes+'</small></a>'+
 									    '</div>'+
 							    	'</div>');
 			
@@ -1263,6 +1687,60 @@
 		})
 	};
 	
+	function replyReInsert(n247_reDes){
+		//console.log("임시번호 부여하기 어떻게 되가니2" + insertReplyPreNumber);
+		$('#reply_reinsert_'+insertReplyPreNumber+'').html(
+				'<div class="input-group">'+
+				'<input type="text" class="form-control col" onKeypress="javascript:if(event.keyCode==13) {updateReDesToDes(this.value)}" placeholder="수정할 내용을 입력해 주세요" maxlength="45">'+
+				'<button onclick="deleteChangeReply()" class="btn btn-outline-secondary" type="button">삭제</button>'+
+				'</div>'
+				);
+		replyReInsert_delReplyDes(n247_reDes);
+	}
+	
+	var delReply = '';
+	function replyReInsert_delReplyDes(delReDes){
+		delReply=delReDes;
+		console.log("찾을 내용 받음 :" + delReply);
+		//여기서 내용찾아서 원래쓴거 지워
+
+	}
+	
+	function updateReDesToDes(insertDes){
+		 console.log("찾아서 바꿀 내용 받음 :" + insertDes);
+		 $.ajax({
+	         url: 'updateReplyDesToDesAjax',
+	    	 method: "POST",
+	 	     data: {'n247_reDes': delReply, 'insertDes' : insertDes}
+	 	     })
+	 	
+		.done(function() {
+			
+			
+			
+			
+			modalClose();	
+		});
+		
+	}
+	
+	function modalClose(){
+		document.getElementById('modal_card_closeButton').click();
+	}
+	
+	function deleteChangeReply(){
+		$.ajax({
+	         url: 'deleteChangeReplyAjax',
+	    	 method: "POST",
+	 	     data: {'n247_reDes' : delReply}
+	 	     })
+	 	
+		.done(function() {	
+			
+			$('#reply_reinsert_'+insertReplyPreNumber+'').empty();
+			
+		});
+	}
 	
     </script>
     

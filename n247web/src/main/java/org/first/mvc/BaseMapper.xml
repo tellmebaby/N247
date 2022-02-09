@@ -209,7 +209,7 @@
     delete from hong.N247 where id=#{id}
   </delete>
 
-  <update id="updateTabTitle" parameterType="org.first.mvc.entity.Post">
+  <update id="updateProjectTitle" parameterType="org.first.mvc.entity.Post">
     update hong.N247_tab set tabTitle=#{tabTitle},hong.N247_tab.lastUpdate=now() where tabId=#{tabId}
   </update>
   <update id="updateIsDelPost" parameterType="org.first.mvc.entity.Post">
@@ -221,7 +221,7 @@
   <update id="updateCompleteTab" parameterType="org.first.mvc.entity.Post">
     update hong.N247_tab set isDel=#{isDel} , hong.N247_tab.lastUpdate = now() where tabId=#{tabId}
   </update>
-  <update id="updateTabIntro" parameterType="org.first.mvc.entity.Post">
+  <update id="updateProjectIntro" parameterType="org.first.mvc.entity.Post">
     update hong.N247_tab set tab_intro=#{tab_intro},hong.N247_tab.lastUpdate=now() where tabId=#{tabId}
   </update>
   <update id="updateTabDueDay" parameterType="org.first.mvc.entity.Post">
@@ -242,6 +242,13 @@
    <update id="updatePost" parameterType="org.first.mvc.entity.Post">
     update hong.N247 set hong.N247.lastUpdate = now(), postTitle = #{postTitle} , description = #{description} , tabId = #{tabId} , dueDay = #{dueDay} where id = #{id}
   </update>
+  <update id="updateCardTitle" parameterType="org.first.mvc.entity.Post">
+    update hong.N247 set hong.N247.lastUpdate = now(), postTitle = #{postTitle} where id = #{id}
+  </update>
+  <update id="updateCardDescription" parameterType="org.first.mvc.entity.Post">
+    update hong.N247 set hong.N247.lastUpdate = now(), description = #{description} where id = #{id}
+  </update>
+  
    <update id="updateFriAdm" parameterType="org.first.mvc.entity.Fn247">
     UPDATE hong.N247_f set adm = 1 where idN247_f = #{idN247_f}
   </update>
@@ -257,6 +264,9 @@
   <update id="updateDelFriToTab" parameterType="org.first.mvc.entity.Fn247">
     UPDATE hong.N247_ft set ft_isDel = 1 , hong.N247_ft.lastModified = now() where idN247_ft = #{idN247_ft}
   </update>
+  <update id="isDelProjectAdm" parameterType="org.first.mvc.entity.Fn247">
+    UPDATE hong.N247_ft set ft_isDel = 1 , hong.N247_ft.lastModified = now() where idN247_ft = #{idN247_ft}
+  </update>
   
    <update id="updateUserImg" parameterType="org.first.mvc.entity.Member">
    UPDATE hong.member set userImg = #{userImg}, hong.member.modified = now() where userId = #{userId}
@@ -264,11 +274,17 @@
   <update id="updateUserInfo" parameterType="org.first.mvc.entity.Member">
    UPDATE hong.member set nickName = #{nickName}, mb_introduce = #{mb_introduce}, hong.member.modified = now() where userId = #{userId}
   </update>
-  <update id="updateReply" parameterType="org.first.mvc.entity.Post">
+  <update id="updateReplyDes" parameterType="org.first.mvc.entity.Post">
     UPDATE hong.N247_re SET N247_reDes = #{n247_reDes} , hong.N247_re.lastModified = now() WHERE idN247_re = #{idN247_re}
+  </update>
+  <update id="updateReplyDesToDes" parameterType="org.first.mvc.entity.Post">
+    UPDATE hong.N247_re SET N247_reDes = #{insertDes} , hong.N247_re.lastModified = now() WHERE N247_reDes = #{n247_reDes}
   </update>
    <update id="deleteReply" parameterType="org.first.mvc.entity.Post">
     UPDATE hong.N247_re SET N247_reIsDel = 1 , hong.N247_re.lastModified = now() WHERE idN247_re = #{idN247_re}
+  </update>
+   <update id="deleteChangeReply" parameterType="org.first.mvc.entity.Post">
+    UPDATE hong.N247_re SET N247_reIsDel = 1 , hong.N247_re.lastModified = now() WHERE N247_reDes = #{n247_reDes}
   </update>
   <update id="updateMemberIntroduce" parameterType="org.first.mvc.entity.Member">
     UPDATE hong.member set nickName = #{nickName} ,mb_introduce = #{mb_introduce} , hong.member.modified = now() where userId = #{userId}
@@ -279,9 +295,19 @@
   <update id="updateDelFtToTabId" parameterType="Integer">
     UPDATE hong.N247_ft set ft_isDel = 1 , hong.N247_ft.lastModified = now() where ft_tabId = #{tabId} AND ft_isDel = 0
   </update>
+  <update id="deleteUpFile" parameterType="Integer">
+    UPDATE hong.N247_up set up_isDel = 1 , hong.N247_up.up_lastModified = now() where idN247_up = #{idN247_up} 
+  </update>
   
   <select id="getUserIdTabId" resultType="org.first.mvc.entity.Member">
-    SELECT hong.member.id, hong.N247_tab.tabId,hong.N247_ft.ft_tabId,hong.N247_ft.ft_userId,hong.N247_ft.ft_isDel,hong.N247_f.fUserId,hong.N247_f.myId,hong.N247_f.f_isDel,hong.N247_tab.isDel,userId FROM hong.member left join hong.N247_tab on userNum = userId left join hong.N247_ft on ft_userId = userId left join hong.N247_f on myId = userId or fUserId = userId where id = #{id} order by hong.N247_tab.lastUpdate desc
+    SELECT hong.member.id, hong.N247_tab.tabId,hong.N247_ft.ft_tabId,hong.N247_ft.ft_userId,
+    hong.N247_ft.ft_isDel,hong.N247_f.fUserId,hong.N247_f.myId,hong.N247_f.f_isDel,
+    hong.N247_tab.isDel,userId 
+    FROM hong.member 
+    left join hong.N247_tab on userNum = userId left join hong.N247_ft on ft_userId = userId 
+    left join hong.N247_f on myId = userId or fUserId = userId 
+    where id = #{id} 
+    order by hong.N247_tab.lastUpdate desc
   </select>
   
   <select id="getProjectList" resultType="org.first.mvc.entity.Post">
@@ -299,14 +325,14 @@
  	hong.N247_up.idN247_up, hong.N247_up.up_fileName, hong.N247_up.up_orgName, hong.N247_up.up_check, hong.N247_up.up_lastModified, hong.N247_up.up_isDel, hong.N247_up.up_userId,
  	hong.N247.id, hong.N247.postTitle, hong.N247.description, hong.N247.isDel, hong.N247.create, hong.N247.lastUpdate,
  	hong.N247.tabId, hong.N247.userNum, hong.N247.dueDay ,hong.N247_tab.tabTitle, hong.N247_tab.tab_intro,
-    hong.N247_tab.tab_dueDay, hong.N247_tab.create, hong.N247_tab.isDel as tabCompCheck,  
+    hong.N247_tab.tab_dueDay, hong.N247_tab.create as tab_create, hong.N247_tab.isDel as tabCompCheck,  
     hong.N247_tab.lastUpdate as tab_LastUpdate, hong.N247_tab.userNum as tab_userNum
-    FROM hong.N247 
- 	left join hong.N247_up on up_postId = id 
- 	left join hong.N247_re on N247_rePoId = id 
- 	left join hong.member on userId = hong.N247_re.N247_reUsId or userId = hong.N247.userNum
- 	left join hong.N247_tab on hong.N247_tab.tabId = hong.N247.tabId
- 	where hong.N247.tabId = #{tabId} AND hong.N247.isDel=0 or hong.N247.tabId = #{tabId} AND hong.N247.isDel=3 
+    FROM hong.N247_tab 
+	left join hong.N247_up on up_postId = userNum
+	left join hong.N247_re on N247_rePoId = userNum 
+	left join hong.N247 on hong.N247.tabId = hong.N247_tab.tabId
+	left join hong.member on userId = hong.N247_re.N247_reUsId or userId = hong.N247.userNum
+ 	where hong.N247_tab.tabId = #{tabId} 
  	order by lastUpdate desc
   </select>
   
@@ -316,7 +342,7 @@
 
   <select id="getReplyListCard" resultType="org.first.mvc.entity.Post">
   	SELECT hong.N247.id, hong.N247.postTitle, hong.N247.description, hong.N247.create, hong.N247.lastUpdate ,
-	hong.N247.dueDay, hong.N247_re.idN247_re, hong.N247_re.N247_rePoId, hong.N247_re.N247_reDes,
+	hong.N247.dueDay, hong.N247.userNum, hong.N247_re.idN247_re, hong.N247_re.N247_rePoId, hong.N247_re.N247_reDes,
 	hong.N247_re.N247_reUsId, hong.N247_re.lastModified, hong.N247_re.N247_reIsDel, 
 	hong.N247_up.idN247_up, hong.N247_up.up_fileName,  hong.N247_up.up_orgName, hong.N247_up.up_isDel,  
 	hong.N247_up.up_postId, hong.N247_up.up_check, hong.member.id, hong.member.nickName, hong.member.userId, hong.member.userImg

@@ -93,6 +93,7 @@
                프로젝트 만들기 
              </button>
  	 		<input type="hidden" name="userNum" value="${userIdTabId.userId }">
+ 	 		<input type="text" name="id" value="${userIdTabId.id }">
  	 		
 		   </div>
 		  </div>	     

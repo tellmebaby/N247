@@ -67,7 +67,7 @@ public class Post {
 	
 	private String compareMessage;
 	
-	private String TabLastUpdate;
+	private String tabLastUpdate;
 	
 	private Date tab_LastUpdate;
 	
@@ -134,9 +134,57 @@ public class Post {
 	
 	private Integer tab_userNum;
 	
+	private int up_isDel;
+	
+	private int idN247_up;
+
+	private String insertDes;
+	
+	private Date tab_create;
 	
 	
 	
+	
+	public Date getTab_create() {
+		return tab_create;
+	}
+
+	public void setTab_create(Date tab_create) {
+		this.tab_create = tab_create;
+	}
+
+	public String getInsertDes() {
+		return insertDes;
+	}
+
+	public void setInsertDes(String insertDes) {
+		this.insertDes = insertDes;
+	}
+
+	public int getIdN247_up() {
+		return idN247_up;
+	}
+
+	public void setIdN247_up(int idN247_up) {
+		this.idN247_up = idN247_up;
+	}
+
+	public int getUp_isDel() {
+		return up_isDel;
+	}
+
+	public void setUp_isDel(int up_isDel) {
+		this.up_isDel = up_isDel;
+	}
+
+	public String getTabLastUpdate() {
+		return tabLastUpdate;
+	}
+
+	public void setTabLastUpdate(String tabLastUpdate) {
+		this.tabLastUpdate = tabLastUpdate;
+	}
+
 	public Integer getTab_userNum() {
 		return tab_userNum;
 	}
@@ -408,15 +456,7 @@ public class Post {
 	public void setTab_dueDay(Date tab_dueDay) {
 		Tab_dueDay = tab_dueDay;
 	}
-
-	public String getTabLastUpdate() {
-		return TabLastUpdate;
-	}
-
-	public void setTabLastUpdate(String tabLastUpdate) {
-		TabLastUpdate = tabLastUpdate;
-	}
-
+	
 	public long getCompareTime() {
 		return compareTime;
 	}

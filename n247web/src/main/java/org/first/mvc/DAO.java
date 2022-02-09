@@ -68,6 +68,7 @@ public class DAO {
 			}
 			
 			
+			
 			public static void createFriTabAdd (Integer ft_userId, Integer ft_tabId ) {
 				String resource = "org/first/mvc/mybatis_config.xml";
 				InputStream inputStream;
@@ -585,6 +586,9 @@ public class DAO {
 					SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
 					SqlSession session = sqlSessionFactory.openSession();
 					result = session.selectList("org.first.mvc.BaseMapper.getReplyListCard", id);
+					if(result.get(0).getDueDay() != null) {
+						result.get(0).setDueDayString(dateToString3(result.get(0).getDueDay()));
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -814,7 +818,7 @@ public class DAO {
 	        }
 	
 			
-			public static void tabTitleUpdate (Integer tabId, String tabTitle ) {
+			public static void updateProjectTitle (String tabTitle, Integer tabId ) {
 				String resource = "org/first/mvc/mybatis_config.xml";
 				InputStream inputStream;
 				Post tab = new Post();
@@ -824,7 +828,7 @@ public class DAO {
 					inputStream = Resources.getResourceAsStream(resource);
 					SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
 					SqlSession session = sqlSessionFactory.openSession();
-					session.update("org.first.mvc.BaseMapper.updateTabTitle", tab);
+					session.update("org.first.mvc.BaseMapper.updateProjectTitle", tab);
 					session.commit();
 					session.close();
 				} catch (IOException e) {
@@ -832,7 +836,23 @@ public class DAO {
 				}
 			}
 	
-			
+			public static void updateProjectIntro (String tab_intro, Integer tabId ) {
+				String resource = "org/first/mvc/mybatis_config.xml";
+				InputStream inputStream;
+				Post tab = new Post();
+				tab.setTabId(tabId);
+				tab.setTab_intro(tab_intro);
+				try {
+					inputStream = Resources.getResourceAsStream(resource);
+					SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+					SqlSession session = sqlSessionFactory.openSession();
+					session.update("org.first.mvc.BaseMapper.updateProjectIntro", tab);
+					session.commit();
+					session.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 			
 			 
 			 
@@ -1403,8 +1423,88 @@ public class DAO {
 						e.printStackTrace();
 					}
 				}
-			
+				
+				public static void updateCardTitle (String postTitle, Integer id) {
+					String resource = "org/first/mvc/mybatis_config.xml";
+					InputStream inputStream;
+					Post post = new Post();
+					post.setId(id);
+					post.setPostTitle(postTitle);
 
+					
+					try {
+						inputStream = Resources.getResourceAsStream(resource);
+						SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+						SqlSession session = sqlSessionFactory.openSession();
+						session.update("org.first.mvc.BaseMapper.updateCardTitle", post);
+						session.commit();
+						session.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				public static void updateCardDescription (String description, Integer id) {
+					String resource = "org/first/mvc/mybatis_config.xml";
+					InputStream inputStream;
+					Post post = new Post();
+					post.setId(id);
+					post.setDescription(description);
+
+					
+					try {
+						inputStream = Resources.getResourceAsStream(resource);
+						SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+						SqlSession session = sqlSessionFactory.openSession();
+						session.update("org.first.mvc.BaseMapper.updateCardDescription", post);
+						session.commit();
+						session.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				
+				public static void updateReplyDes (String n247_reDes, Integer idN247_re) {
+					String resource = "org/first/mvc/mybatis_config.xml";
+					InputStream inputStream;
+					Post post = new Post();
+					post.setIdN247_re(idN247_re);
+					post.setN247_reDes(n247_reDes);
+
+					
+					try {
+						inputStream = Resources.getResourceAsStream(resource);
+						SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+						SqlSession session = sqlSessionFactory.openSession();
+						session.update("org.first.mvc.BaseMapper.updateReplyDes", post);
+						session.commit();
+						session.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				public static void updateReplyDesToDes (String n247_reDes, String insertDes) {
+					String resource = "org/first/mvc/mybatis_config.xml";
+					InputStream inputStream;
+					Post post = new Post();
+					post.setInsertDes(insertDes);
+					post.setN247_reDes(n247_reDes);
+
+					
+					try {
+						inputStream = Resources.getResourceAsStream(resource);
+						SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+						SqlSession session = sqlSessionFactory.openSession();
+						session.update("org.first.mvc.BaseMapper.updateReplyDesToDes", post);
+						session.commit();
+						session.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				
 				public static void updateFriAdmission(Integer idN247_f, Integer userNum, Integer tabId ) {
 					String resource = "org/first/mvc/mybatis_config.xml";
 					InputStream inputStream;
@@ -1537,6 +1637,24 @@ public class DAO {
 					}
 				}
 				
+				public static void deleteChangeReply (String n247_reDes ) {
+					String resource = "org/first/mvc/mybatis_config.xml";
+					InputStream inputStream;
+					Post p1 = new Post();
+					p1.setN247_reDes(n247_reDes);
+					
+					try {
+						inputStream = Resources.getResourceAsStream(resource);
+						SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+						SqlSession session = sqlSessionFactory.openSession();
+						//System.out.println("실행할게 : " + p1.getIdN247_re());
+						session.update("org.first.mvc.BaseMapper.deleteChangeReply", p1);
+						session.commit();
+						session.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 				
 				public static void updateDelFriToTab (Integer idN247_ft) {
 					String resource = "org/first/mvc/mybatis_config.xml";
@@ -1555,7 +1673,39 @@ public class DAO {
 					}
 				}
 			 	
-			 	
+				
+				public static void isDelProjectAdm (Integer idN247_ft) {
+					String resource = "org/first/mvc/mybatis_config.xml";
+					InputStream inputStream;
+					Fn247 p1 = new Fn247();
+					p1.setIdN247_ft(idN247_ft);
+					try {
+						inputStream = Resources.getResourceAsStream(resource);
+						SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+						SqlSession session = sqlSessionFactory.openSession();
+						session.update("org.first.mvc.BaseMapper.isDelProjectAdm", p1);
+						session.commit();
+						session.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				public static void deleteUpFile (Integer idN247_up) {
+					String resource = "org/first/mvc/mybatis_config.xml";
+					InputStream inputStream;
+					try {
+						inputStream = Resources.getResourceAsStream(resource);
+						SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+						SqlSession session = sqlSessionFactory.openSession();
+						session.update("org.first.mvc.BaseMapper.deleteUpFile", idN247_up);
+						session.commit();
+						session.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				
 				public static void updatePostTabTitle (Integer tabId, Integer moveOn, Integer isDelCheck ) {
 					String resource = "org/first/mvc/mybatis_config.xml";
 					InputStream inputStream;
@@ -2069,7 +2219,8 @@ public class DAO {
 						 result.setFriTabList(tabs.getFriTabList());
 						 result.setCompleteTabList(tabs.getCompleteTabList());
 						 result.setAllTabList(projectList);
-						 
+						 result.setTabId(userIdTabId.getTabId());
+						 System.out.println(result.getTabId() + "여기에요 여기에서 없어요 탭아이디");
 						 return result;
 					 }
 					 
@@ -2449,19 +2600,21 @@ public class DAO {
 					 
 				 //유저아이디를 주고 포스트를 받아오자 모든 
 					 public static List<Post> getPostList (Member userIdTabId ) {
+						
 						 	List<Post> result = new ArrayList<Post>();
 						 	String resource = "org/first/mvc/mybatis_config.xml";
 							InputStream inputStream;
 							Post p1 = new Post();
 							p1.setTabId(userIdTabId.getTabId());
-							
+							 System.out.println("getPostList돌아가는중 tabId 왔나요 :" + p1.getTabId());
 							try {
 								inputStream = Resources.getResourceAsStream(resource);
 								SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
 								SqlSession session = sqlSessionFactory.openSession();
 								result = session.selectList("org.first.mvc.BaseMapper.getPostList", p1);
-							 	//System.out.println("getPostList 에서 몇개 가져왔니 :" + result.size());
-							 	
+								
+							 	System.out.println("getPostList 에서 몇개 가져왔니 :" + result.size());
+								
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
@@ -2729,27 +2882,31 @@ public class DAO {
 						 List<Post> result = new ArrayList<Post>();
 						 Date date_now = new Date(System.currentTimeMillis()); 
 						 List<Post> postList = p1;
+						
 						 for (int i=0 ; i<postList.size(); i++) {
-							 
-							 postList.get(i).setProgress(progress(postList.get(i).getCreate(),postList.get(i).getDueDay()));
-							 postList.get(i).setProgressBg(progressBg(postList.get(i).getProgress()));
-							 postList.get(i).setCompareMessage(calCardDueDate(dateChangeAction2(postList.get(i).getLastUpdate()),date_now));	
-							 //System.out.println("일단 postAdmCheck 를 0으로 넣었어 ");
-							 postList.get(i).setPostAdmCheck(0);
-							 postList.get(i).setDueDayString(dateToString3(postList.get(i).getDueDay()));
-							
-							 if(postList.get(i).getUp_fileName() != null) {
-								 postList.get(i).setCheck(1);
-							 }else {
-								 postList.get(i).setCheck(0);
+							 if(postList.get(i).getId() != null) {
+								 System.out.println("포스트 아이디가 있어서 실행중");
+								 postList.get(i).setProgress(progress(postList.get(i).getCreate(),postList.get(i).getDueDay()));
+								 postList.get(i).setProgressBg(progressBg(postList.get(i).getProgress()));
+								 postList.get(i).setCompareMessage(calCardDueDate(dateChangeAction2(postList.get(i).getLastUpdate()),date_now));	
+								 //System.out.println("일단 postAdmCheck 를 0으로 넣었어 ");
+								 postList.get(i).setPostAdmCheck(0);
+								 postList.get(i).setDueDayString(dateToString3(postList.get(i).getDueDay()));
+								
+								 if(postList.get(i).getUp_fileName() != null) {
+									 postList.get(i).setCheck(1);
+								 }else {
+									 postList.get(i).setCheck(0);
+								 }
+								 
+								 if(postList.get(i).getUserNum() == userId.getUserId()) {
+									 postList.get(i).setPostAdmCheck(1);
+								 }  
 							 }
-							 
-							 if(postList.get(i).getUserNum() == userId.getUserId()) {
-								 postList.get(i).setPostAdmCheck(1);
-							 } 
+							
 							//현재탭의 진행률 입력
 								Double tabProgress = 0.0;
-								tabProgress = tabProgress(postList.get(i).getTabId(),postList.get(i).getTab_dueDay(),dateChangeAction2(postList.get(i).getCreate()));
+								tabProgress = tabProgress(postList.get(i).getTabId(),postList.get(i).getTab_dueDay(),dateChangeAction2(postList.get(i).getTab_create()));
 								postList.get(i).setTabProgress(tabProgress);
 								
 							//현재탭의 진행상태 색깔 입력
@@ -2773,14 +2930,17 @@ public class DAO {
 								
 							//마지막 업데이트시간을 정해주자
 								//탭마지막 업데이트시간 넣어, 포스트1번 애들 마지막시간 넣어 ,진행,완료 , 계산해서 오늘과의 차이가 가장작은아이를 마직막업데이트로 만든다.
-								if(postList.get(i).getTab_LastUpdate() != null) {
-									String tabLastUpdate = dateToString(postList.get(i).getTab_LastUpdate());
-									postList.get(i).setTabLastUpdate(tabLastUpdate);
-								}
+//								if(postList.get(i).getTab_LastUpdate() != null) {
+//									System.out.println("돌아가는 중이에요 탭 마지막 업데이트 ");
+//									String tabLastUpdate = dateToString(postList.get(i).getTab_LastUpdate());
+//									postList.get(i).setTabLastUpdate(tabLastUpdate);
+//								}
 								
 						 }
 						 
 						 result.addAll(postList);
+						 
+						
 						 
 						 return result;
 					 }
@@ -2865,7 +3025,7 @@ public class DAO {
 					    	if(totalDay == 0) {
 					    		result = 100.0;
 					    	}else {
-					    		long dueDay = calDateBetweenAndB(dateChangeAction2(due),date_now);
+					    		long dueDay = calDateBetweenAndB2(dateChangeAction2(due),date_now);
 						    	if(dueDay < 0) {
 						    		dueDay = 0;
 						    	}
@@ -2876,6 +3036,9 @@ public class DAO {
 						    	if(p1 == p2) {
 						    		result = 1.0;
 						    	//System.out.println("100 - ((" + p1 +"/"+ p2 +")*100) = " + result );
+						    	}
+						    	if(result < 0) {
+						    		result = 100.0;
 						    	}
 					    	}
 					    	
@@ -2913,7 +3076,7 @@ public class DAO {
 						    	if(calDateDays == 0) {
 						    			result = "마감일 입니다.";
 						    	}else if(calDateDays < 0) {
-						    		result = "마감일이 지났습니다.";
+						    		result = "마감일이 지나 카드를 생성 할 수 없습니다.";
 						    	}
 					    	return result ;
 					    }
@@ -2988,6 +3151,22 @@ public class DAO {
 						    	//두날짜 차의 절대값을 반환한
 						    	calDateDays = Math.abs(calDateDays);
 						    	result = String.valueOf(calDateDays)+"일전";
+						    	
+						    	if(calDateDays > 20) {
+					    			result = dateToString3(p1);
+					    		}
+						    	
+						    	if(calDateDays > 6 && calDateDays < 21) {
+						    		Double resultDays = 1.0 * calDateDays ;
+						    		Double calDateWeek = resultDays / 7 ;
+						    		for(int i=1 ; i<3 ; i++) {
+						    			if(calDateWeek < i+1) {
+						    				result = i+"주전";
+						    				break;
+						    			}
+						    		}
+						    		
+						    	}
 						    	////System.out.println("두 날짜의 차이 : " + calDateDays);
 						    	if(calDateDays == 0) {
 						    		//System.out.println("날짜 계산 했는데 0이 나왔어요");
@@ -3050,7 +3229,6 @@ public class DAO {
 						 }
 					    
 					    public static List<Member> getFriendsAdmList (Integer userId){
-					    	System.out.println("내 친구 아이디 받아왔어요 : " + userId);
 							List<Member> result = new ArrayList<Member>();
 							String resource = "org/first/mvc/mybatis_config.xml";
 							InputStream inputStream;
