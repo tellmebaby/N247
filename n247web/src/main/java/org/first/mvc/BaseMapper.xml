@@ -32,7 +32,9 @@
   <insert id="insertReply" parameterType="org.first.mvc.entity.Post">
     INSERT INTO hong.N247_re (N247_rePoId,N247_reUsId,N247_reDes,hong.N247_re.create,hong.N247_re.lastModified,N247_reIsDel,N247_reTabId) VALUE (#{n247_rePoId},#{n247_reUsId},#{n247_reDes},now(),now(),0,#{N247_reTabId})
   </insert>
-  
+  <insert id="insertMemoFile" parameterType="org.first.mvc.entity.Post">
+    INSERT INTO hong.N247_re (N247_reFile,N247_rePoId,N247_reUsId,N247_reDes,hong.N247_re.create,hong.N247_re.lastModified,N247_reIsDel,N247_reTabId,N247_reUpCheck,N247_reOrgFile) VALUE (#{n247_reFile},#{n247_rePoId},#{n247_reUsId},#{n247_reOrgFile},now(),now(),0,#{N247_reTabId},#{n247_reUpCheck},#{n247_reOrgFile})
+  </insert>
   
   <select id="getFriImgList" resultType="org.first.mvc.entity.Post">
   	select N247_reUsId from hong.N247_re where N247_rePoId = #{N247_rePoId} AND N247_reDu = 1
@@ -215,7 +217,7 @@
   <update id="updateIsDelPost" parameterType="org.first.mvc.entity.Post">
     update hong.N247 set isDel=1 , hong.N247.lastUpdate = now() where id=#{id}
   </update>
-  <update id="updateCompletePost" parameterType="org.first.mvc.entity.Post">
+  <update id="updateIsdelCard" parameterType="org.first.mvc.entity.Post">
     update hong.N247 set isDel=#{isDel} , hong.N247.lastUpdate = now() where id=#{id}
   </update>
   <update id="updateCompleteTab" parameterType="org.first.mvc.entity.Post">
@@ -300,7 +302,8 @@
   </update>
   
   <select id="getUserIdTabId" resultType="org.first.mvc.entity.Member">
-    SELECT hong.member.id, hong.N247_tab.tabId,hong.N247_ft.ft_tabId,hong.N247_ft.ft_userId,
+    SELECT hong.member.id, hong.member.nickName, hong.member.mb_introduce, 
+	hong.member.userImg, hong.member.modified, hong.N247_tab.tabId,hong.N247_ft.ft_tabId,hong.N247_ft.ft_userId,
     hong.N247_ft.ft_isDel,hong.N247_f.fUserId,hong.N247_f.myId,hong.N247_f.f_isDel,
     hong.N247_tab.isDel,userId 
     FROM hong.member 
@@ -315,7 +318,13 @@
   </select>
   
   <select id="getMemberList" resultType="org.first.mvc.entity.Member">
-   SELECT * FROM hong.N247_f left join hong.member on userId = myId or userId = fUserId where f_isDel = 0 AND myId = #{userId} OR f_isDel = 0 AND fUserId = #{userId}
+   SELECT hong.N247_f.idN247_f, hong.N247_f.fUserId, hong.N247_f.myId, 
+	hong.N247_f.adm, hong.N247_f.f_isDel, hong.N247_f.create as f_create, 
+	hong.member.id, hong.member.userId, hong.member.nickName, 
+	hong.member.mb_introduce, hong.member.userImg, hong.member.create, hong.member.modified
+   FROM hong.N247_f 
+   left join hong.member on userId = myId or userId = fUserId where f_isDel = 0 
+   AND myId = #{userId} OR f_isDel = 0 AND fUserId = #{userId}
   </select>
   
   <select id="getPostList" resultType="org.first.mvc.entity.Post">
@@ -328,9 +337,9 @@
     hong.N247_tab.tab_dueDay, hong.N247_tab.create as tab_create, hong.N247_tab.isDel as tabCompCheck,  
     hong.N247_tab.lastUpdate as tab_LastUpdate, hong.N247_tab.userNum as tab_userNum
     FROM hong.N247_tab 
-	left join hong.N247_up on up_postId = userNum
 	left join hong.N247_re on N247_rePoId = userNum 
 	left join hong.N247 on hong.N247.tabId = hong.N247_tab.tabId
+	left join hong.N247_up on up_postId = hong.N247.id
 	left join hong.member on userId = hong.N247_re.N247_reUsId or userId = hong.N247.userNum
  	where hong.N247_tab.tabId = #{tabId} 
  	order by lastUpdate desc
@@ -343,7 +352,7 @@
   <select id="getReplyListCard" resultType="org.first.mvc.entity.Post">
   	SELECT hong.N247.id, hong.N247.postTitle, hong.N247.description, hong.N247.create, hong.N247.lastUpdate ,
 	hong.N247.dueDay, hong.N247.userNum, hong.N247_re.idN247_re, hong.N247_re.N247_rePoId, hong.N247_re.N247_reDes,
-	hong.N247_re.N247_reUsId, hong.N247_re.lastModified, hong.N247_re.N247_reIsDel, 
+	hong.N247_re.N247_reUsId, hong.N247_re.lastModified, hong.N247_re.N247_reIsDel, hong.N247_re.N247_reFile, hong.N247_re.N247_reUpCheck,hong.N247_re.N247_reOrgFile,
 	hong.N247_up.idN247_up, hong.N247_up.up_fileName,  hong.N247_up.up_orgName, hong.N247_up.up_isDel,  
 	hong.N247_up.up_postId, hong.N247_up.up_check, hong.member.id, hong.member.nickName, hong.member.userId, hong.member.userImg
 	FROM hong.N247

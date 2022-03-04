@@ -49,6 +49,8 @@ public class Post {
 	
 	private Integer N247_reTabId;
 	
+	private String N247_reKrModified;
+	
 	private List <Post> replyList;
 	
 	private String krCreate;
@@ -142,9 +144,48 @@ public class Post {
 	
 	private Date tab_create;
 	
+	private String n247_reFile;
+	
+	private int n247_reUpCheck;
+	
+	private String n247_reOrgFile;
 	
 	
 	
+
+
+	public String getN247_reKrModified() {
+		return N247_reKrModified;
+	}
+
+	public void setN247_reKrModified(String n247_reKrModified) {
+		N247_reKrModified = n247_reKrModified;
+	}
+
+	public int getN247_reUpCheck() {
+		return n247_reUpCheck;
+	}
+
+	public void setN247_reUpCheck(int n247_reUpCheck) {
+		this.n247_reUpCheck = n247_reUpCheck;
+	}
+
+	public String getN247_reOrgFile() {
+		return n247_reOrgFile;
+	}
+
+	public void setN247_reOrgFile(String n247_reOrgFile) {
+		this.n247_reOrgFile = n247_reOrgFile;
+	}
+
+	public String getN247_reFile() {
+		return n247_reFile;
+	}
+
+	public void setN247_reFile(String n247_reFile) {
+		this.n247_reFile = n247_reFile;
+	}
+
 	public Date getTab_create() {
 		return tab_create;
 	}

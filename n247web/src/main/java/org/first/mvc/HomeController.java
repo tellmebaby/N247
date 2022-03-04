@@ -69,12 +69,15 @@ public class HomeController {
 			HttpSession session = request.getSession();
 			//유저번호와 가장최근 탭아이디 및 탭이없을시 텝체크0 를 id를 넣어 리턴한다.
 			Member login = new Member();
+			//로그인 성공시 유저의 정보를 가져와서 로그인에 넣어둔다 DB
+			//id,nickName,mb_introduce,userImg,modified,tabId,ft_tabId,ft_userId,ft_isDel,fUserId,myId,f_isDel,isDel,userId
 			login.setLoginSucceedGetUserInfo(DAO.loginSucceedGetUserInfo(id));
+			//사용자유형파악
 			Member userIdTabId = DAO.getUserIdTabId(login.getLoginSucceedGetUserInfo(),id);
-			//System.out.println("하하하 급하게 하지말자 처음 받아온거 "+userIdTabId.getUserId());
+			System.out.println("하하하 급하게 하지말자 처음 받아온거 "+userIdTabId.getUserId());
 			if(userIdTabId.getUserId() == null) {
 				userIdTabId = DAO.getMemberToId(id);
-				//System.out.println("하하하 급하게 하지말자 아래 "+userIdTabId.getUserId() +userIdTabId.getNickName());
+				System.out.println("하하하 급하게 하지말자 아래 "+userIdTabId.getUserId() +userIdTabId.getNickName());
 			}
 			session.setAttribute("login", login); 
 			session.setAttribute("userIdTabId", userIdTabId); 
@@ -94,7 +97,7 @@ public class HomeController {
 				
 				return "firstboard";
 			}else {
-				System.out.println("아이디는 뭐냐 " + userIdTabId.getId());
+				//System.out.println("아이디는 뭐냐 " + userIdTabId.getId());
 				return "redirect:board?tabId="+userIdTabId.getTabId();
 			}
 		
@@ -113,7 +116,7 @@ public class HomeController {
 			Integer boardCheck = 0;
 			if(userIdTabId == null) {
 				//System.out.println("탭주인 체크 결과 실패  ");
-				String em = "잘못된 접근 입니다. 로그인 해주세요.";
+				String em = "잘못된 접근 입니다. 로그인 해주세요.1";
 				model.addAttribute("errorMessage",em);
 				return "home";	
 			}else {
@@ -125,10 +128,10 @@ public class HomeController {
 			if(boardCheck != 0 ) {
 					userIdTabId.setTabId(tabId);
 				//나포함친구들의 정보를 가져온다.@
-					System.out.println("getMembertList 사용하기 위해 파라미터 : " + userIdTabId.getUserId());
+					//System.out.println("getMembertList 사용하기 위해 파라미터 : " + userIdTabId.getUserId());
 				//유저의 정보를 세팅해준다.	
-					Member userInformation = (DAO.userInformation(userIdTabId));
-					System.out.println("제발 탭아이디좀 가져와" + userInformation.getTabId());
+//					Member userInformation = (DAO.userInformation(userIdTabId));
+					//System.out.println("제발 탭아이디좀 가져와" + userInformation.getTabId());
 //					Post cards = (DAO.cardsSet(userIdTabId));
 
 					
@@ -140,10 +143,13 @@ public class HomeController {
 					
 //					session.setAttribute("thisTab", thisTab); 
 					
-					session.setAttribute("userInformation", userInformation); 
-					model.addAttribute("userInformation", userInformation);
+//					session.setAttribute("userInformation", userInformation); 
+					session.setAttribute("userIdTabId", userIdTabId); 
+//					model.addAttribute("userInformation", userInformation);
+					model.addAttribute("userIdTabId", userIdTabId);
 //					model.addAttribute("thisTab",thisTab);
 //					model.addAttribute("cards",cards);
+					
 					
 			// 접근실패	
 			}else {
@@ -151,7 +157,7 @@ public class HomeController {
 				//System.out.println("탭주인 체크 결과 실패  ");
 				
 				session.invalidate();
-				String em = "잘못된 접근 입니다. 로그인 해주세요.";
+				String em = "잘못된 접근 입니다. 로그인 해주세요.2";
 				model.addAttribute("errorMessage",em);
 				return "home";	
 			}
@@ -169,8 +175,9 @@ public class HomeController {
 		Member userIdTabId = (Member) session.getAttribute("userIdTabId");
 		
 		
-		System.out.println("오니 : "+ userIdTabId.getUserId() + userIdTabId.getNickName());
-		if(userIdTabId.getUserId() != null) {
+		//System.out.println("오니 : "+ userIdTabId.getUserId() + userIdTabId.getNickName());
+		if(userIdTabId.getUserId() == null) {
+			//System.out.println("안와 홈으로 가 : "+ userIdTabId.getUserId() + userIdTabId.getNickName());
 			return "home";
 		}
 		
@@ -184,7 +191,7 @@ public class HomeController {
 	public String searchPostNickAction (Locale locale, Model model, String search, HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		Member userIdTabId = (Member) session.getAttribute("userIdTabId");
-		Member userInformation = (Member) session.getAttribute("userInformation");
+//		Member userInformation = (Member) session.getAttribute("userInformation");
 		Post thisTab = (Post) session.getAttribute("thisTab");
 		
 		//System.out.println("검색어 받아왔어 : " + search);
@@ -196,7 +203,7 @@ public class HomeController {
 		model.addAttribute("searchResult",searchResult);
 		model.addAttribute("search",search);
 		model.addAttribute("userIdTabId",userIdTabId);
-		model.addAttribute("userInformation",userInformation);
+//		model.addAttribute("userInformation",userInformation);
 		
 		return "searchBoard";
 	}
@@ -418,15 +425,18 @@ public class HomeController {
 		 session.setAttribute("userIdTabId", userIdTabId); 
 			return new RedirectView("board?tabId="+userIdTabId.getTabId());
 		}
-	 
-	 @RequestMapping(value = "updateIsDelPostAction", method = RequestMethod.GET)
-		public RedirectView completePostAction(Locale locale, Model model, Integer id, Integer isDel, HttpServletRequest request) {
+	 @RequestMapping(value = "updateTabDueDayAction", method = RequestMethod.POST)
+		public RedirectView updateTabDueDayAction(Locale locale, Model model, Integer tabId, @DateTimeFormat(pattern="yyyy-MM-dd") Date tab_dueDay, HttpServletRequest request ) {
+		 	DAO.updateTabDueDay(tabId, tab_dueDay);
 		 	HttpSession session = request.getSession();
-		 	Member userIdTabId = (Member) session.getAttribute("userIdTabId");
-		 	DAO.completePost(id,isDel);
+			Member userIdTabId = (Member) session.getAttribute("userIdTabId");
+			
 			session.setAttribute("userIdTabId", userIdTabId); 
-			return new RedirectView("board?tabId="+userIdTabId.getTabId());
+			return new RedirectView("board?tabId="+tabId);
 		}
+	 
+	 
+
 	 
 	 @RequestMapping(value = "completeTabAction", method = RequestMethod.GET)
 		public RedirectView completeTabAction(Locale locale, Model model, Integer isDel, HttpServletRequest request) {
@@ -448,15 +458,7 @@ public class HomeController {
 		
 			return new RedirectView("board?tabId="+userIdTabId.getTabId());
 		}
-	 @RequestMapping(value = "updateTabDueDayAction", method = RequestMethod.POST)
-		public RedirectView updateTabDueDayAction(Locale locale, Model model, Integer tabId, @DateTimeFormat(pattern="yyyy-MM-dd") Date tab_dueDay, HttpServletRequest request ) {
-		 	DAO.updateTabDueDay(tabId, tab_dueDay);
-		 	HttpSession session = request.getSession();
-			Member userIdTabId = (Member) session.getAttribute("userIdTabId");
-			
-			session.setAttribute("userIdTabId", userIdTabId); 
-			return new RedirectView("board?tabId="+userIdTabId.getTabId());
-		}
+
 	 @RequestMapping(value = "updatePostAction2", method = RequestMethod.POST)
 		public RedirectView updatePostAction2(Locale locale, Model model, Integer id, String postTitle, String description, Integer tabId, @DateTimeFormat(pattern="yyyy-MM-dd") Date dueDay ,Integer userNum ) {
 		 	DAO.updatePost(id, postTitle, description, tabId, dueDay);
@@ -472,8 +474,8 @@ public class HomeController {
 		public RedirectView createFriTabAdd(Locale locale, Model model, Integer ft_userId, Integer ft_tabId, HttpServletRequest request ) {
 	    	DAO.createFriTabAdd(ft_userId, ft_tabId);
 	    	HttpSession session = request.getSession();
-			Member userInformation = (Member) session.getAttribute("userInformation");
-			session.setAttribute("userInformation", userInformation); 
+//			Member userInformation = (Member) session.getAttribute("userInformation");
+//			session.setAttribute("userInformation", userInformation); 
 
 			return new RedirectView("board?tabId="+ft_tabId);
 		}
@@ -610,8 +612,8 @@ public class HomeController {
 //			userIdTabId.setTabId(DAO.getTabIdAction(tabTitle).get(0).getTabId());
 			login.setLoginSucceedGetUserInfo(DAO.loginSucceedGetUserInfo(id));
 			userIdTabId = DAO.getUserIdTabId(login.getLoginSucceedGetUserInfo(),id);
-			System.out.println("로그인 정보에 뭐들어갔냐 :" + login.getLoginSucceedGetUserInfo().size() + "아이디는?:" + id);
-			System.out.println("뭘주길래 실패란거야 : "+userIdTabId.getTabId());
+			//System.out.println("로그인 정보에 뭐들어갔냐 :" + login.getLoginSucceedGetUserInfo().size() + "아이디는?:" + id);
+			//System.out.println("뭘주길래 실패란거야 : "+userIdTabId.getTabId());
 			
 			session.setAttribute("login", login); 
 			session.setAttribute("userIdTabId", userIdTabId); 
@@ -636,11 +638,11 @@ public class HomeController {
 			HttpSession session = request.getSession();
 			Member userIdTabId = (Member) session.getAttribute("userIdTabId");
 			DAO.friendSubscription(fUserId, userIdTabId.getUserId());
-			System.out.println("userIdTabId.getId()" + userIdTabId.getId());
+			//System.out.println("userIdTabId.getId()" + userIdTabId.getId());
 			List<Member> loginSucceedGetUserInfo = DAO.loginSucceedGetUserInfo(userIdTabId.getId());
 			userIdTabId = DAO.getUserIdTabId(loginSucceedGetUserInfo,userIdTabId.getId());
 			
-			System.out.println(userIdTabId.getTabId()+"번 탭아이디와 유저아이디 : "+userIdTabId.getUserId());
+			//System.out.println(userIdTabId.getTabId()+"번 탭아이디와 유저아이디 : "+userIdTabId.getUserId());
 			
 			session.setAttribute("userIdTabId", userIdTabId); 
 			return "redirect:board?tabId="+userIdTabId.getTabId();
@@ -691,8 +693,8 @@ public class HomeController {
 		String resource = "org/first/mvc/mybatis_config.xml";
 		InputStream inputStream;
 		Integer result = 0;
-		System.out.println("id = "+id);
-		System.out.println("resurt = "+result);
+		//System.out.println("id = "+id);
+		//System.out.println("resurt = "+result);
 		
 		
 		try {
@@ -709,10 +711,10 @@ public class HomeController {
 				result = 1 ;
 			}
 		
-			System.out.println("resurt = "+result);
+			//System.out.println("resurt = "+result);
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("id check error in sql");
+			//System.out.println("id check error in sql");
 			
 		}
 		
@@ -726,8 +728,8 @@ public class HomeController {
 		String resource = "org/first/mvc/mybatis_config.xml";
 		InputStream inputStream;
 		Integer result = 0;
-		System.out.println("nick = "+nickName);
-		System.out.println("resurt = "+result);
+		//System.out.println("nick = "+nickName);
+		//System.out.println("resurt = "+result);
 		
 		
 		try {
@@ -744,10 +746,10 @@ public class HomeController {
 				result = 1 ;
 			}
 		
-			System.out.println("resurt = "+result);
+			//System.out.println("resurt = "+result);
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.out.println("nick check error in sql");
+			//System.out.println("nick check error in sql");
 			
 		}
 		
@@ -760,8 +762,8 @@ public class HomeController {
 	public @ResponseBody Integer passwordCheck(@RequestParam("password") String password){
 
 		Integer result = 0;
-		System.out.println("nick = "+password);
-		System.out.println("resurt = "+result);
+		//System.out.println("nick = "+password);
+		//System.out.println("resurt = "+result);
 
 			if(Pattern.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$", password)) {
 				result = 0 ;
@@ -769,7 +771,7 @@ public class HomeController {
 				result = 1 ;
 			}
 		
-			System.out.println("resurt = "+result);
+			//System.out.println("resurt = "+result);
 
 	 return result;
 	}
@@ -815,16 +817,16 @@ public class HomeController {
 	
 	@RequestMapping(value = "getAllListAjax", method = {RequestMethod.POST})
 	public @ResponseBody List<Post> getAllListAjax(Model model,@RequestParam("tabId") Integer tabId, Integer userId){
-		System.out.println("getAllListAjax 돌아가는 중 " + tabId +"이것은 탭아이디 " + userId + "이것은 유저아이디");
+		//System.out.println("getAllListAjax 돌아가는 중 " + tabId +"이것은 탭아이디 " + userId + "이것은 유저아이디");
 		Member userIdTabId = new Member();
 		userIdTabId.setTabId(tabId);
 		userIdTabId.setUserId(userId);
 		
 		List<Post> result = DAO.getPostList(userIdTabId);
 		for(int i=0 ; i<result.size(); i++) {
-			System.out.println("getPostList 돌아가는중 : " + i);
+			//System.out.println("getPostList 돌아가는중 : " + i);
 			if(result.get(i).getTabTitle() != null) {
-				System.out.println("여기 따끈따끈한 탭타이틀이 있어요 : " + result.get(i).getTabTitle());
+				//System.out.println("여기 따끈따끈한 탭타이틀이 있어요 : " + result.get(i).getTabTitle());
 			}
 		}
 		result = (DAO.postSet(result,userIdTabId));	
@@ -832,6 +834,7 @@ public class HomeController {
 	 return result;
 	}
 	
+
 	@RequestMapping(value = "ajax_createReplyAction2", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
 	public @ResponseBody List<Post> ajax_createReplyAction2(Model model,@RequestParam("n247_reDes") String n247_reDes, Integer n247_reUsId , Integer n247_rePoId , Integer tabId) {
 		DAO.createReply(n247_reDes, n247_reUsId, n247_rePoId, tabId );
@@ -843,25 +846,29 @@ public class HomeController {
 		
 		result = (DAO.postSet(result,userIdTabId));	
 		
+		for( int i=0 ; i<result.size(); i++) {
+			System.out.println("탭의 맥스 데이는 : " + result.get(i).getMaxDay());
+		}
 		return result;
 	}
 	
 	
 	@RequestMapping(value = "ajax_createReplyAction", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
 	public @ResponseBody List<Post> ajax_createReplyAction(Model model,@RequestParam("n247_reDes") String n247_reDes, Integer n247_reUsId , Integer n247_rePoId, Integer tabId) {
-		System.out.println("ajax_createReplyAction 작동중 ");
+		//System.out.println("ajax_createReplyAction 작동중 ");
 		DAO.createReply(n247_reDes, n247_reUsId, n247_rePoId, tabId );
 		
 		List<Post> result = DAO.getReplyListCard(n247_rePoId);
+		
 
 		return result;
 	}
 	
 	@RequestMapping(value = "getOneCardAjax", method = {RequestMethod.POST})
 	public @ResponseBody List<Post> getOneCardAjax(Model model,@RequestParam("id") Integer id){
-		System.out.println("getOneCardAjax 작동중 ");
+		//System.out.println("getOneCardAjax 작동중 ");
 		List<Post> result = DAO.getReplyListCard(id);
-		System.out.println(id+"받아서 보낸다.");
+		//System.out.println(id+"받아서 보낸다.");
 	 return result;
 	}
 	
@@ -869,11 +876,11 @@ public class HomeController {
 	
 	@RequestMapping(value = "getProjectAdmFriendsAjax", method = {RequestMethod.POST})
 	public @ResponseBody List<Member> getProjectAdmFriendsAjax(Model model,@RequestParam("tabId") Integer tabId){
-		System.out.println("getUserInfoAjax 작동중 ");
+		//System.out.println("getUserInfoAjax 작동중 ");
 		List<Member> result = DAO.getFriTabList(tabId);
 	if(result != null) {
 		for (int i=0 ; i<result.size(); i++) {
-			System.out.println("받아온 친구는 " + result.size() +"명 이고 이름은 : " + result.get(i).getNickName());
+			//System.out.println("받아온 친구는 " + result.size() +"명 이고 이름은 : " + result.get(i).getNickName());
 		}
 	}
 		
@@ -882,76 +889,136 @@ public class HomeController {
 	
 	@RequestMapping(value = "getAdmFriendsAjax", method = {RequestMethod.POST})
 	public @ResponseBody List<Member> getAdmFriendsAjax(Model model,@RequestParam("userId") Integer userId){
-		System.out.println("getUserInfoAjax 작동중 ");
+		//System.out.println("getUserInfoAjax 작동중 ");
 		List<Member> result = DAO.getFriendsAdmList(userId);
+
+	 return result;
+	}
+	
+	
+	@RequestMapping(value = "getProjectListAjax", method = {RequestMethod.POST})
+	public @ResponseBody List<Post> getProjectListAjax(Model model,@RequestParam("userId") Integer userId){
+		//System.out.println("getProjectListAjax 작동중 ");
+		List<Post> result = DAO.getProjectList(userId);
+
+	 return result;
+	}
+	
+	@RequestMapping(value = "getFriendsListAjax", method = {RequestMethod.POST})
+	public @ResponseBody List<Member> getFriendsListAjax(Model model,@RequestParam("userId") Integer userId){
+		//System.out.println("getFriendsListAjax 작동중 ");
+		List<Member> result = DAO.getMemberList(userId);
 
 	 return result;
 	}
 	
 	@RequestMapping(value = "insertProjectAdm", method = {RequestMethod.POST})
 	public @ResponseBody void insertProjectAdm(Model model,@RequestParam("userId") Integer userId, Integer tabId){
-		System.out.println("getUserInfoAjax 작동중 ");
+		//System.out.println("insertProjectAdm 작동중 ");
 		DAO.createFriTabAdd(userId, tabId);
 	}
 	
 	@RequestMapping(value = "isDelProjectAdm", method = {RequestMethod.POST})
 	public @ResponseBody void isDelProjectAdm(Model model,@RequestParam("idN247_ft") Integer idN247_ft){
-		System.out.println("isDelProjectAdm 작동중 ");
+		//System.out.println("isDelProjectAdm 작동중 ");
 		DAO.isDelProjectAdm(idN247_ft);
 	}
 	
 	
 	@RequestMapping(value = "updateCardTitleAjax", method = {RequestMethod.POST})
 	public @ResponseBody void updateCardTitleAjax(Model model,@RequestParam("postTitle") String postTitle, Integer id){
-		System.out.println("getUserInfoAjax 작동중 ");
+		//System.out.println("getUserInfoAjax 작동중 ");
 		DAO.updateCardTitle(postTitle, id);
 	}
 	
 	@RequestMapping(value = "updateCardDescriptionAjax", method = {RequestMethod.POST})
 	public @ResponseBody void updateCardDescriptionAjax(Model model,@RequestParam("description") String description, Integer id){
-		System.out.println("updateCardDescriptionAjax 작동중 ");
+		//System.out.println("updateCardDescriptionAjax 작동중 ");
 		DAO.updateCardDescription(description, id);
 	}
 	
 	@RequestMapping(value = "deleteUpFileAjax", method = {RequestMethod.POST})
 	public @ResponseBody void deleteUpFileAjax(Model model,@RequestParam("idN247_up") Integer idN247_up ){
-		System.out.println("deleteUpFileAjax 작동중 ");
+		//System.out.println("deleteUpFileAjax 작동중 ");
 		DAO.deleteUpFile(idN247_up);
 	}
 	
 	@RequestMapping(value = "updateReplyDesAjax", method = {RequestMethod.POST})
 	public @ResponseBody void updateReplyDesAjax(Model model,@RequestParam("n247_reDes") String n247_reDes, Integer idN247_re){
-		System.out.println("updateReplyDesAjax 작동중 ");
+		//System.out.println("updateReplyDesAjax 작동중 ");
 		DAO.updateReplyDes(n247_reDes, idN247_re);
 	}
 	
 	@RequestMapping(value = "updateReplyDesToDesAjax", method = {RequestMethod.POST})
 	public @ResponseBody void updateReplyDesToDesAjax(Model model,@RequestParam("n247_reDes") String n247_reDes, String insertDes){
-		System.out.println("updateReplyDesAjax 작동중 ");
+		//System.out.println("updateReplyDesAjax 작동중 ");
 		DAO.updateReplyDesToDes(n247_reDes, insertDes);
 	}
 	
 	@RequestMapping(value = "updateProjectTitleAjax", method = {RequestMethod.POST})
 	public @ResponseBody void updateProjectTitleAjax(Model model,@RequestParam("tabTitle") String tabTitle, Integer tabId){
-		System.out.println("updateProjectTitleAjax 작동중 ");
+		//System.out.println("updateProjectTitleAjax 작동중 ");
 		DAO.updateProjectTitle(tabTitle, tabId);
 	}
 	
 	@RequestMapping(value = "updateProjectIntroAjax", method = {RequestMethod.POST})
 	public @ResponseBody void updateProjectIntroAjax(Model model,@RequestParam("tab_intro") String tab_intro, Integer tabId){
-		System.out.println("updateProjectIntroAjax 작동중 ");
+		//System.out.println("updateProjectIntroAjax 작동중 ");
 		DAO.updateProjectIntro(tab_intro, tabId);
 	}
 	
 	@RequestMapping(value = "deleteReplyAjax", method = {RequestMethod.POST})
 	public @ResponseBody void deleteReplyAjax(Model model,@RequestParam("idN247_re") Integer idN247_re){
-		System.out.println("deleteReplyAjax 작동중 ");
+		//System.out.println("deleteReplyAjax 작동중 ");
 		DAO.deleteReply(idN247_re);
 	}
 	
 	@RequestMapping(value = "deleteChangeReplyAjax", method = {RequestMethod.POST})
 	public @ResponseBody void deleteChangeReplyAjax(Model model,@RequestParam("n247_reDes") String n247_reDes){
-		System.out.println("deleteChangeReplyAjax 작동중 ");
+		//System.out.println("deleteChangeReplyAjax 작동중 ");
 		DAO.deleteChangeReply(n247_reDes);
 	}
+	
+	@RequestMapping(value = "updateCompCardAction", method = {RequestMethod.POST})
+	public @ResponseBody void updateCompCardAction(Model model,@RequestParam("id") Integer id){
+		//System.out.println("deleteChangeReplyAjax 작동중 ");
+		DAO.updateIsDelCard(id,3);
+	}
+	
+	@RequestMapping(value = "updateUnCompCardAction", method = {RequestMethod.POST})
+	public @ResponseBody void updateUnCompCardAction(Model model,@RequestParam("id") Integer id){
+		//System.out.println("deleteChangeReplyAjax 작동중 ");
+		DAO.updateIsDelCard(id,0);
+	}
+	
+	@RequestMapping(value = "updateUnCompProjectAction", method = {RequestMethod.POST})
+	public @ResponseBody void updateUnCompProjectAction(Model model,@RequestParam("tabId") Integer tabId){
+		//System.out.println("deleteChangeReplyAjax 작동중 ");
+		DAO.completeTab(tabId,0);
+	}
+	
+	@RequestMapping(value = "updateCompProjectAction", method = {RequestMethod.POST})
+	public @ResponseBody void updateCompProjectAction(Model model,@RequestParam("tabId") Integer tabId){
+		//System.out.println("deleteChangeReplyAjax 작동중 ");
+		DAO.completeTab(tabId,3);
+	}
+	
+	@RequestMapping(value = "updateDeleteCardAction", method = {RequestMethod.POST})
+	public @ResponseBody void updateDeleteCardAction(Model model,@RequestParam("id") Integer id){
+		//System.out.println("updateIsdelCardAction 작동중 ");
+		DAO.updateIsDelCard(id,1);
+	}
+	
+	@RequestMapping(value = "updateSelectProjectAction", method = {RequestMethod.POST})
+	public @ResponseBody void updateSelectProjectAction(Model model,@RequestParam("tabId") Integer tabId, Integer moveOn, Integer isDelCheck){
+		System.out.println("updateSelectProjectAction 작동중 " + tabId +":"+ moveOn +":"+ isDelCheck);
+		DAO.updateDeleteProject(tabId, moveOn, isDelCheck);	
+	}
+	
+	@RequestMapping(value = "updateDeleteProjectAction", method = {RequestMethod.POST})
+	public @ResponseBody void updateDeleteProjectAction(Model model,@RequestParam("tabId") Integer tabId){
+		System.out.println("updateDeleteProjectAction 작동중 " + tabId );
+		DAO.deleteTab(tabId);	
+	}
+	
 }

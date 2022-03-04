@@ -589,6 +589,11 @@ public class DAO {
 					if(result.get(0).getDueDay() != null) {
 						result.get(0).setDueDayString(dateToString3(result.get(0).getDueDay()));
 					}
+					for (int i=0 ; i<result.size(); i++) {
+						if(result.get(i).getLastModified() != null) {
+							result.get(i).setN247_reKrModified(dateToString(dateChangeAction2(result.get(i).getLastModified())));
+						}
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -1080,7 +1085,7 @@ public class DAO {
 				        for(int i=0 ; i<result.size() ; i++) {
 				        	result.get(i).setKrCreate(dateChangeAction(result.get(i).getLastModified()));
 				        	result.get(i).setNick(getNickNameToUserNum(result.get(i).getN247_reUsId()));
-				        	System.out.println("리플라이리스트에 닉네임 넣고 있어요 : " + result.get(i).getN247_reUsId()+"번: 사용자네요 ");
+				        	//System.out.println("리플라이리스트에 닉네임 넣고 있어요 : " + result.get(i).getN247_reUsId()+"번: 사용자네요 ");
 					 	}  
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -1739,6 +1744,40 @@ public class DAO {
 					}
 				}
 				
+				
+				public static void updateDeleteProject (Integer tabId, Integer moveOn, Integer isDelCheck ) {
+					String resource = "org/first/mvc/mybatis_config.xml";
+					InputStream inputStream;
+					Post p1 = new Post();
+					p1.setTabId(moveOn);
+					p1.setIsDel(1);
+					Post tab = new Post();
+					tab.setTabId(tabId);
+					tab.setMoveOn(moveOn);
+					try {
+						inputStream = Resources.getResourceAsStream(resource);
+						SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+						SqlSession session = sqlSessionFactory.openSession();
+						if(isDelCheck == 1) {
+							
+							session.update("org.first.mvc.BaseMapper.updateAllPostIsDeltoTabId", tabId);
+							session.update("org.first.mvc.BaseMapper.updateIsDelTab", p1);
+							session.update("org.first.mvc.BaseMapper.updateDelFtToTabId", moveOn);
+							session.commit();
+							session.close();
+						}else {
+							session.update("org.first.mvc.BaseMapper.updatePostTabTitle", tab);
+							session.update("org.first.mvc.BaseMapper.updateIsDelTab", p1);
+							session.update("org.first.mvc.BaseMapper.updateDelFtToTabId", moveOn);
+							session.commit();
+							session.close();
+						}
+						
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				
 				public static void updateTabIntro (Integer tabId, String tab_intro ) {
 					String resource = "org/first/mvc/mybatis_config.xml";
 					InputStream inputStream;
@@ -1795,7 +1834,7 @@ public class DAO {
 					}
 				}
 				
-				public static void completePost (Integer id, Integer isDel) {
+				public static void updateIsDelCard (Integer id, Integer isDel) {
 					String resource = "org/first/mvc/mybatis_config.xml";
 					InputStream inputStream;
 					Post p1 = new Post();
@@ -1805,7 +1844,7 @@ public class DAO {
 						inputStream = Resources.getResourceAsStream(resource);
 						SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
 						SqlSession session = sqlSessionFactory.openSession();
-						session.update("org.first.mvc.BaseMapper.updateCompletePost", p1);
+						session.update("org.first.mvc.BaseMapper.updateIsdelCard", p1);
 						session.commit();
 						session.close();
 					} catch (IOException e) {
@@ -1989,42 +2028,7 @@ public class DAO {
 				    	return result;
 				    }
 
-				   
-				    
-				    
-				    
-				    
-					 //배열 중복 제거 처리 
-					 public static int remove_Duplicate_Elements (int arr[], int n) {
-						 if (n==0 || n==1) {
-							 return n;
-						 }
-						 int[] tempA = new int[n];
-						 int j = 0;
-						 for (int i=0; i<n-1; i++) {
-							 if(arr[i] != arr[i+1]) {
-								 tempA[j++] = arr[i]; 
-							 }
-						 }
-						 tempA[j++] = arr[n-1];
-						 for (int i=0; i<j; i++) {
-							 arr[i] = tempA[i];
-						 }
-						 return j;
-					 }
-					//배열 중복 제거 처리 
-					 public static void reDuList (String[] args) {			 
-						 
-						 int arr[] = {11,77,2,2,7,8,8,8,3};
-						 //System.out.println("이것도 테스트야 : " + Arrays.toString(arr));
-						 Arrays.sort(arr);
-						 int length = arr.length;
-						 length = remove_Duplicate_Elements(arr, length);
-						 for (int i=0; i<length; i++) 
-							 System.out.println("중복제거중이야 : "+arr[i]+" ");
-					 }
-					 
-					 
+
 		 // 최적화 이후 정리중 *******
 					 
 					 public static Integer checkLoginMember (String id, String password) {
@@ -2093,23 +2097,33 @@ public class DAO {
 							Integer tabId = 0;
 							Integer tabCheck = 0;
 							Integer friCheck = 1;
-							
-							//System.out.println("getUserIdTabId 돌아갑니다.");
+							String nickName = "";
+							String userImg = "";
+							String mb_introduce = "";
+							String lastModified = "";
+							System.out.println("getUserIdTabId 돌아갑니다.");
 							if(loginSucceedGetUserInfo != null) {
-								//System.out.println("내용이 있네요 ");
+								System.out.println("내용이 있네요 ");
 								List<Member> friTab = new ArrayList<Member>();
 								List<Member> myTab = new ArrayList<Member>();
 								
 								for(int i=0 ; i<loginSucceedGetUserInfo.size(); i++) {
 									if(loginSucceedGetUserInfo.get(i).getTabId() == null && loginSucceedGetUserInfo.get(i).getUserId() != null) {
-										//System.out.println("여기야 "+ loginSucceedGetUserInfo.get(i).getUserId() );
+										System.out.println("여기야 "+ loginSucceedGetUserInfo.get(i).getUserId() );
 										userId=loginSucceedGetUserInfo.get(i).getUserId();
-										
+										nickName=loginSucceedGetUserInfo.get(i).getNickName();
+										userImg=loginSucceedGetUserInfo.get(i).getUserImg();
+										mb_introduce=loginSucceedGetUserInfo.get(i).getMb_introduce();
+										lastModified=DAO.dateToString(loginSucceedGetUserInfo.get(i).getModified());
 									
 									}else if(loginSucceedGetUserInfo.get(i).getTabId() != null && loginSucceedGetUserInfo.get(i).getIsDel() == 0) {
-										//System.out.println("내탭이 있어서 여기로왔어요 : "+ loginSucceedGetUserInfo.get(i).getTabId() +"번 탭아이디가 있네요");
+										System.out.println("내탭이 있어서 여기로왔어요 : "+ loginSucceedGetUserInfo.get(i).getTabId() +"번 탭아이디가 있네요");
 										myTab.add(loginSucceedGetUserInfo.get(i));
 										userId = myTab.get(0).getUserId();
+										nickName = myTab.get(0).getNickName();
+										userImg = myTab.get(0).getUserImg();
+										mb_introduce = myTab.get(0).getMb_introduce();
+										lastModified=DAO.dateToString(myTab.get(0).getModified());
 										tabId = myTab.get(0).getTabId();
 										tabCheck = 1;
 										if(loginSucceedGetUserInfo.get(i).getfUserId() == null || loginSucceedGetUserInfo.get(i).getF_isDel() == 1) {
@@ -2118,19 +2132,38 @@ public class DAO {
 										break;
 									}else if(loginSucceedGetUserInfo.get(i).getFt_tabId() != null && loginSucceedGetUserInfo.get(i).getFt_isDel() == 0){ 
 										friTab.add(loginSucceedGetUserInfo.get(i));
-										//System.out.println("공유가 있어서 여기로왔어요 : "+ loginSucceedGetUserInfo.get(i).getFt_tabId() +"번 탭아이디가 있네요");
+										System.out.println("공유가 있어서 여기로왔어요 : "+ loginSucceedGetUserInfo.get(i).getFt_tabId() +"번 탭아이디가 있네요");
 										userId = friTab.get(0).getUserId();
+										nickName = friTab.get(0).getNickName();
+										userImg = friTab.get(0).getUserImg();
+										mb_introduce = friTab.get(0).getMb_introduce();
+										lastModified=DAO.dateToString(friTab.get(0).getModified());
 										tabId = friTab.get(0).getFt_tabId();
 										tabCheck = 2;
 										if(loginSucceedGetUserInfo.get(i).getfUserId() == null || loginSucceedGetUserInfo.get(i).getF_isDel() == 1) {
 											friCheck = 0;
 										}
 									    break;
+									}else {
+										System.out.println("가지고 있는 탭이 삭제되었네요");
+										Member unTabMember = getMemberToId(id);
+										userId = unTabMember.getUserId();
+										nickName = unTabMember.getNickName();
+										userImg = unTabMember.getUserImg();
+										mb_introduce = unTabMember.getMb_introduce();
+										lastModified=DAO.dateToString(unTabMember.getModified());
+										tabId = unTabMember.getFt_tabId();
+										tabCheck = 0;
 									}
 								}
 							}else {
+								System.out.println("탭이 아예 없네요");
 								Member unTabMember = getMemberToId(id);
 								userId = unTabMember.getUserId();
+								nickName = unTabMember.getNickName();
+								userImg = unTabMember.getUserImg();
+								mb_introduce = unTabMember.getMb_introduce();
+								lastModified=DAO.dateToString(unTabMember.getModified());
 								tabId = unTabMember.getFt_tabId();
 								tabCheck = 0;
 							}
@@ -2139,6 +2172,10 @@ public class DAO {
 								result.setTabId(tabId);
 								result.setTabCheck(tabCheck);
 								result.setFriCheck(friCheck);
+								result.setNickName(nickName);
+								result.setUserImg(userImg);
+								result.setMb_introduce(mb_introduce);
+								result.setLastModified(lastModified);
 							
 							return result ;
 						}
@@ -2156,6 +2193,13 @@ public class DAO {
 								SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
 								SqlSession session = sqlSessionFactory.openSession();
 								result = session.selectList("org.first.mvc.BaseMapper.getMemberList", userId);
+								
+								if(result != null) {
+									for(int i=0 ; i<result.size(); i++) {
+										result.get(i).setLastModified(dateChangeMaxAction(result.get(i).getModified()));
+									}
+								}
+								
 							 	
 							} catch (IOException e) {
 								e.printStackTrace();
@@ -2206,7 +2250,7 @@ public class DAO {
 							 result.setWaitingAdmList(friends.getWaitingAdmList());
 							 result.setFriendAdmList(friends.getFriendAdmList());
 						 }else {
-							 System.out.println("여기로와야지" + userIdTabId.getUserId() +"번 아이디");
+							// System.out.println("여기로와야지" + userIdTabId.getUserId() +"번 아이디");
 							 result = getMember(userIdTabId.getUserId());
 							 result.setLastModified(dateToString(dateChangeAction2(result.getModified())));
 						 }
@@ -2220,7 +2264,7 @@ public class DAO {
 						 result.setCompleteTabList(tabs.getCompleteTabList());
 						 result.setAllTabList(projectList);
 						 result.setTabId(userIdTabId.getTabId());
-						 System.out.println(result.getTabId() + "여기에요 여기에서 없어요 탭아이디");
+						// System.out.println(result.getTabId() + "여기에요 여기에서 없어요 탭아이디");
 						 return result;
 					 }
 					 
@@ -2448,7 +2492,7 @@ public class DAO {
 							//현재탭이 공유탭인지 판단	
 								int tabAdmCheck = 0;
 								int tabCompCheck = 0;
-								System.out.println("체크중 : " + tabCompCheck);
+								//System.out.println("체크중 : " + tabCompCheck);
 									if(userInformation.getTabList() != null) {
 										//System.out.println("내탭중 찾고있음. userInformation.getTabList().size() =  " + userInformation.getTabList().size());
 										
@@ -2478,10 +2522,10 @@ public class DAO {
 											p1 = userInformation.getCompleteTabList();
 											
 											if(p1.get(i).getTabId() == tabId) {
-												System.out.println("탭이 여기로 왔어 :" + p1.get(i).getTabId() +"보는중" + tabId);
+												//System.out.println("탭이 여기로 왔어 :" + p1.get(i).getTabId() +"보는중" + tabId);
 												tabAdmCheck = 0;
 												tabCompCheck = 1;
-												System.out.println("체크중 : " + tabCompCheck);
+												//System.out.println("체크중 : " + tabCompCheck);
 												tabTitle = p1.get(i).getTabTitle();
 												//System.out.println("tabTitle = p1.get(i).getTabTitle(); 체크 : " + p1.get(i).getTabTitle());
 												tabIntro = p1.get(i).getTab_intro();
@@ -2514,7 +2558,7 @@ public class DAO {
 									}
 									
 								thisTab.setTabCompCheck(tabCompCheck);
-								System.out.println("체크중 : " + tabCompCheck + "세팅한건? " + thisTab.getTabCompCheck());
+								//System.out.println("체크중 : " + tabCompCheck + "세팅한건? " + thisTab.getTabCompCheck());
 								thisTab.setTabAdmCheck(tabAdmCheck);
 							//현재탭의 제목입력
 								thisTab.setTabTitle(tabTitle);
@@ -2606,14 +2650,15 @@ public class DAO {
 							InputStream inputStream;
 							Post p1 = new Post();
 							p1.setTabId(userIdTabId.getTabId());
-							 System.out.println("getPostList돌아가는중 tabId 왔나요 :" + p1.getTabId());
+							 //System.out.println("getPostList돌아가는중 tabId 왔나요 :" + p1.getTabId());
 							try {
 								inputStream = Resources.getResourceAsStream(resource);
 								SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
 								SqlSession session = sqlSessionFactory.openSession();
 								result = session.selectList("org.first.mvc.BaseMapper.getPostList", p1);
 								
-							 	System.out.println("getPostList 에서 몇개 가져왔니 :" + result.size());
+								
+							 	//System.out.println("getPostList 에서 몇개 가져왔니 :" + result.size());
 								
 							} catch (IOException e) {
 								e.printStackTrace();
@@ -2885,7 +2930,7 @@ public class DAO {
 						
 						 for (int i=0 ; i<postList.size(); i++) {
 							 if(postList.get(i).getId() != null) {
-								 System.out.println("포스트 아이디가 있어서 실행중");
+								 //System.out.println("포스트 아이디가 있어서 실행중 : " + userId.getUserId());
 								 postList.get(i).setProgress(progress(postList.get(i).getCreate(),postList.get(i).getDueDay()));
 								 postList.get(i).setProgressBg(progressBg(postList.get(i).getProgress()));
 								 postList.get(i).setCompareMessage(calCardDueDate(dateChangeAction2(postList.get(i).getLastUpdate()),date_now));	
@@ -2925,8 +2970,12 @@ public class DAO {
 								
 							//탭안의 카드생성시 완료제한날짜를 정해준다.
 								String maxDay = "";
+								String minDay = "";
 								maxDay = dateChangeMaxAction(postList.get(i).getTab_dueDay());
 								postList.get(i).setMaxDay(maxDay);
+								minDay = dateChangeMinAction(date_now);
+								//System.out.println("postSet의 minday체크 : " + minDay);
+								postList.get(i).setMinDay(minDay);
 								
 							//마지막 업데이트시간을 정해주자
 								//탭마지막 업데이트시간 넣어, 포스트1번 애들 마지막시간 넣어 ,진행,완료 , 계산해서 오늘과의 차이가 가장작은아이를 마직막업데이트로 만든다.
@@ -3202,18 +3251,30 @@ public class DAO {
 					    
 					    public static Integer boardCheck(List<Member> p1, Integer tabId) {
 					    	Integer result = 0;
+					    	//System.out.println("보드첵 돌아가는중");
+					    	
 					    	for(int i=0;i<p1.size(); i++) {
-					    		if(p1.get(i).getTabId() == tabId && p1.get(i).getIsDel() == 0) {
+
+					    		int p2 = p1.get(i).getTabId();
+					    		int p4 = p1.get(i).getIsDel();
+					    		
+					    		System.out.println(tabId +"번 을 받아왔어 새로운 보드첵 유형이 왔어 뭔데"+p1.get(i).getTabId()+"의 삭제여부는 :" + p1.get(i).getIsDel());
+					    		if(p2 == tabId && p4 == 0) {
+					    			System.out.println("보드로 바로 접근시 체크중 통과1:"+p1.get(i).getTabId()+"의 삭제여부는 :" + p1.get(i).getIsDel());
 					    			result = 1;
+					    			break;
 					    		}else if(p1.get(i).getFt_tabId()==tabId && p1.get(i).getFt_isDel() == 0) {
+					    			System.out.println("보드로 바로 접근시 체크중 통과2");
 					    			result = 1;
+					    			break;
 					    		}
+					    	    
 					    	}
 					    	return result;
 					    }
 					    
 					    public static List<Member> getFriTabList (Integer tabId){
-					    	System.out.println("친구받아오기 실행해서 탭아이디 받아왔어요 : " + tabId);
+					    	//System.out.println("친구받아오기 실행해서 탭아이디 받아왔어요 : " + tabId);
 							List<Member> result = new ArrayList<Member>();
 							String resource = "org/first/mvc/mybatis_config.xml";
 							InputStream inputStream;
@@ -3242,4 +3303,6 @@ public class DAO {
 							}
 							 return result;
 						 }
+					    
+					   
 }

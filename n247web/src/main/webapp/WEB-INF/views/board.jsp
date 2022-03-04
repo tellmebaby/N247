@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A project management Bootstrap theme by Medium Rare">
     <link href="assets/img/favicon.ico" rel="icon" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Gothic+A1" rel="stylesheet">
     <link href="resources/theme.css" rel="stylesheet" type="text/css" media="all" />
@@ -50,11 +51,11 @@
           
           <div class="dropdown">
 		      <a href="#" class="d-flex align-items-center text-white text-decoration-none" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-		        <img src="/images/${userInformation.userImg }" alt="" width="32" height="32" class="rounded-circle me-2">	        
+		        <img src="/images/${userIdTabId.userImg }" alt="" width="32" height="32" class="rounded-circle me-2">	        
 		      </a>
 		      <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownUser1">
 		        <li><a class="dropdown-item" href="#">cloud</a></li>
-		        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#userInfo" >${userInformation.nickName}의 정보</a></li>
+		        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#userInfo" >${userIdTabId.nickName}의 정보</a></li>
 		        <li><hr class="dropdown-divider"></li>
 		        <li><a class="dropdown-item" href="/mvc/logOutAction">로그아웃</a></li>
 		      </ul>
@@ -64,39 +65,8 @@
         </div>
         <div class="collapse navbar-collapse flex-column" id="navbar-collapse">
           <p>
-          <ul class="navbar-nav d-lg-block">
-            <span class="text-small text-muted">진행중 프로젝트 </span>
-			  <c:forEach items="${userInformation.tabList }" var="tab" begin="0" >	
-			      <li class="nav-item">
-
-			        <a href="#" class="nav-link" onclick="getProject(this.id)" aria-current="page" id="${tab.tabId }">
-			          ${tab.tabTitle }
-			        </a>
-			      </li>
-			  </c:forEach>
-			   <hr><span class="text-small text-muted">완료된 프로젝트</span>
-			  <c:forEach items="${userInformation.completeTabList }" var="compTab" begin="0" >	
-			    <li class="nav-item">
-
-			      <a href="#" class="nav-link" onclick="getProject(this.id)" aria-current="page" id="${compTab.tabId }">
-			        ${compTab.tabTitle }
-			      </a>
-			    </li>
-			  </c:forEach>
-			  <hr><span class="text-small text-muted">공유 프로젝트</span>
-			  <c:forEach items="${userInformation.friTabList }" var="friTab" begin="0" >	
-			  
-			    <li class="nav-item">
-
-			      <a href="#" class="nav-link" onclick="getProject(this.id)" aria-current="page" id="${friTab.tabId }" title="${friTab.nick }님의 ${friTab.tabTitle } 프로젝트">
-			        <img src="/images/${friTab.imgName }" alt="" width="16" height="16" class="rounded-circle me-2" >
-			        ${friTab.tabTitle }
-			      </a>
-			    </li>
-			  </c:forEach>
-			  <hr>
-          </ul>
-
+          <div id="sideNavbar">
+          </div>
           <div>
             <form action="searchPostNickAction" id="search" class="form-inline" method="get">
               <div class="input-group input-group-dark input-group-round">
@@ -108,26 +78,19 @@
                 <input name="search" type="search" class="form-control form-control-dark" placeholder="Search" aria-label="Search app">
               </div>
             </form>
-            
-            <div class="dropdown">
-              <button class="btn btn-primary btn-block" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <button class="btn btn-primary btn-block" type="button" onclick="newProjectModal()" data-bs-toggle="modal" data-bs-target="#project-create-modal" id="nav_newButton">
                 New
               </button>
-              <ul class="dropdown-menu dropdown-menu-right">
-	              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#project-create-modal">새로운 프로젝트</a></li>             
-	              <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#member-edit">새로운 친구</a></li>
-			  </ul>
-            </div>
           </div>
         </div>
         <div class="d-none d-lg-block">
           <div class="dropdown">
-		      <a href="#" class="d-flex align-items-center text-white text-decoration-none" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false" title="${userInformation.nickName}">
-		        <img src="/images/${userInformation.userImg }" alt="" width="32" height="32" class="rounded-circle me-2">	        
+		      <a href="#" class="d-flex align-items-center text-white text-decoration-none" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false" title="${userIdTabId.nickName}">
+		        <img src="/images/${userIdTabId.userImg }" alt="" width="32" height="32" class="rounded-circle me-2">	        
 		      </a>
 		      <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
 		        <li><a class="dropdown-item" href="#">cloud</a></li>
-		        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#userInfo" >${userInformation.nickName}의 정보</a></li>
+		        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#userInfo" >${userIdTabId.nickName}의 정보</a></li>
 		        <li><hr class="dropdown-divider"></li>
 		        <li><a class="dropdown-item" href="/mvc/logOutAction">로그아웃</a></li>
 		      </ul>
@@ -161,7 +124,8 @@
                     <h6>Time line</h6>
 				<div class="form-group row align-items-center">
      				<label class="col-3" for="date">프로젝트 완료일 </label>
-   					<input class="form-control col flatpickr-input" type="date" name="tab_dueDay" id="date" min="${thisTab.minDay }">
+     				<div id="modal_newProject_minDay">
+     				</div>
    				</div>
             </div>
             <div class="alert alert-warning text-small" role="alert">
@@ -172,8 +136,8 @@
 		     <button role="button" class="btn btn-primary" type="submit">
                프로젝트 만들기
              </button>
- 	 		<input type="hidden" name="userNum" value="${userInformation.userId }">
- 	 		<input type="hidden" name="id" value="${userInformation.id }">
+ 	 		<input type="hidden" name="userNum" value="${userIdTabId.userId }">
+ 	 		<input type="hidden" name="id" value="${userIdTabId.id }">
 		   </div>
 		  </div>	     
 		</div>
@@ -189,31 +153,19 @@
 		     <i class="material-icons">close</i>
 		     </button>
 		   </div>
-		   <div class="modal-body">
-			 <div class="row g-0">
-			   <div class="col-md-4">
-				 <img src="/images/${userInformation.userImg }" class="img-fluid rounded-start" alt="..." data-bs-toggle="modal" data-bs-target="#userImgUpdate">
-			   </div>
-		      <div class="col-md-8">
-			   
-			     <h5 class="card-title">${userInformation.nickName }</h5>
-				 <p class="card-text">${userInformation.id }</p>
-				 <p class="card-text">${userInformation.mb_introduce }</p>
-				 <p class="card-text"><small class="text-muted">Last updated ${userInformation.lastModified }</small></p>
-			  
-			  </div>
-			  </div>
+		   <div class="modal-body" id="modal_userInfo_body">
 			</div>
 			<div class="modal-footer">
 			  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-			  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#userInfoUpdate${userInformation.userId }" >수정</button>
+			  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#userInfoUpdate${userIdTabId.userId }" >수정</button>
+			  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#member-edit">친구관리</button>
 		    </div>
 		  </div>
 		</div>
 	  </div>
 	  
 	  
-	  <div class="modal fade" id="userInfoUpdate${userInformation.userId }" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	  <div class="modal fade" id="userInfoUpdate${userIdTabId.userId }" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 		  <form action="updateUserInfoAction" id="myForm" class="form-inline" method="post" accept-charset="UTF-8">
 		  <div class="modal-dialog">     
 		    <div class="modal-content">
@@ -225,10 +177,10 @@
 		      </div>
 		      <div class="modal-body">
 		          <div class="mb-3">
-		           	<input class="form-control" type="text" name="nickName" value="${userInformation.nickName }" maxlength="10" aria-label="postTitle">
+		           	<input class="form-control" type="text" name="nickName" value="${userIdTabId.nickName }" maxlength="10" aria-label="postTitle">
 		          </div>
 		          <div class="mb-3">      
-		            <input class="form-control" type="text" name="mb_introduce" value="${userInformation.mb_introduce }" maxlength="45" aria-label="postTitle">
+		            <input class="form-control" type="text" name="mb_introduce" value="${userIdTabId.mb_introduce }" maxlength="45" aria-label="postTitle">
 		          </div>
 		      </div>
 		      <div class="modal-footer">
@@ -281,10 +233,10 @@
 		   
 			<ul class="nav nav-tabs nav-fill" role="tablist">
                <li class="nav-item">
-                 <a class="nav-link" id="task-add-members-tab" data-toggle="tab" href="#task-add-members1" role="tab" aria-controls="task-add-members1" aria-selected="false">새로운 친구추가</a>
+                 <a class="nav-link" id="task-add-members-tab" onclick="getFriendsListByType(1)" data-toggle="tab" href="#task-add-members1" role="tab" aria-controls="task-add-members1" aria-selected="false">새로운 친구추가</a>
                </li>
                 <li class="nav-item">
-                 <a class="nav-link" id="task-add-members-tab" data-toggle="tab" href="#task-add-members2" role="tab" aria-controls="task-add-members2" aria-selected="false">친구 관리</a>
+                 <a class="nav-link" id="task-add-members-tab" onclick="getFriendsListByType(2)" data-toggle="tab" href="#task-add-members2" role="tab" aria-controls="task-add-members2" aria-selected="false">친구 관리</a>
                </li>
              </ul> 
 		   <div class="modal-body">
@@ -297,23 +249,14 @@
 	                       <form action="searchFriendAction" id="myForm" class="form-inline" method="get" accept-charset="UTF-8">
 							  <input type="text" class="form-control" name="search" placeholder="friends@email.com" aria-label="friendsEmail" aria-describedby="button-addon2">
 							  <button type="submit" class="btn btn-outline-secondary" type="button" id="button-addon2">검색</button>
-							  <input type="hidden" name="tabId" value="${thisTab.tabId }">
-							  <input type="hidden" name="userNum" value="${userInformation.userId }">
+							  <input type="hidden" name="tabId" value="${userIdTabId.tabId }">
+							  <input type="hidden" name="userNum" value="${userIdTabId.userId }">
 							  </form>
 						  </div>
 						  
 	                  	<hr>
 	                    <h6>보낸 친구 요청</h6>
-		                  <div class="mb-3">
-		                    <ul class="avatars text-center">
-		                      <c:forEach items="${userInformation.iWaitAdmList }" var="iWait" begin="0" >	
-		                      <li>
-		                      	<a href="/mvc/updateDelFriIWaitAction?fUserId=${iWait.userId }">
-		                        <img alt="${iWait.nickName }" src="/images/${iWait.userImg }" class="avatar" data-toggle="tooltip" data-title="${iWait.nickName }에게 보낸 친구신청 취소하기">
-		                        </a>
-		                      </li>
-		                      </c:forEach>
-		                    </ul>
+		                  <div class="mb-3" id="modal_members_type1">
 		                  </div>
 	                </div>
 	            </div>
@@ -323,37 +266,12 @@
                <div class="tab-pane fade" id="task-add-members2" role="tabpanel">
                 <div class="users-manage" data-filter-list="form-group-users">
                   <h6>현재 친구들</h6>
-                  <div class="mb-3">
-                    <ul class="avatars text-center">
-                      <c:forEach items="${userInformation.iApproveAdmList }" var="friAdm1" begin="0" >	
-	                      <li>
-	                        <a href="/mvc/updateDelFriIWaitAction?fUserId=${friAdm1.userId }">
-	                        <img alt="${friAdm1.nickName }" src="/images/${friAdm1.userImg }" class="avatar" data-toggle="tooltip" data-title="${friAdm1.nickName }님과 친구 취소하기">
-	                        </a>
-	                      </li>
-                      </c:forEach>
-                      <c:forEach items="${userInformation.friendApproveAdmList }" var="friAdm2" begin="0" >	
-	                      <li>
-	                        <a href="/mvc/updateDelFriWaitAction?myId=${friAdm2.userId }"">
-	                        <img alt="${friAdm2.nickName }" src="/images/${friAdm2.userImg }" class="avatar" data-toggle="tooltip" data-title="${friAdm2.nickName }님과 친구 취소하기">
-	                        </a>
-	                      </li>
-                      </c:forEach>
-                    </ul>
+                  <div class="mb-3" id="modal_members_type2">
                   </div>
                  <hr>
                  <h6>받은 친구 요청</h6>
                   <div class="alert alert-warning text-small" role="alert">
-	                 <div class="mb-3">
-	                    <ul class="avatars text-center">
-	                    <c:forEach items="${userInformation.waitingAdmList }" var="waitFri" begin="0" >	
-	                      <li>
-	                        <a href="/mvc/updateFriAdmAction?myId=${waitFri.userId }">
-	                        <img alt="${waitFri.nickName }" src="/images/${waitFri.userImg }" class="avatar" data-toggle="tooltip" data-title="${waitFri.nickName }님과 친구 맺기">
-	                        </a>
-	                      </li>
-	                      </c:forEach>
-	                    </ul>
+	                 <div class="mb-3" id="modal_members_type3">
 	                  </div>
 	                  <span>사진을 클릭해 친구 요청을 수락해 주세요. </span>
            		  </div>
@@ -405,32 +323,9 @@
       
       
 <!-- 		프로젝트 관련 모달 시작부분  -->
-			<div class="modal fade" id="project-edit-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">		    
-			  <form action="updateTabTitleAction" id="myForm" class="form-inline" method="get">
-				<div class="modal-dialog">	      
-				  <div class="modal-content">
-				     <div class="modal-header">
-						 <h5 class="modal-title" id="exampleModalLabel">프로젝트 이름 변경</h5>
-						 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				     </div>
-					 <div class="modal-body">
-					   <div class="mb-3">
-						 <input class="form-control" type="text" name="tabTitle" value="${thisTab.tabTitle }" maxlength="45" aria-label="tabTitleUpdate" >
-					   </div>
-					 </div>
-					 <div class="modal-footer">
-					   <button type="submit" class="btn btn-secondary">확인</button>
-					   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-					   <input type="hidden" name="tabId" value="${thisTab.tabId }">
-					 </div>
-						     
-				   </div>
-				 </div>
-			   </form>
-			 </div>
-						
+		
 			 <div class="modal fade" id="project-editDueDay-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">		    
-			   <form action="updateTabDueDayAction" id="myForm" class="form-inline" method="post">
+				<form action="updateTabDueDayAction" id="myForm" class="form-inline" method="POST">
 				  <div class="modal-dialog">	      
 				    <div class="modal-content">
 					  <div class="modal-header">
@@ -438,43 +333,23 @@
 						 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					  </div>
 				      <div class="modal-body">
-						 <div class="mb-3">
-   						    <input class="form-control col flatpickr-input" type="date" name="tab_dueDay" id="date" min="${thisTab.minDay }">
+						 <div class="mb-3" id="modal-editDueDay-body">
 						 </div>
 					  </div>
 					  <div class="modal-footer">
 					     <button type="submit" class="btn btn-secondary">확인</button>
 						 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-						 <input type="hidden" name="tabId" value="${thisTab.tabId }">
+						 <div id="modal-editDueDay-footer">
+						 </div>
 					  </div>     
 				    </div>
 				  </div>
-			   </form>
+				</form>
 		     </div>	
-			 <div class="modal fade" id="project-editIntro-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">		    
-			   <form action="updateTabIntroAction" id="myForm" class="form-inline" method="post">
-				  <div class="modal-dialog">	      
-				    <div class="modal-content">
-				      <div class="modal-header">
-						<h5 class="modal-title" id="exampleModalLabel">프로젝트 소개글 변경</h5>
-						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				      </div>
-				      <div class="modal-body">
-					    <div class="mb-3">
-						  <input class="form-control" type="text" name="tab_intro" value="${thisTab.tab_intro }" maxlength="250" aria-label="tabIntroUpdate" >
-					    </div>
-				      </div>
-				      <div class="modal-footer">
-					     <button type="submit" class="btn btn-secondary">확인</button>
-					     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-						 <input type="hidden" name="tabId" value="${thisTab.tabId }">
-				      </div> 
-				    </div>
-				  </div>
-			   </form>
-			 </div>
+		     
 <!-- 						삭제시 두가지 모달이 필요함  -->
-
+			
+				
 			 <div class="modal fade" id="project-del-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">		    
 			   <form action="deleteTabAction" id="myForm" class="form-inline" method="get">
 				  <div class="modal-dialog">	      
@@ -484,14 +359,13 @@
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				      </div>
 				      <div class="modal-body">
-					    <div class="mb-3">
-						  <input class="form-control" type="text" value="${thisTab.tabTitle }" aria-label="tabTitleUpdate" readonly>
+					    <div class="mb-3" id="modal_deleteProject_body" >
 					    </div>
 				      </div>
 				      <div class="modal-footer">
 					    <button type="submit" class="btn btn-secondary">삭제</button>
 					    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-					    <input type="hidden" name="tabId" value="${thisTab.tabId }">
+					    <div id="modal_deleteProject_footer"></div>
 					  </div>
 				    </div>
 				  </div>
@@ -506,40 +380,21 @@
 			         <h5 class="modal-title" id="exampleModalLabel">프로젝트안에 카드가 있습니다. 이동시키시겠습니까?</h5>
 					 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				   </div>
-				   <div class="modal-body">
-					 <c:forEach items="${userInformation.tabList }" var="tab" begin="0" >
-						    <form action="updatePostTabTitleAction" id="myForm" class="form-inline" method="post">
-						    <div Style="<c:out value="${tab.check == 1 ? 'display:none' : '' }"/>">
-							    <button type="submit" class="btn btn-secondary">${tab.tabTitle }</button>
-							    <input type="hidden" name="tabId" value="${tab.tabId }">
-							    <input type="hidden" name="moveOn" value="${thisTab.tabId }">
-							    <input type="hidden" name="id" value="${userInformation.id }">
-							    <input type="hidden" name="isDelCheck" value="0">
-						    </div>
-					        </form>
-					 </c:forEach>
+				   <div class="modal-body" id="modal_projectSelect_body">
 				    </div>
 				    <div class="modal-footer"> 
 					  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-					  <form action="updatePostTabTitleAction" id="myForm" class="form-inline" method="post">
-					  <button type="submit" class="btn btn-secondary">카드 모두삭제</button>
-					  <input type="hidden" name="tabId" value="${thisTab.tabId }">
-					  <input type="hidden" name="moveOn" value="${thisTab.tabId }">
-					  <input type="hidden" name="id" value="${userInformation.id }">
-					  <input type="hidden" name="isDelCheck" value="1">
-					  </form>
+					  <button type="button" onclick="projectWithCardDeleteAction()" class="btn btn-secondary">카드 모두삭제</button>
 				    </div>
 				  </div>
 				</div>
 			  </div>
 			  
 <!-- 		프로젝트 관련 모달 끝부분  -->
-	<div class="modal fade" id="cardAddModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">		    
+	<div class="modal fade" id="cardAddModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">	
 		<form id="frm" name="frm" method="post" action="/mvc/register/createPostAction" enctype="multipart/form-data">
 			 <div class="modal-dialog">	
-			       
 			  <div class="modal-content">
-			  
 			   <div class="modal-header">
 			    <h5 class="modal-title">카드 생성</h5>
 			            <button type="button" class="close btn btn-round" data-bs-dismiss="modal" aria-label="Close">
@@ -558,19 +413,20 @@
 			                  <label class="col-3">내용</label>
 			                  <textarea class="form-control col" rows="3" name="description" placeholder="카드 내용" name="task-description"></textarea>
 			              </div>
-			              <div class="form-group row">
-			             		  <label class="col-3">Upload</label>
-								  <input type="file" name=file class="form-control col">
+			              
+			              <div class="form-group row" id="modal_cardAdd_fileUp">  
+							<label class="col-3">Upload</label>
+							<input type="file" name=file onchange="fileUpCheck()" class="form-control col">
 			              </div>
 			                  <hr> 
 			                  <h6>Timeline</h6>
 					<div class="form-group row align-items-center">
 			   				<label class="col-3" for="date">카드 완료일 </label>
-			 					<input class="form-control col flatpickr-input" type="date" name="dueDay" id="date" min="${thisTab.minDay }" max="${thisTab.maxDay }">
+			   				<div id="modal_newCard_minDay"></div>
 			 				</div>
 			          </div>
-			          <div class="alert alert-warning text-small" role="alert">
-			               <span>카드 완료일은 ${thisTab.minDay }부터 ${thisTab.maxDay } (프로젝트완료일)안에서 선택가능합니다. </span>
+			          <div class="alert alert-warning text-small" id="modal_newCard_alertMessage" role="alert">
+			               
 			          </div>
 			         </div>
 			
@@ -624,9 +480,7 @@
 	      <div class="modal-body" id="modal_card_body">
 	
 	      </div>
-	      <div class="modal-footer">
-	        <input type="text" class="form-control col" onKeypress="javascript:if(event.keyCode==13) {input_replyAction(this.value)}" placeholder="댓글을 입력해주세요" id="input_card_reply" maxlength="45">
-	        <button type="button" onclick="reload()" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>
+	      <div class="modal-footer" id="modal_card_footer">
 	      </div>
 	    </div>
 	  </div>
@@ -655,48 +509,21 @@
 	
 	<div id="modal_project_addFriends">
 	</div>	
+
 	
-	
-	<div class="modal fade" id="modal_userInformation" tabindex="-1" aria-labelledby="userInfoModal" aria-hidden="true">  
-	   <div class="modal-dialog">
-		 <div class="modal-content">
-		   <div class="modal-header">
-		     <h5 class="modal-title" id="userInfoModal">회원정보</h5>
-		     <button type="button" class="close btn btn-round" data-bs-dismiss="modal" aria-label="Close">
-	    	 <i class="material-icons">close</i>
-		     </button>
-		   </div>
-		   <div class="modal-body">
-			 <div class="row g-0">
-			   <div class="col-md-4" id="moal_userInformation_userImg">
-			   </div>
-		     	 <div class="col-md-8">
-			     <h5 class="card-title">${userInformation.nickName }</h5>
-				 <p class="card-text">${userInformation.id }</p>
-				 <p class="card-text">${userInformation.mb_introduce }</p>
-				 <p class="card-text"><small class="text-muted">Last updated ${userInformation.lastModified }</small></p>
-				 </div>
-			  </div>
-			</div>
-			<div class="modal-footer">
-			  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-			  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#userInfoUpdate${userInformation.userId }" >수정</button>
-		    </div>
-		  </div>
-		</div>
-	  </div>
+
 	
 <!-- 	공유취소 모달 -->
 	<div class="modal fade" id="projectUnAdm" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	  <div class="modal-dialog">
 	    <div class="modal-content">
 	      <div class="modal-header">
-	       <h5 class="modal-title">공유를 취소하시겠습니까?</h5>
+	       <h5 class="modal-title">공유된 회원 정보</h5>
 	        <button type="button" class="close btn btn-round" data-bs-dismiss="modal" aria-label="Close">
 				<i class="material-icons">close</i>
 			</button>
 	      </div>
-	      <div class="modal-body">
+	      <div class="modal-body" id="projectUnAdm_modalBody">
 	      </div>
 	      <div class="modal-footer" id="projectUnAdm_action_button">
 	      </div>
@@ -704,18 +531,229 @@
 	  </div>
 	</div>
 	
-
     <script type="text/javascript" src="http://code.jquery.com/jquery-3.5.1.min.js"></script>  
     <script>
     //jstl 이 들어가면 밖으로 못뽑아 분리 안됨 
-    var p1 = '${userInformation.tabId}';
- 	var p2 = '${userInformation.userId }';
- 	var userNickName = '${userInformation.nickName }';
- 	var replyUser = '${userInformation.nickName }';
+    var p1 = '${userIdTabId.tabId}';
+ 	var p2 = '${userIdTabId.userId }';
+ 	var userNickName = '${userIdTabId.nickName }';
+ 	var userFriCheck = '${userIdTabId.friCheck}';
+ 	var allFriendsList = [];
+ 	var minDay = '2022-01-01';
+ 	var myInfor = [];
+ 	//var replyUser = '${userInformation.nickName }';
    	var allList = [];
    	
 	console.log("로그인 하면 뭘 가져오나 볼게요 :" + p1 + "그리고 :" + p2 );
  	
+	
+	
+	
+	getProjectSideList(p2)
+	var navBarProjectList=[];
+	
+	
+	function getProjectSideList(userId){
+		
+		 $.ajax({
+	         url: 'getProjectListAjax',
+	    	 method: "POST",
+	 	     data: {'userId': userId }
+	 	     })
+	 	
+		.done(function(data) {
+			navBarProjectList = data ;
+			$('#sideNavbar').html(
+					'<ul class="navbar-nav d-lg-block">'+
+					'<span class="text-small text-muted">진행중 프로젝트</span>'+
+					'<li class="nav-item" id="navList_progress"></li>'+
+					'<hr><span class="text-small text-muted">완료된 프로젝트</span>'+
+					'<li class="nav-item" id="navList_comp"></li>'+
+					'<hr><span class="text-small text-muted">공유 프로젝트</span>'+
+					'<li class="nav-item" id="navList_adm"></li>'+
+					'</ul>'
+					);
+			if(navBarProjectList.length != 0){
+				for (var i=0 ; i<navBarProjectList.length ; i++){
+
+					if(navBarProjectList[i].userNum != p2){
+						$('#navList_adm').append('<a href="#" class="nav-link" onclick="getProject(this.id)" aria-current="page" id="'+navBarProjectList[i].tabId+'"> '+navBarProjectList[i].tabTitle+'</a>');
+					}else{
+						if(navBarProjectList[i].isDel != 0){
+							$('#navList_comp').append('<a href="#" class="nav-link" onclick="getProject(this.id)" aria-current="page" id="'+navBarProjectList[i].tabId+'"> '+navBarProjectList[i].tabTitle+'</a>');
+							
+						}else{
+							$('#navList_progress').append('<a href="#" class="nav-link" onclick="getProject(this.id)" aria-current="page" id="'+navBarProjectList[i].tabId+'"> '+navBarProjectList[i].tabTitle+'</a>');
+						}
+					}
+					
+				}
+			}else{
+				//만약 가지고있는 프로젝트가 없을시 퍼스트보드로 옮겨준다.
+				 location.href="/mvc/firstboard";
+			}
+
+		})
+	}
+	
+	
+	
+	//친구목록을 불러온다.
+	if(userFriCheck == 1){
+		getFriendsList();
+	}else{
+		
+	}
+	
+	//친구목록 불러오는 함수
+	function getFriendsList(){
+		 $.ajax({
+	         url: 'getFriendsListAjax',
+	    	 method: "POST",
+	 	     data: {'userId' : p2}
+	 	     })
+	 	
+		.done(function(data) {
+			allFriendsList = data;
+			for(var i=0 ; i<allFriendsList.length ; i++){
+					if(allFriendsList[i].userId != p2){
+						//console.count(allFriendsList[i].userId +'번 친구가 확인되었습니다.');
+					}else{
+						myInfor.push(allFriendsList[i])
+					}
+				}	
+			console.log(myInfor[0].mb_introduce);
+			//여기서 자신의 정보를 찾는다 - 회원정보에 띄우기위해 
+
+			$('#modal_userInfo_body').html(
+					'<div class="row g-0">'+
+					'<div class="col-md-4">'+
+					'<img src="/images/'+myInfor[0].userImg+'" class="img-fluid rounded-start" alt="..." data-bs-toggle="modal" data-bs-target="#userImgUpdate">'+
+					'</div>'+
+					'<div class="col-md-8">'+
+					'<h5 class="card-title">'+myInfor[0].nickName+'</h5>'+
+					'<p class="card-text">'+myInfor[0].id+'</p>'+
+					'<p class="card-text">'+myInfor[0].mb_introduce+'</p>'+
+					'<p class="card-text"><small class="text-muted">Last updated '+myInfor[0].lastModified+'</small></p>'+
+					'</div>'+
+					'</div>'
+					);
+		})
+	}
+	
+	//타입별 분류
+	function getFriendsListByType(typeNum){
+		console.log('테스트 성공 타입별 친구부르기 타입은? :' + typeNum);
+		var iWaitAdmList = [];
+		var iApproveAdmList = [];
+		var friendApproveAdmList = [];
+		var waitingAdmList = [];
+		
+		if(typeNum == 1){
+			//내가 보낸 승인대기
+			for(var i=0 ; i<allFriendsList.length ; i++){
+				if(allFriendsList[i].myId == p2 && allFriendsList[i].userId != p2 && allFriendsList[i].adm == 0){
+					iWaitAdmList.push(allFriendsList[i]);
+					console.log('내가보낸 승인대기 친구는'+allFriendsList[i].nickName);
+				}
+			}
+			
+			//1번분류
+			$('#modal_members_type1').html(
+					'<ul class="avatars text-center">'+
+					'<li id="membersType1"></li>'+
+					'</ul>');
+			if(iWaitAdmList.length != 0){
+				for(var i=0 ; i<iWaitAdmList.length ; i++){
+					$('#membersType1').append(
+							'<a href="#">'+
+							'<img alt="'+iWaitAdmList[i].nickName+'" src="/images/'+iWaitAdmList[i].userImg+'" class="avatar">'+
+							'</a>'
+							);
+				}
+			}
+		}else{
+			//친구가 보낸 승인대기
+			for(var i=0 ; i<allFriendsList.length ; i++){
+				if(allFriendsList[i].fUserId == p2 && allFriendsList[i].userId != p2 && allFriendsList[i].adm == 0){
+					waitingAdmList.push(allFriendsList[i]);
+					console.log('승인대기 친구는'+allFriendsList[i].nickName);
+				}else if(allFriendsList[i].myId == p2 && allFriendsList[i].userId != p2 && allFriendsList[i].adm == 1){
+					iApproveAdmList.push(allFriendsList[i]);
+					console.log('내가추가한 친구목록은'+allFriendsList[i].nickName);
+				}else if(allFriendsList[i].fUserId == p2 && allFriendsList[i].userId != p2 && allFriendsList[i].adm == 1){
+					friendApproveAdmList.push(allFriendsList[i]);
+					console.log('친구가 신청한 목록은'+allFriendsList[i].nickName);
+				}
+			}
+			//2번분류
+			$('#modal_members_type2').html(
+					'<ul class="avatars text-center">'+
+					'<li id="membersType2"></li>'+
+					'<li id="membersType3"></li>'+
+					'</ul>');
+			
+			$('#modal_members_type3').html(
+					'<ul class="avatars text-center">'+
+					'<li id="membersType4"></li>'+
+					'</ul>');
+			if(iApproveAdmList.length != 0){
+				for(var i=0 ; i<iApproveAdmList.length ; i++){
+					$('#membersType2').append(
+							'<a href="#">'+
+							'<img alt="'+iApproveAdmList[i].nickName+'" src="/images/'+iApproveAdmList[i].userImg+'" class="avatar">'+
+							'</a>'
+							);
+				}
+			}
+			if(friendApproveAdmList.length != 0){
+				for(var i=0 ; i<friendApproveAdmList.length ; i++){
+					$('#membersType3').append(
+							'<a href="#">'+
+							'<img alt="'+friendApproveAdmList[i].nickName+'" src="/images/'+friendApproveAdmList[i].userImg+'" class="avatar">'+
+							'</a>'
+							);
+				}
+			}
+			if(waitingAdmList.length != 0){
+				for(var i=0 ; i<waitingAdmList.length ; i++){
+					$('#membersType4').append(
+							'<a href="#">'+
+							'<img alt="'+waitingAdmList[i].nickName+'" src="/images/'+waitingAdmList[i].userImg+'" class="avatar">'+
+							'</a>'
+							);
+				}
+			}
+		}
+		
+		
+	}
+	
+	getMinDay();
+	
+	//오늘날짜 구해줌
+	function getMinDay(){
+		let today = new Date();
+		let year = today.getFullYear();
+		let firstMonth = today.getMonth() + 1 ;
+		let month = '';
+		
+		if(firstMonth < 10){
+			month = '0' + firstMonth;
+		}else{
+			month = firstMonth ;
+		}
+		
+		let date = today.getDate();
+		minDay = year + '-' + month + '-' + date ;	
+	}
+	
+	
+	
+	function newProjectModal(){
+		$('#modal_newProject_minDay').html('<input class="form-control col flatpickr-input" type="date" name="tab_dueDay" id="date" min="'+minDay+'">');
+	}
+	
    	function getAllList(p1,p2){
 		
 		 $.ajax({
@@ -735,6 +773,12 @@
 	};
 	
 	getAllList(p1,p2);
+	var projectTabId = '';
+   	if(p1 != projectNumber){
+   		projectTabId = p1;
+   	}else{
+   		projectTabId = projectNumber;
+   	}
    	
    	function getCardList2(allList){
    		
@@ -744,7 +788,7 @@
  		var projectInfo = allList;
  		for(var i=0 ; i<allList.length ; i++){
  			if( allList[i].id === postCheck){
- 			}else if(allList[i].isDel == 0){
+ 			}else if(allList[i].isDel == 0 || allList[i].isDel == 3){
  				postCheck = allList[i].id;
  				allCardList.push(allList[i]);
  			}
@@ -753,7 +797,6 @@
  		
  		var cards_list = allCardList;
 	    var compCards_list = allCardList;
-	
 	   
 	$('#tasks').append(
 		'<div class="list-head"></div>'+
@@ -767,23 +810,11 @@
 		'<div class="col-auto">'+
 			'<h3>Cards</h3>'+
 			'<div>'+
-				'<button id="card-add-icon" class="btn btn-round" onclick=" modalInput()" data-bs-toggle="modal" data-bs-target="#cardAddModal">'+
+				'<button id="card-add-icon" class="btn btn-round" onclick=" modalInput(0)" data-bs-toggle="modal" data-bs-target="#cardAddModal">'+
 				'<i class="material-icons">add</i>'+
 				'</button>'+
 			'</div>'+
 		'</div>'+
-		'<form class="col-md-auto">'+
-		'<div class="col align-self-end">'+
-			'<div class="input-group input-group-round">'+
-				'<div class="input-group-prepend">'+
-					'<span class="input-group-text">'+
-					'<i class="material-icons">filter_list</i>'+
-					'</span>'+
-				'</div>'+
-			'<input type="search" class="form-control filter-list-input" placeholder="Filter cards" aria-label="Filter cards">'+
-			'</div>'+
-			'</div>'+
-		'</form>'+
 		'</div>'
 	);
 	if(cards_list.length != 0){
@@ -843,9 +874,9 @@
 				   			'<i id="'+cards_list[i].id+'more_verIcon" class="material-icons">more_vert</i>'+	
 				       		'</button>'	  +
 							'<ul class="dropdown-menu dropdown-menu-right">' +
-				       		'<li><a class="dropdown-item" href="/mvc/updateIsDelPostAction?id='+ cards_list[i].id +'&&isDel=3">완료</a></li>'+
+				       		'<li><a class="dropdown-item" onclick="updateCompCard('+cards_list[i].id+')" href="#">완료</a></li>'+
 				       		'<li><hr class="dropdown-divider"></li>'	+
-				       		'<li><a class="dropdown-item text-danger" href="/mvc/updateIsDelPostAction?id='+ cards_list[i].id +'&&isDel=1">삭제</a></li> '+
+				       		'<li><a class="dropdown-item text-danger" onclick="updateDeleteCard('+cards_list[i].id+')" href="#">삭제</a></li> '+
 							'</ul>'+
 						'</div>'+
 					'</div>'+
@@ -874,11 +905,10 @@
 					'<div class="card-body"> '+
 						'<div class="card-title">'+
 			           		'<a onclick="getOneCardAjax(this.id)" data-bs-toggle="modal" data-bs-target="#getCardModal" id="'+compCards_list[i].id+'">' +
-			       			'<h6 data-filter-by="text">'+ compCards_list[i].postTitle +'</h6>'+
-			   				'<img id="'+compCards_list[i].id+'compPostUpfile" class="avatar" src="/images/'+compCards_list[i].up_fileName +' "/>'+ 
-			       		  	'<span class="text-small">'+compCards_list[i].description+'</span>' +
+			       			'<h6 data-filter-by="text">'+ compCards_list[i].postTitle +'</h6><br>'+
+			   				'<img id="'+compCards_list[i].id+'compPostUpfile" class="box" src="/images/'+compCards_list[i].up_fileName +' "/>'+ 
+			       		  	'<span class="text-small">'+'\u00a0\u00a0\u00a0'+compCards_list[i].description+'</span>'+
 			       		    '</a>'+
-			           	 	'<small>'+compCards_list[i].dueDayString+' 까지 완료</small>'+ 
 			            '</div>'+
 			            '<div class="card-meta">'+
 			                '<ul class="avatars">'+
@@ -886,7 +916,7 @@
 			               		'<a data-toggle="tooltip" title="'+compCards_list[i].nickName+'">'+
 			              		'<img alt="'+ compCards_list[i].nickName +'" class="avatar" src="/images/'+ compCards_list[i].userImg +'" />'+
 			              		'</a>'+
-			               		'<small>'+ compCards_list[i].nickName +' <span class="text-small" style="color:green"> '+ compCards_list[i].compareMessage +'</span></small>'+
+			               		'<small>'+'\u00a0\u00a0'+ compCards_list[i].nickName +' <span class="text-small" style="color:green"> '+ compCards_list[i].compareMessage +'</span></small>'+
 			           		 	'</li>'+
 			               	'</ul>'+
 			               	'<div class="d-flex align-items-center">'+
@@ -899,7 +929,7 @@
 			           			'<i id="'+compCards_list[i].id+'compMore_verIcon" class="material-icons">more_vert</i>'+	
 			               		'</button>'	  +
 								'<ul class="dropdown-menu dropdown-menu-right">' +
-			               		'<li><a class="dropdown-item text-danger" href="/mvc/updateIsDelPostAction?id='+ compCards_list[i].id +'&&isDel=0">완료 해제</a></li>'+
+			               		'<li><a class="dropdown-item text-danger" onclick="updateUnCompCard('+compCards_list[i].id+')" href="#">완료 해제</a></li>'+
 								'</ul>'+
 							'</div>'+
 						'</div>'+
@@ -921,8 +951,7 @@
 				
 			}
 		}
-		
-
+	
 	$('#breadcrumb-item-userName').hide();
 		$('#breadcrumb-item-userName').show();
 		$('#breadcrumb-item-userName').html('<a>'+userNickName+'</a>');
@@ -947,12 +976,14 @@
 					'<i class="material-icons">settings</i></button>'+
 					' <ul class="dropdown-menu dropdown-menu-right">'+
 						'<li id="dropDown-reDeuDay"><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#project-editDueDay-modal">완료일 변경</a></li>'+
-						'<li id="dropDown-complete"><a class="dropdown-item" href="completeTabAction?isDel=3">프로젝트 완료</a></li>'+
-						'<li id="dropDown-unComplete"><a class="dropdown-item" href="completeTabAction?isDel=0">완료해제</a></li>'+
+						'<li id="dropDown-complete"><a class="dropdown-item" onclick="updateCompProject()" href="#">프로젝트 완료</a></li>'+
+						'<li id="dropDown-unComplete"><a class="dropdown-item" onclick="updateUnCompProject()" href="#">완료해제</a></li>'+
 						'<li><hr class="dropdown-divider"></li>'+
-						'<li id="dropDown-delProject"><a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#project-del-modal">삭제</a></li>'+
-						'<li id="dropDown-moveAllCard"><a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#project-select-modal">삭제</a></li>'+
+						'<li id="dropDown-delProject"><a class="dropdown-item text-danger" href="#" onclick="projectDelete('+projectTabId+')" data-bs-toggle="modal" data-bs-target="#project-del-modal">삭제</a></li>'+
+						'<li id="dropDown-moveAllCard"><a class="dropdown-item text-danger" href="#" onclick="projectSelect('+projectTabId+')" data-bs-toggle="modal" data-bs-target="#project-select-modal" >카드이동 후 삭제</a></li>'+
 					' </ul>');
+			$('#modal-editDueDay-body').html('<input class="form-control col flatpickr-input" type="date" name="tab_dueDay" id="date" min="'+projectInfo[0].minDay+'">');
+			$('#modal-editDueDay-footer').html('<input type="hidden" name="tabId" value="'+projectTabId+'"><a>'+projectTabId+'</a>');
 		}
 		
 		$('#dropDown-reName').hide();
@@ -974,11 +1005,11 @@
 		}
 		for(var i=0 ; i<projectInfo.length ; i++){
 			var tabSelectCheck = 0;
-			if(projectInfo[i].id != null){
-				$('#dropDown-delProject').show();
+			if(projectInfo[i].id != null && projectInfo[i].isDel != 1){
+				$('#dropDown-moveAllCard').show();
 				break;
 			}else{
-				$('#dropDown-moveAllCard').show();
+				$('#dropDown-delProject').show();
 				break;
 			}	
 		}
@@ -996,9 +1027,11 @@
 		
 	$('#header_admAdd').hide();	
 	
+	$('#modal_newCard_minDay').html('<input class="form-control col flatpickr-input" type="date" name="dueDay" id="date" min="'+projectInfo[0].minDay+'" max="'+projectInfo[0].maxDay+'">');
+	$('#modal_newCard_alertMessage').html('<span>카드 완료일은 '+projectInfo[0].minDay+'부터 '+projectInfo[0].maxDay+' (프로젝트완료일)안에서 선택가능합니다. </span>');
 	if(projectInfo[0].tab_userNum == p2 && projectInfo[0].tabCompCheck == 0){
-		$('#header_projectTitle').html('<h1 onclick="update_project_title()" id="project_title">'+projectInfo[0].tabTitle+'</h1> <div id="project_titleUpdate_input"></div>'+
-				'<p class="lead" onclick="update_project_intro()" id="projcet_intro">'+projectInfo[0].tab_intro+'</p><div id="project_introUpdate_input"></div>');	
+		$('#header_projectTitle').html('<div class="col-md-auto"><h1 onclick="update_project_title()" id="project_title">'+projectInfo[0].tabTitle+'</h1></div> <div id="project_titleUpdate_input"></div>'+
+				'<div class="col-md-auto"><p class="lead" onclick="update_project_intro()" id="projcet_intro">'+projectInfo[0].tab_intro+'</p></div><div id="project_introUpdate_input"></div>');	
 		$('#header_admSet').show();	
 		getProjectInfor(projectInfo[0].tabTitle,projectInfo[0].tabId,projectInfo[0].tab_intro);
 	}else{
@@ -1017,13 +1050,196 @@
 		
 	// 020901 탭이 마감일이 지나면 포스트를 작성할 수 없게 한다.
 	if(projectInfo[0].tabProgress > 99.99){
-		console.log("테스트 성공" + projectInfo[0].tabProgress);
+		//console.log("테스트 성공" + projectInfo[0].tabProgress);
 		$('#card-add-icon').hide();
 	}	
 		
+
 	};
 	
+	// 220210-01 카드 완료 함수로 하기
+	function updateCompCard(cardId){
+		
+		 $.ajax({
+	         url: 'updateCompCardAction',
+	    	 method: "POST",
+	 	     data: {'id': cardId}
+	 	     })
+
+		 location.href="/mvc/board?tabId="+projectNumber;
+		 
+	}
+	// 220221-01 카드 삭제 함수
+	function updateDeleteCard(cardId){
+		
+		 $.ajax({
+	         url: 'updateDeleteCardAction',
+	    	 method: "POST",
+	 	     data: {'id': cardId}
+	 	     })
+
+		 location.href="/mvc/board?tabId="+projectNumber;
+	}
+	// 220210-02 카드 완료 해제 함수
 	
+	function updateUnCompCard(cardId){
+		
+		$.ajax({
+	         url: 'updateUnCompCardAction',
+	    	 method: "POST",
+	 	     data: {'id': cardId}
+	 	     })
+	 	 
+	 	   location.href="/mvc/board?tabId="+projectNumber;
+		
+	}
+	
+	// 220210-03 프로젝트 완료 해제 함수
+	
+	function updateUnCompProject(){
+		
+		$.ajax({
+	         url: 'updateUnCompProjectAction',
+	    	 method: "POST",
+	 	     data: {'tabId': projectNumber}
+	 	     })
+	 	    location.href="/mvc/board?tabId="+projectNumber;
+	}
+	
+	// 220210-04 프로젝트 완료 함수
+	
+	function updateCompProject(){
+
+		 $.ajax({
+	         url: 'updateCompProjectAction',
+	    	 method: "POST",
+	 	     data: {'tabId': projectNumber}
+	 	     })
+	 	     
+	 	    location.href="/mvc/board?tabId="+projectNumber;
+		 
+	}
+	
+	// 220214-01 메모이미지 여는 함수
+	function inputMemoImg(id){
+		console.log("테스트 성공 id :" + id + "userId : " + p2 +" tabId :" + projectNumber);
+		$('#modal_card_footer').html('<form id="frm" name="frm" method="post" action="/mvc/register/insertMemoFile" enctype="multipart/form-data">'+
+				'<div>'+
+				'<input type="file" name=file>'+
+				'<button type="submit" onclick="reload()" class="btn btn-outline-secondary">업로드</button>'+
+				'<button type="button" onclick="reload()" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>'+
+				'<input type="hidden" name="n247_rePoId" value="'+id+'">'+
+				'<input type="hidden" name="n247_reUsId" value="'+p2+'">'+
+				'<input type="hidden" name="n247_reTabId" value="'+projectNumber+'">'+
+				'</div>'+
+				'</form>'
+				);	
+		
+	}
+	
+	//220222-01 카드이동후 프로젝트 삭제 리스트 함수()
+	var moveOn = '';
+	var isDelSelect = '';
+	function projectSelect(projectId){
+		$('#modal_projectSelect_body').html('');
+		if(navBarProjectList.length > 1){
+			console.log(navBarProjectList.length + "this1");
+			for (var i=0 ; i<navBarProjectList.length ; i++){
+				if(navBarProjectList[i].tabId != projectId && navBarProjectList[i].userNum == p2 &&  navBarProjectList[i].isDel == 0){
+					$('#modal_projectSelect_body').append(
+							'<button type="button" onclick="projectSelectAction(this.id)" class="btn btn-secondary" id="'+navBarProjectList[i].tabId+'">'+navBarProjectList[i].tabTitle+'</button>');
+				}
+			}
+		}else{
+			console.log("this2");
+			$('#modal_projectSelect_body').html('<a>카드를 넣을 프로젝트가 없습니다.</a>');
+		}
+		
+		moveOn = projectId;	
+	//카드 모두 이동시 0 , 모두 삭제시 1
+	isDelSelect = 0 ;	
+	}
+	
+	//220222-02 프로젝트삭제시 카드가 존재하면 카드이동할 목록을 보여준 중 선택하면 옮겨주는 함수
+	function projectSelectAction(projectSelectId){
+		//console.log(projectSelectId + '번 탭의 카드 이동시키기 테스트 성공' + moveOn +'삭제번호는?:' + isDelSelect);
+		
+		 $.ajax({
+	         url: 'updateSelectProjectAction',
+	    	 method: "POST",
+	 	     data: {'tabId': projectSelectId , 'moveOn' : moveOn , 'isDelCheck' : isDelSelect}
+	 	     })
+	 	     
+		//일단 보드로 이동시키는데 목록받아올때 걸러내겠지?
+ 		location.href="/mvc/board?tabId="+projectSelectId;
+		
+	}
+	
+	//220223-01 프로젝트 삭제시 카드 모두 삭제하고 프로젝트삭제 
+	function projectWithCardDeleteAction(){
+		isDelSelect = 1 ;
+		//console.log(moveOn + '번 탭의 카드 모두삭제 테스트 성공' +'삭제번호는?:' + isDelSelect);
+		//카드 모두 삭제라 1
+		
+		 $.ajax({
+	         url: 'updateSelectProjectAction',
+	    	 method: "POST",
+	 	     data: {'tabId': moveOn , 'moveOn' : moveOn , 'isDelCheck' : isDelSelect}
+	 	     })
+	 	     
+		//있는보드중 골라가는데 없으면 퍼스트로 가라
+		if(navBarProjectList.length != 0){
+			for(var i=0 ; i<navBarProjectList.length ; i++){
+				if(navBarProjectList[i].tabId != moveOn && navBarProjectList[i].isDel == 0){
+					//console.log('맞는게 있어서 가요');
+					location.href="/mvc/board?tabId="+navBarProjectList[i].tabId;
+				}else{
+					//console.log('맞는게 없어서 가요1');
+					location.href="/mvc/firstboard";
+				}
+			}	
+		}else{
+			//console.log('맞는게 없어서 가요2');
+			location.href="/mvc/firstboard";
+		}
+			
+		 
+		
+	}
+	
+	function projectDelete(projectId){
+		console.log('내용없는 탭 삭제 성공 ' + projectId);
+		
+		 $.ajax({
+	         url: 'updateDeleteProjectAction',
+	    	 method: "POST",
+	 	     data: {'tabId': projectId}
+	 	     })
+	 	     
+	 	  //있는보드중 골라가는데 없으면 퍼스트로 가라
+	 		if(navBarProjectList.length != 0){
+	 			for(var i=0 ; i<navBarProjectList.length ; i++){
+	 				if(navBarProjectList[i].tabId != moveOn && navBarProjectList[i].isDel == 0){
+	 					//console.log('맞는게 있어서 가요');
+	 					location.href="/mvc/board?tabId="+navBarProjectList[i].tabId;
+	 				}else{
+	 					//console.log('맞는게 없어서 가요1');
+	 					location.href="/mvc/firstboard";
+	 				}
+	 			}	
+	 		}else{
+	 			//console.log('맞는게 없어서 가요2');
+	 			location.href="/mvc/firstboard";
+	 		}
+		
+	}
+	
+	
+	//220301파일인풋창이 변했을경우
+	function fileUpCheck(){
+		console.log('test success !!');
+		modalInput(1);
+	}
 	
 	
 	var update_projcetTitle = '';
@@ -1031,6 +1247,7 @@
 	var update_projectIntro = '';
 	
 	
+
 	function getProjectInfor(titlearg,idarg,introarg){
 		update_projcetTitle = titlearg;
 		update_projectId = idarg;
@@ -1072,7 +1289,7 @@
 	}
 	
 	function updat_project_title_cancle(){
-		console.log("프로젝트 제목 수정 취소 테스트 성공");
+		//console.log("프로젝트 제목 수정 취소 테스트 성공");
 		$('#project_titleUpdate_input').hide();
 		$('#project_title').show();
 		
@@ -1122,24 +1339,32 @@
 		$('#tasks').empty();
 		$('#cardsList').empty(); 
 		$('#completeCardsList').empty(); 
+		document.getElementById('navbar-togglerButton').click();
 		getAllList(projectNumber,p2);
 		
 	};
 	
-	function modalInput(){
+	
+	function modalInput(p1){
+		var uploadCheck = 0;
+		uploadCheck = p1;
+		//console.log('업로드체크 받아온거 :' + uploadCheck);
 		if(projectNumber != p1){
 			$('#thisTabUserIdTabId').html(
 					'<input type="hidden" name="userId" value="'+p2+'">'+
-					'<input type="hidden" name="tabId" value="'+projectNumber+'">'
+					'<input type="hidden" name="tabId" value="'+projectNumber+'">'+
+					'<input type="hidden" name="uploadCheck" value="'+uploadCheck+'">'
 					);
 		}else{
 			$('#thisTabUserIdTabId').html(
 					'<input type="hidden" name="userId" value="'+p2+'">'+
-					'<input type="hidden" name="tabId" value="'+p1+'">'
+					'<input type="hidden" name="tabId" value="'+p1+'">'+
+					'<input type="hidden" name="uploadCheck" value="'+uploadCheck+'">'
 					);
 		}
 		
 	}
+	
 
 	// 친구를 모두 받아올게 
 	function getAdmFriendsAjax(){
@@ -1238,7 +1463,7 @@
 	       	$('#header_admSetting').empty();
 	       	if(projectAdmList.length != 0){
 		       	for (var i=0 ; i<projectAdmList.length ; i++){
-		       		console.count("공유친구 반복" + projectAdmList[i].nickName + "님의 정보를 표시중 " );
+		       		//console.count("공유친구 반복" + projectAdmList[i].nickName + "님의 정보를 표시중 " );
 					$('#header_admSetting').append(
 							'<li>'+
 			 				'<a href="#" onclick="projectUnAdmGetUserId('+ projectAdmList[i].idN247_ft +')" data-bs-toggle="modal" data-bs-target="#projectUnAdm" data-placement="top" title="'+projectAdmList[i].nickName+'">'+
@@ -1302,31 +1527,30 @@
 		          					'</div>'+
 		      					'</div>'
 		       					);
+	       			//console.log("아니왜 하나야 :" + selectProjectAdmFriends[i].nickName);
 
 	       	}
 	       	// 아주 좋아 ();
 	       	var admfriends_tabId = projectNumber;
+	       	var friendsListTest = selectProjectAdmFriends;
+	       	//console.log("갯수좀 보자1 friendsListTest:" + friendsListTest.length);
+	    	//console.log("갯수좀 보자2 selectProjectAdmFriends:" + selectProjectAdmFriends.length);
 	       	testtesttest(selectProjectAdmFriends,admfriends_tabId);
 	       	
 	       //console.log("현재 탭번호 이거임1 : " + projectNumber);
 	    })
 	}	
-	//공유를 취소할 모달을 열었을때 버튼의 유형을 정해준다 유저의 아이디를 가져와 준비시킨다. 
-	function projectUnAdmGetUserId(idN247_ft){
-		$('#projectUnAdm_action_button').html(
-				'<button id="projectUnAdm_action_button" type="button" onclick="projectUnAdmAction('+ idN247_ft +')" class="btn btn-outline-secondary" data-bs-dismiss="modal">예</button>'+
-				'<button type="button" onclick="reload()" class="btn btn-outline-secondary" data-bs-dismiss="modal">아니오</button>');
-	}
+	
 	//공유를 취소할때 유저의 아이디를 넣어주고 리로드 시킨다.
 	function projectUnAdmAction(idN247_ft){
 		
-		console.log("취소시키기 성공 : " + idN247_ft);
+		//console.log("취소시키기 성공 : " + idN247_ft);
 		$.ajax({
 	         url: 'isDelProjectAdm',
 	    	 method: "POST",
 	 	     data: {'idN247_ft': idN247_ft}
 	 	     });
-		location.reload();
+		location.href="/mvc/board?tabId="+projectNumber;
 		
 	}
 	
@@ -1339,7 +1563,7 @@
 			
 			admFriends_body.push(p1[i]);
 			//console.log("테스트 성공" + admFriends_body[i].nickName);
-			break;
+			
 		}
 		admTabId = admfriends_tabId;
 		//console.log("현재 탭번호 이거임2 : " + admTabId);
@@ -1350,12 +1574,13 @@
 	function insertProjectAdm(userId){
 	//console.log("insertProjectAdm 실행 됐어요  : " + userId + "번 유저를 탭번호 :" + admTabId + "에 공유시켰습니다.");
 		for (var i=0 ; i<admFriends_body.length ; i++){
+			//console.log("뭘찾고있나" + admFriends_body[i].userId);
 			if (admFriends_body[i].userId == userId){
 				
 				//console.log("불러와서 찾기 성공" + admFriends_body[i].nickName);
 				$('#header_admSetting').append(
 						'<li>'+
-		 				'<a href="#" data-bs-toggle="modal" data-bs-target="#projectUnAdm" data-placement="top" title="'+admFriends_body[i].nickName+'">'+
+		 				'<a href="#" onclick="projectUnAdmGetUserId('+ admFriends_body[i].idN247_ft +')" data-bs-toggle="modal" data-bs-target="#projectUnAdm" data-placement="top" title="'+admFriends_body[i].nickName+'">'+
 		 				'<img alt="Claire Connors" class="avatar" src="/images/'+admFriends_body[i].userImg+'" /></a>'+
 		 				'</li>');
 				
@@ -1363,7 +1588,7 @@
 			}
 		}
 		
-		console.log("받아온거 표시할게요 : userId =" + userId + " , tabId =" + admTabId);
+		//console.log("받아온거 표시할게요 : userId =" + userId + " , tabId =" + admTabId);
 		$.ajax({
 	         url: 'insertProjectAdm',
 	    	 method: "POST",
@@ -1373,6 +1598,47 @@
 		
 	}
 	
+	//공유를 취소할 모달을 열었을때 버튼의 유형을 정해준다 유저의 아이디를 가져와 준비시킨다. 
+	function projectUnAdmGetUserId(idN247_ft){
+		
+		let ft_userId = 0;
+		let ft_friednInfo = [];
+		//idN247_ft 를 통해 프로젝트 공유된 친구의 정보를 잦는다.
+		for(var i=0 ; i<admFriends_body.length ; i++){
+			if(admFriends_body[i].idN247_ft == idN247_ft){
+				ft_userId = admFriends_body[i].ft_userId;
+			}
+		}
+		
+		//친구의 번호로 친구정보를 넣는다.
+		if(allFriendsList.length != 0){
+			for (var i=0 ; i<allFriendsList.length ; i++){
+				if(allFriendsList[i].userId == ft_userId){
+					ft_friednInfo.push(allFriendsList[i]);
+					
+					break;
+				}
+			}	
+		}
+		
+		$('#projectUnAdm_modalBody').html(
+				'<div class="row g-0">'+
+				'<div class="col-md-4">'+
+				'<img src="/images/'+ft_friednInfo[0].userImg+'" class="img-fluid rounded-start" alt="..." data-bs-toggle="modal" data-bs-target="#userImgUpdate">'+
+				'</div>'+
+				'<div class="col-md-8">'+
+				'<h5 class="card-title">'+ft_friednInfo[0].nickName+'</h5>'+
+				'<p class="card-text">'+ft_friednInfo[0].id+'</p>'+
+				'<p class="card-text">'+ft_friednInfo[0].mb_introduce+'</p>'+
+				'</div>'+
+				'</div>'
+				);
+		
+		$('#projectUnAdm_action_button').html(
+				'<button id="projectUnAdm_action_button" type="button" onclick="projectUnAdmAction('+ idN247_ft +')" class="btn btn-outline-secondary" data-bs-dismiss="modal">공유해제</button>'+
+				'<button type="button" onclick="reload()" class="btn btn-outline-secondary" data-bs-dismiss="modal">아니오</button>');
+	}
+	
 	var cardNumber = "";
 	
 	$(".nav-link").on("click",function(){
@@ -1380,6 +1646,10 @@
 	});
 	
 	
+	
+	$("#nav_newButton").on("click",function(){
+		document.getElementById('navbar-togglerButton').click();
+	});
 	
 	
 	function reload(){
@@ -1419,6 +1689,7 @@
 		.done(function(data) {
 			var myCardCheck = 0;
 			var oneCardList = [];
+			
 			$('#modal_card_updateFile_body_fileSelecter').empty();
 			$('#modal_card_updateFile_body_deleteFile').empty();
 			for(var i=0 ; i<data.length ; i++){
@@ -1457,27 +1728,62 @@
 			$("#replyListDiv").empty();
 			$("#replyLine").empty();
 			$('#replyLine').html('<hr>');
-			
+			$('#modal_card_footer').html('<input type="text" class="form-control col" onKeypress="javascript:if(event.keyCode==13) {input_replyAction(this.value)}" placeholder="메모를 입력해주세요" id="input_card_reply" maxlength="45">'+
+					'<a style="color:#666666" href="#" onclick="inputMemoImg('+oneCardList[0].id+')"><i class="material-icons" id="modal_button_inputFile">attach_file</i></a>'+
+					'<button type="button" onclick="reload()" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>'
+					);	
 			var reIdCheck = 0;
 			for(var i=0 ; i<oneCardList.length ; i++){
 				if(oneCardList[i].N247_reDes != null && oneCardList[i].idN247_re != reIdCheck && oneCardList[i].N247_reUsId == p2 && oneCardList[i].N247_reIsDel == 0){
 					reIdCheck = oneCardList[i].idN247_re;
-					$("#replyListDiv").append(
-							'<div class="row">'+
-								'<div class="col" id="card_reply_'+oneCardList[i].idN247_re+'">'+
-							      '<small style="color:black">'+oneCardList[i].nickName+'</small>'+
-							      '<a><small  onclick="replyUpdate(this.id)" id="'+oneCardList[i].idN247_re+'">'+' '+oneCardList[i].N247_reDes+'</small></a>'+
-							      '</div>'+
-						    '</div>');
+					if(oneCardList[i].n247_reFile != null){
+						$("#replyListDiv").append(
+								'<div class="row">'+
+									'<div class="col" id="card_reply_'+oneCardList[i].idN247_re+'">'+
+								      '<small style="color:black">'+oneCardList[i].nickName+'</small>'+
+								      '<a><small>'+' '+oneCardList[i].N247_reDes+'</small></a>'+
+								      '<small style="color:#dcdee0">'+'\u00a0\u00a0'+oneCardList[i].N247_reKrModified+'</small>'+
+								      '<br><div class="row"><div class="row"><div class="col-sm-12"><a onclick="reFileUpdate('+oneCardList[i].idN247_re+')" ><img src="/images/'+oneCardList[i].n247_reFile+'" class="rounded float-start" width="200"></a></div></div>'+
+								      '<input type="hidden" id="reFileName_'+oneCardList[i].idN247_re+'" value="'+oneCardList[i].n247_reFile+'">'+
+								      '<input type="hidden" id="reFileOrgName_'+oneCardList[i].idN247_re+'" value="'+oneCardList[i].n247_reOrgFile+'">'+
+								      '<div class="reFileMenu" id="icontest_'+oneCardList[i].idN247_re+'"></div></div>'+
+								      '</div>'+
+							    '</div>');	
+					}else{
+						$("#replyListDiv").append(
+								'<div class="row">'+
+									'<div class="col" id="card_reply_'+oneCardList[i].idN247_re+'">'+
+								      '<small style="color:black">'+oneCardList[i].nickName+'</small>'+
+								      '<div class="reDescription" id="reDesc_'+oneCardList[i].idN247_re+'"><a><small  onclick="replyUpdate('+oneCardList[i].idN247_re+')">'+' '+oneCardList[i].N247_reDes+'</small></a>'+
+								      '<small style="color:#dcdee0">'+'\u00a0\u00a0'+oneCardList[i].N247_reKrModified+'</small></div>'+
+								      '<div class="reDescription_input" id="reDesc_input_'+oneCardList[i].idN247_re+'"></div>'+
+								      '<input type="hidden" id="reDes_'+oneCardList[i].idN247_re+'" value="'+oneCardList[i].N247_reDes+'">'+
+								      '</div>'+
+							    '</div>');	
+					}
+					
+// 						$('#replyImg').html('<img src="/images/'+oneCardList[i].n247_reFile+'" class="rounded float-start" alt="테스트성공">');
+				
 				}else if(oneCardList[i].N247_reDes != null && oneCardList[i].idN247_re != reIdCheck && oneCardList[i].N247_reUsId != p2 && oneCardList[i].N247_reIsDel == 0){
 					reIdCheck = oneCardList[i].idN247_re;
-					$("#replyListDiv").append(
-							'<div class="row">'+
-								'<div class="col" id="card_reply_'+oneCardList[i].idN247_re+'">'+
-							      '<small style="color:black">'+oneCardList[i].nickName+'</small>'+
-							      '<a id="'+oneCardList[i].idN247_re+'"><small>'+' '+oneCardList[i].N247_reDes+'</small></a>'+
-							      '</div>'+
-						    '</div>');
+					if(oneCardList[i].n247_reFile != null){
+						$("#replyListDiv").append(
+								'<div class="row">'+
+									'<div class="col" id="card_reply_'+oneCardList[i].idN247_re+'">'+
+								      '<small style="color:black">'+oneCardList[i].nickName+'</small>'+
+								      '<a id="'+oneCardList[i].idN247_re+'"><small>'+' '+oneCardList[i].N247_reDes+'</small></a>'+
+								      '<br><img src="/images/'+oneCardList[i].n247_reFile+'" class="rounded float-start" width="200">'+
+								      '</div>'+
+							    '</div>');
+					}else{
+						$("#replyListDiv").append(
+								'<div class="row">'+
+									'<div class="col" id="card_reply_'+oneCardList[i].idN247_re+'">'+
+								      '<small style="color:black">'+oneCardList[i].nickName+'</small>'+
+								      '<a id="'+oneCardList[i].idN247_re+'"><small>'+' '+oneCardList[i].N247_reDes+'</small></a>'+
+								      '</div>'+
+							    '</div>');
+					}
 				}
 				
 			}
@@ -1549,16 +1855,42 @@
 	
 	//리플레이 업데이트 함수
 	var replyUpdateId = 0;
+	
+	
 	function replyUpdate(replyId){
+		$('.reDescription_input').html('');
+		$('.reDescription').show();
+		$('#reDesc_'+replyId+'').hide();
+		const x = document.getElementById("reDes_"+replyId).value;
+		console.log(x);
 		replyUpdateId = replyId;
-		$('#card_reply_'+replyId+'').html(
+		$('#reDesc_input_'+replyId+'').html(
 				'<div class="input-group">'+
-				'<input type="text" class="form-control col" onKeypress="javascript:if(event.keyCode==13) {replyDesUpdate(this.value)}" placeholder="댓글을 입력해주세요" maxlength="45">'+
-				'<button onclick="deleteReply()" class="btn btn-outline-secondary" type="button">삭제</button>'+
-				'</div>'
+				'<input type="text" class="form-control col" onKeypress="javascript:if(event.keyCode==13) {replyDesUpdate(this.value)}" placeholder="'+x+'" maxlength="45">'+
+				'<button onclick="deleteReply()" class="btn btn-outline-secondary" type="button"><i data-toggle="tooltip" title="메모삭제" class="bi bi-trash3"></i></button>'+
+				'</div>'		
 				);
 	}
 	
+	function reFileUpdate(replyId){
+		$('.reFileMenu').html('');
+		const reFileName = document.getElementById("reFileName_"+replyId).value;
+		const reOrgFileName = document.getElementById("reFileOrgName_"+replyId).value;
+		replyUpdateId = replyId;
+		$('#icontest_'+replyId+'').html(
+				'<a href="/images/'+reFileName+'" download="'+reOrgFileName+'"><button class="btn btn-outline-secondary" type="button"><i class="bi bi-caret-down-square"></i></button></a>'+
+				'<button onclick="deleteReply()" class="btn btn-outline-secondary" type="button"><i style="color:#666666" data-toggle="tooltip" title="파일삭제" class="bi bi-trash3"></i></button>'
+				);
+	}
+	
+	function reFileUpdateMouseOut(replyId){
+		
+		$('#icontest_'+replyId+'').html('');
+	}
+	
+	function clickeventtest(){
+		console.log("클릭성공");
+	}
 	function replyDesUpdate(updateDes){
 		$.ajax({
 	         url: 'updateReplyDesAjax',
@@ -1570,7 +1902,7 @@
 			
 			$('#card_reply_'+replyUpdateId+'').html(
 					 '<small style="color:black">'+userNickName+'</small>'+
-				      '<a><small  onclick="replyUpdate(this.id)" id="'+replyUpdateId+'">'+' '+updateDes+'</small></a>'
+				      '<div><a><small  onclick="replyUpdate(this.id)" id="'+replyUpdateId+'">'+'  '+updateDes+'</small></a><small style="color:#dcdee0">\u00a0\u00a0 지금</small></div>'
 					);
 			
 		});
@@ -1678,8 +2010,8 @@
 			$('#replyInputTest').append(
 									'<div class="row">'+
 										'<div class="col" id="reply_reinsert_'+insertReplyPreNumber+'">'+
-									      '<small style="color:black">'+replyUser+'</small>'+
-									      '<a><small  onclick="replyReInsert(this.id)" id="'+n247_reDes+'">'+' '+n247_reDes+'</small></a>'+
+									      '<small style="color:black">'+userNickName+'</small>'+
+									      '<div><a><small  onclick="replyReInsert(this.id)" id="'+n247_reDes+'">'+' '+n247_reDes+'</small></a><small style="color:#dcdee0">\u00a0\u00a0 지금</small></div>'+
 									    '</div>'+
 							    	'</div>');
 			
@@ -1691,8 +2023,8 @@
 		//console.log("임시번호 부여하기 어떻게 되가니2" + insertReplyPreNumber);
 		$('#reply_reinsert_'+insertReplyPreNumber+'').html(
 				'<div class="input-group">'+
-				'<input type="text" class="form-control col" onKeypress="javascript:if(event.keyCode==13) {updateReDesToDes(this.value)}" placeholder="수정할 내용을 입력해 주세요" maxlength="45">'+
-				'<button onclick="deleteChangeReply()" class="btn btn-outline-secondary" type="button">삭제</button>'+
+				'<input type="text" class="form-control col" onKeypress="javascript:if(event.keyCode==13) {updateReDesToDes(this.value)}" placeholder="'+n247_reDes+'" maxlength="45">'+
+				'<button onclick="deleteChangeReply()" class="btn btn-outline-secondary" type="button"><i data-toggle="tooltip" title="메모삭제" class="bi bi-trash3"></i></button>'+
 				'</div>'
 				);
 		replyReInsert_delReplyDes(n247_reDes);
@@ -1701,13 +2033,13 @@
 	var delReply = '';
 	function replyReInsert_delReplyDes(delReDes){
 		delReply=delReDes;
-		console.log("찾을 내용 받음 :" + delReply);
+		//console.log("찾을 내용 받음 :" + delReply);
 		//여기서 내용찾아서 원래쓴거 지워
 
 	}
 	
 	function updateReDesToDes(insertDes){
-		 console.log("찾아서 바꿀 내용 받음 :" + insertDes);
+		 //console.log("찾아서 바꿀 내용 받음 :" + insertDes);
 		 $.ajax({
 	         url: 'updateReplyDesToDesAjax',
 	    	 method: "POST",
@@ -1742,6 +2074,7 @@
 		});
 	}
 	
+
     </script>
     
     

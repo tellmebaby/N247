@@ -9,6 +9,7 @@
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 	<style>
 	.erm {
 	color: red;
@@ -79,9 +80,7 @@
                 </div>
                     <hr> 
                     <h6>Time line</h6>
-				<div class="form-group row align-items-center">
-     				<label class="col-3" for="date">프로젝트 완료일 </label>
-   					<input class="form-control col flatpickr-input" type="date" name="tab_dueDay" id="date" min="${thisTab.minDay }">
+				<div class="form-group row align-items-center" id="modal_newProject_dueDay">
    				</div>
             </div>
             <div class="alert alert-warning text-small" role="alert">
@@ -103,6 +102,8 @@
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: Bootstrap Bundle with Popper -->
+    
+   
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
     <!-- Option 2: Separate Popper and Bootstrap JS -->
@@ -110,11 +111,40 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
     -->
-    
     <script>
+    
+    	var minDay = '';
+    	getMinDay();
+    	console.log('오늘날짜는 : ' + minDay);
+    	
+    	$('#modal_newProject_dueDay').html('<label class="col-3" for="date">프로젝트 완료일 </label>'+
+    			'<input class="form-control col flatpickr-input" type="date" name="tab_dueDay" id="date" min="'+minDay+'">');
+    	
 		function myFunction() {
 		 document.getElementById("myForm").reset();
 		}
+		
+		
+		function getMinDay(){
+			let today = new Date();
+			let year = today.getFullYear();
+			let firstMonth = today.getMonth() + 1 ;
+			let month = '';
+			
+			if(firstMonth < 10){
+				month = '0' + firstMonth;
+			}else{
+				month = firstMonth ;
+			}
+			
+			let date = today.getDate();
+			minDay = year + '-' + month + '-' + date ;	
+		}
+		
+		
     </script>
+    <script type="text/javascript" src="resources/jquery.min.js"></script>
+    <script type="text/javascript" src="resources/popper.min.js"></script>
+    <script type="text/javascript" src="resources/bootstrap.js"></script>
   </body>
 </html>

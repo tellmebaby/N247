@@ -46,9 +46,8 @@ public class uploadController {
 	}
 	
 	@RequestMapping(value = "/register/createPostAction", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
-	public RedirectView createPostAction (Locale locale, Model model, String postTitle, String description, @DateTimeFormat(pattern="yyyy-MM-dd") Date dueDay, MultipartHttpServletRequest multiRequest, Integer userId, Integer tabId) {
-		System.out.println("/register/createPostAction 돌아가는 중입니다.");
-		
+	public RedirectView createPostAction (Locale locale, Model model, String postTitle, String description, @DateTimeFormat(pattern="yyyy-MM-dd") Date dueDay, MultipartHttpServletRequest multiRequest, Integer userId, Integer tabId, int uploadCheck) {
+		//System.out.println("/register/createPostAction 돌아가는 중입니다.");
 		try {
 		Date date_now = new Date(System.currentTimeMillis());
 		Date dueDayPara = dueDay;
@@ -56,8 +55,11 @@ public class uploadController {
 			dueDayPara = date_now;
 		}
 		DAO.createPost(postTitle,description,tabId,userId,dueDayPara);
-		Integer postId = DAO.getPostId(tabId);
-		fileService.uploadFile(multiRequest,userId,postId,tabId);
+		if(uploadCheck != 0) {
+			//System.out.println("뭘까 파일은 : " + multiRequest);
+			Integer postId = DAO.getPostId(tabId);
+			fileService.uploadFile(multiRequest,userId,postId,tabId);
+		}
 		}catch(Exception e) {
 			if (logger.isErrorEnabled()) {
     			logger.error("#Exception Message : {}",e.getMessage());
@@ -65,6 +67,20 @@ public class uploadController {
 		}
 		return new RedirectView ("/mvc/board?tabId="+tabId) ;
 	}
+	
+	
+	@RequestMapping(value = "/register/createOnlyPostAction", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+	public RedirectView createOnlyPostAction (Locale locale, Model model, String postTitle, String description, @DateTimeFormat(pattern="yyyy-MM-dd") Date dueDay, Integer userId, Integer tabId) {
+		System.out.println("/register/createOnlyPostAction 돌아가는 중입니다.");
+		Date date_now = new Date(System.currentTimeMillis());
+		Date dueDayPara = dueDay;
+		if(dueDay == null) {
+			dueDayPara = date_now;
+		}
+		DAO.createPost(postTitle,description,tabId,userId,dueDayPara);
+		return new RedirectView ("/mvc/board?tabId="+tabId) ;
+	}
+	
 	
 	@RequestMapping(value = "/register/updateFileAction", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
 	public RedirectView updateFileAction (Locale locale, Model model, MultipartHttpServletRequest multiRequest, Integer up_userId, Integer up_postId, Integer up_tabId) {
@@ -80,5 +96,18 @@ public class uploadController {
 		return new RedirectView ("/mvc/board?tabId="+up_tabId) ;
 	}
 	
+	@RequestMapping(value = "/register/insertMemoFile", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
+	public RedirectView insertMemoFile (Locale locale, Model model, MultipartHttpServletRequest multiRequest, Integer n247_rePoId, Integer n247_reUsId, Integer n247_reTabId) {
+		//System.out.println("/register/insertMemoFile 돌아가는 중입니다.");
+		
+		try {
+		fileService.uploadFile3(multiRequest,n247_rePoId,n247_reUsId,n247_reTabId);
+		}catch(Exception e) {
+			if (logger.isErrorEnabled()) {
+    			logger.error("#Exception Message : {}",e.getMessage());
+			}
+		}
+		return new RedirectView ("/mvc/board?tabId="+n247_reTabId) ;
+	}
 	
 }
