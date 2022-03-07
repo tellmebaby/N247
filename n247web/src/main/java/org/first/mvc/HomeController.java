@@ -115,52 +115,26 @@ public class HomeController {
 			Member login = (Member) session.getAttribute("login");
 			Integer boardCheck = 0;
 			if(userIdTabId == null) {
-				//System.out.println("탭주인 체크 결과 실패  ");
 				String em = "잘못된 접근 입니다. 로그인 해주세요.1";
 				model.addAttribute("errorMessage",em);
 				return "home";	
 			}else {
 				boardCheck = DAO.boardCheck(login.getLoginSucceedGetUserInfo(), tabId);
-				System.out.println("보드로 바로접근 탭번호 : " + tabId +"체크결과는 : " + boardCheck);
+				//System.out.println("보드로 바로접근 탭번호 : " + tabId +"체크결과는 : " + boardCheck);
 			}
-			//접근승인 세션에서 받아온 유저번호와 입력된 탭아이디의 유저번호 (탭을 새로만들어서 들어올시 리로딩해야함) 가 맞는지 확인 하거나 탭체크가 0이 아닐때 true. @
-//			if(userIdTabId.getUserId() == DAO.getUserNumToTabId(tabId) || userIdTabId.getTabCheck() != 0 ) {
+
 			if(boardCheck != 0 ) {
 					userIdTabId.setTabId(tabId);
-				//나포함친구들의 정보를 가져온다.@
-					//System.out.println("getMembertList 사용하기 위해 파라미터 : " + userIdTabId.getUserId());
-				//유저의 정보를 세팅해준다.	
-//					Member userInformation = (DAO.userInformation(userIdTabId));
-					//System.out.println("제발 탭아이디좀 가져와" + userInformation.getTabId());
-//					Post cards = (DAO.cardsSet(userIdTabId));
-
-					
-					//System.out.println("카드있는지 봐야돼 home : "+ cards.getCompletePostList().size());
-					
-					
-//					Post thisTab = DAO.setThisTab(tabId, userInformation, cards);
-						//tabId,tabAdmCheck,tabSelectCheck,nick,tabTitle,tab_intro,tabProgressBg,tabProgress,dueMessage,maxDay,minDay
-					
-//					session.setAttribute("thisTab", thisTab); 
-					
-//					session.setAttribute("userInformation", userInformation); 
 					session.setAttribute("userIdTabId", userIdTabId); 
-//					model.addAttribute("userInformation", userInformation);
 					model.addAttribute("userIdTabId", userIdTabId);
-//					model.addAttribute("thisTab",thisTab);
-//					model.addAttribute("cards",cards);
-					
-					
 			// 접근실패	
 			}else {
-				
-				//System.out.println("탭주인 체크 결과 실패  ");
-				
 				session.invalidate();
 				String em = "잘못된 접근 입니다. 로그인 해주세요.2";
 				model.addAttribute("errorMessage",em);
 				return "home";	
 			}
+			
 		return "board";
 	}
 	
@@ -776,44 +750,6 @@ public class HomeController {
 	 return result;
 	}
 	
-//	@RequestMapping(value = "getCardsListAjax", method = {RequestMethod.POST})
-//	public @ResponseBody List<Post> getCardsListAjax(Model model,@RequestParam("tabId") Integer tabId, Integer userId){
-//		Member userIdTabId = new Member();
-//		userIdTabId.setTabId(tabId);
-//		userIdTabId.setUserId(userId);
-//		
-//		List<Post> result = DAO.getPostList(userIdTabId);
-//		
-//		
-//		System.out.println("ajax 잘 작동하고 있어요 getPostListAjax 탭번호 :" + userIdTabId.getTabId() +" 유저번호 :"+userIdTabId.getUserId());
-//		
-//		//여기다 작성해서 넘겨보자
-//		
-//		 List<Post> p1 = (result);
-//		
-//		 
-//		 //postList부분
-//		 List<Post> postAllList = new ArrayList<Post>();
-//		 Integer postCheck = 0;
-//		 for(int i=0 ; i<p1.size() ; i++) {
-//			 Integer p4 = p1.get(i).getId();
-//			 List<Post> p2 = new ArrayList<Post>();
-//			 if(postCheck.equals(p4)) {
-//			 }else if(p1.get(i).getUserId() == p1.get(i).getUserNum()) {
-//				 postCheck = p1.get(i).getId();
-//				 p2.add(p1.get(i)); 
-//			 }
-//			 postAllList.addAll(p2);
-//		 }
-//		System.out.println("ajax 잘 작동하고 있어요 getPostListAjax postAllList.size() :" + postAllList.size());
-//
-//		 result = (DAO.postSet(postAllList,userIdTabId));	
-//		 for(int i=0 ; i<result.size(); i++) {
-//			 System.out.println("getCheck : "+result.get(i).getCheck()+"  getPostAdmCheck :"+result.get(i).getPostAdmCheck());
-//		 }
-//		
-//	 return result;
-//	}
 	
 	@RequestMapping(value = "getAllListAjax", method = {RequestMethod.POST})
 	public @ResponseBody List<Post> getAllListAjax(Model model,@RequestParam("tabId") Integer tabId, Integer userId){

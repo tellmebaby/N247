@@ -472,7 +472,8 @@
 	  <div class="modal-dialog">
 	    <div class="modal-content">
 	      <div class="modal-header">
-	       <h5 class="modal-title" id="cardModalLabel"></h5>
+	       <h5 class="modal_card_title" id="cardModalLabel"></h5>
+	       <div class="modal_card_title_input"></div>
 	        <button type="button" onclick="reload()" class="close btn btn-round" data-bs-dismiss="modal" aria-label="Close" id="modal_card_closeButton">
 				<i class="material-icons">close</i>
 			</button>
@@ -543,7 +544,6 @@
  	var myInfor = [];
  	//var replyUser = '${userInformation.nickName }';
    	var allList = [];
-   	
 	console.log("로그인 하면 뭘 가져오나 볼게요 :" + p1 + "그리고 :" + p2 );
  	
 	
@@ -1665,9 +1665,10 @@
 	}
 	
 	function input_replyAction(n247_reDes){
-
-		$("#input_card_reply").val('');
 		
+		$("#input_card_reply").val('');
+		$("#input_card_reply").attr('disabled', true);
+		$('#modal_card_footer_spiner').html('<div class="spinner-border text-light" role="status"></div>');
 		//console.log("댓글입력 끝나고 카드 모달 다시보여줘야돼 : " + n247_rePoId);
 		createReplyAction(n247_reDes,p2,n247_rePoId,p1);
 	}
@@ -1677,6 +1678,7 @@
 	var fileUpdateCheck = 0;
 	var upFile_id = 0;
 	var upFile_name = "";
+	
 	function getOneCardAjax2(cardId){
 		
 		 //console.log("어디까지 오나1 : " + cardId);
@@ -1689,7 +1691,6 @@
 		.done(function(data) {
 			var myCardCheck = 0;
 			var oneCardList = [];
-			
 			$('#modal_card_updateFile_body_fileSelecter').empty();
 			$('#modal_card_updateFile_body_deleteFile').empty();
 			for(var i=0 ; i<data.length ; i++){
@@ -1706,6 +1707,7 @@
 					'<div id="cardImageDiv"></div>'+
 					'<div id="fileDownLink"></div>'+
 					'<div id="cardDescriptionDiv"></div>'+
+					'<div class="card_des_input"></div>'+
 					'<div id="replyLine"></div>'+
 					'<div id="replyListDiv"></div>'+
 					'<div id="replyInputTest"></div>'
@@ -1722,33 +1724,50 @@
 			if(oneCardList[0].description === ""){
 				$('#cardDescriptionDiv').html('<br><h6>내용을 입력해주세요</h6>');
 			}else{
-				$('#cardDescriptionDiv').html('<br><h6>'+ oneCardList[0].description +'</h6>');
+				$('#cardDescriptionDiv').html('<br><h6 id="cardDesHTag">'+ oneCardList[0].description +'</h6>');
 			}
 			
 			$("#replyListDiv").empty();
 			$("#replyLine").empty();
 			$('#replyLine').html('<hr>');
-			$('#modal_card_footer').html('<input type="text" class="form-control col" onKeypress="javascript:if(event.keyCode==13) {input_replyAction(this.value)}" placeholder="메모를 입력해주세요" id="input_card_reply" maxlength="45">'+
+			$('#modal_card_footer').html(
+					'<input type="text" class="form-control col" onKeypress="javascript:if(event.keyCode==13) {input_replyAction(this.value)}" placeholder="메모를 입력해주세요" id="input_card_reply" maxlength="45">'+
+					'<div id="modal_card_footer_spiner"></div>'+
 					'<a style="color:#666666" href="#" onclick="inputMemoImg('+oneCardList[0].id+')"><i class="material-icons" id="modal_button_inputFile">attach_file</i></a>'+
 					'<button type="button" onclick="reload()" class="btn btn-outline-secondary" data-bs-dismiss="modal">닫기</button>'
 					);	
+			
 			var reIdCheck = 0;
 			for(var i=0 ; i<oneCardList.length ; i++){
 				if(oneCardList[i].N247_reDes != null && oneCardList[i].idN247_re != reIdCheck && oneCardList[i].N247_reUsId == p2 && oneCardList[i].N247_reIsDel == 0){
 					reIdCheck = oneCardList[i].idN247_re;
 					if(oneCardList[i].n247_reFile != null){
-						$("#replyListDiv").append(
-								'<div class="row">'+
-									'<div class="col" id="card_reply_'+oneCardList[i].idN247_re+'">'+
-								      '<small style="color:black">'+oneCardList[i].nickName+'</small>'+
-								      '<a><small>'+' '+oneCardList[i].N247_reDes+'</small></a>'+
-								      '<small style="color:#dcdee0">'+'\u00a0\u00a0'+oneCardList[i].N247_reKrModified+'</small>'+
-								      '<br><div class="row"><div class="row"><div class="col-sm-12"><a onclick="reFileUpdate('+oneCardList[i].idN247_re+')" ><img src="/images/'+oneCardList[i].n247_reFile+'" class="rounded float-start" width="200"></a></div></div>'+
-								      '<input type="hidden" id="reFileName_'+oneCardList[i].idN247_re+'" value="'+oneCardList[i].n247_reFile+'">'+
-								      '<input type="hidden" id="reFileOrgName_'+oneCardList[i].idN247_re+'" value="'+oneCardList[i].n247_reOrgFile+'">'+
-								      '<div class="reFileMenu" id="icontest_'+oneCardList[i].idN247_re+'"></div></div>'+
-								      '</div>'+
-							    '</div>');	
+						if(oneCardList[i].n247_reUpCheck != 1){
+							$("#replyListDiv").append(
+									'<div class="row">'+
+										'<div class="col" id="card_reply_'+oneCardList[i].idN247_re+'">'+
+									      '<small style="color:black">'+oneCardList[i].nickName+'</small>'+
+									      '<a><small>'+' '+oneCardList[i].N247_reDes+'</small></a>'+
+									      '<small style="color:#dcdee0">'+'\u00a0\u00a0'+oneCardList[i].N247_reKrModified+'</small>'+
+									      '<br><div class="row"><div class="row"><div class="col-sm-12"><a href="#" onclick="reFileUpdate('+oneCardList[i].idN247_re+')" ><img src="/images/'+oneCardList[i].n247_reFile+'" class="rounded float-start" width="200"></a></div></div>'+
+									      '<input type="hidden" id="reFileName_'+oneCardList[i].idN247_re+'" value="'+oneCardList[i].n247_reFile+'">'+
+									      '<input type="hidden" id="reFileOrgName_'+oneCardList[i].idN247_re+'" value="'+oneCardList[i].n247_reOrgFile+'">'+
+									      '<div class="reFileMenu" id="icontest_'+oneCardList[i].idN247_re+'"></div></div>'+
+									      '</div>'+
+								    '</div>');	
+						}else{
+							$("#replyListDiv").append(
+									'<div class="row">'+
+										'<div class="col" id="card_reply_'+oneCardList[i].idN247_re+'">'+
+									      '<small style="color:black">'+oneCardList[i].nickName+'</small>'+
+									      '<br><div class="row"><div class="row"><div class="col-sm-12"><a href="#" onclick="reFileUpdate('+oneCardList[i].idN247_re+')"><i class="bi bi-files"></i><small>'+' '+oneCardList[i].N247_reDes+'</small></a><small style="color:#dcdee0">'+'\u00a0\u00a0'+oneCardList[i].N247_reKrModified+'</small></div></div>'+
+									      '<input type="hidden" id="reFileName_'+oneCardList[i].idN247_re+'" value="'+oneCardList[i].n247_reFile+'">'+
+									      '<input type="hidden" id="reFileOrgName_'+oneCardList[i].idN247_re+'" value="'+oneCardList[i].n247_reOrgFile+'">'+
+									      '<div class="reFileMenu" id="icontest_'+oneCardList[i].idN247_re+'"></div></div>'+
+									      '</div>'+
+								    '</div>');	
+						}
+						
 					}else{
 						$("#replyListDiv").append(
 								'<div class="row">'+
@@ -1794,28 +1813,40 @@
 			if(oneCardList[0].userNum == p2){
 				myCardCheck = 1;
 			}
+			
 			$("#cardModalLabel").on("click",function(){
-				$('#cardModalLabel').empty();
+				
 				if(myCardCheck == 1){
-					$('#cardModalLabel').html(
-							'<input type="text" class="form-control col" onKeypress="javascript:if(event.keyCode==13) {updateCardTitle(this.value,'+oneCardList[0].id+')}" value="'+ oneCardList[0].postTitle +'" id="update_card_title" maxlength="45">'
-							);
+					
+					$('#cardModalLabel').hide();
+					$('.modal_card_title_input').show();
+					$('.modal_card_title_input').html(
+							'<div class="row">'+
+							'<input type="text" class="form-control col" onKeypress="javascript:if(event.keyCode==13) {updateCardTitle(this.value,'+oneCardList[0].id+')}" value="'+ oneCardList[0].postTitle +'" id="update_card_title" maxlength="45"><button type="button" class="close btn btn-round" onclick="updat_cardTitle_cancle()" ><i class="material-icons">close</i></button>'+
+							'</div>');
 					getOneCardId(oneCardList[0].dueDayString);
 				}else{
+					
 					$('#cardModalLabel').text(oneCardList[0].postTitle);
 				}
 	
 			});
 
-			$("#cardDescriptionDiv").on("click",function(){
-				$('#cardDescriptionDiv').empty();
+			$("#cardDescriptionDiv").on("click",function(){		
+				
+				console.log('카드내용 빼오기 테스트 :'+document.getElementById("cardDesHTag").innerHTML);
+				const cardDes = document.getElementById("cardDesHTag").innerHTML;
 				if(myCardCheck == 1){
-					$('#cardDescriptionDiv').html(
-							'<textarea class="form-control col" rows="3"  onKeypress="javascript:if(event.keyCode==13) {updateCardDescription(this.value,'+oneCardList[0].id+')}">'+oneCardList[0].description+'</textarea>'+
+					
+					$('#cardDescriptionDiv').hide();
+					$('.card_des_input').show();
+					$('.card_des_input').html(
+							'<textarea class="form-control col" rows="3"  onKeypress="javascript:if(event.keyCode==13) {updateCardDescription(this.value,'+oneCardList[0].id+')}">'+cardDes+'</textarea>'+
 							'<p>'+
 							'<div class="container">'+
 								'<div class="row justify-content-md-center">'+
 									'<div class="col-md-auto">'+
+									    '<button type="button" class="close btn btn-round" onclick="updat_cardDes_cancle()" ><i class="material-icons">close</i></button>'+
 							   		    '<a style="color:#666666" data-toggle="tooltip" title="파일첨부" onclick="updateCardFile()" data-bs-toggle="modal" data-bs-target="#modal_card_updateFile">'+
 							   			'<i class="material-icons">attach_file</i>'+
 							       		'</a><p>'+
@@ -1826,7 +1857,7 @@
 					
 				}else{
 					
-					$('#cardDescriptionDiv').html('<br><h6>'+ oneCardList[0].description +'</h6>');
+					$('#cardDescriptionDiv').html('<br><h6 id="cardDesHTag">'+ oneCardList[0].description +'</h6>');
 					
 				}
 				card_id = oneCardList[0].id;
@@ -1852,7 +1883,19 @@
 	function getOneCardId(dueDayString){
 		dueDay = dueDayString;
 	}
+	function updat_cardDes_cancle(){
+		console.log('테스트 성공');	
+		$('.card_des_input').hide();
+		$('#cardDescriptionDiv').show();
+		
+	}
 	
+	function updat_cardTitle_cancle(){
+		console.log('테스트성공');
+		$('.modal_card_title_input').hide();
+		$('#cardModalLabel').show();
+		
+	}
 	//리플레이 업데이트 함수
 	var replyUpdateId = 0;
 	
@@ -1866,23 +1909,35 @@
 		replyUpdateId = replyId;
 		$('#reDesc_input_'+replyId+'').html(
 				'<div class="input-group">'+
+				'<button type="button" class="close btn btn-round" onclick="updat_reply_cancle()" ><i class="material-icons">close</i></button>'+
 				'<input type="text" class="form-control col" onKeypress="javascript:if(event.keyCode==13) {replyDesUpdate(this.value)}" placeholder="'+x+'" maxlength="45">'+
 				'<button onclick="deleteReply()" class="btn btn-outline-secondary" type="button"><i data-toggle="tooltip" title="메모삭제" class="bi bi-trash3"></i></button>'+
+				
 				'</div>'		
 				);
 	}
 	
+	function updat_reply_cancle(){
+		console.log('테스트 성공');
+		$('.reDescription_input').html('');
+		$('.reDescription').show();
+	}
 	function reFileUpdate(replyId){
 		$('.reFileMenu').html('');
 		const reFileName = document.getElementById("reFileName_"+replyId).value;
 		const reOrgFileName = document.getElementById("reFileOrgName_"+replyId).value;
 		replyUpdateId = replyId;
-		$('#icontest_'+replyId+'').html(
+		$('#icontest_'+replyId+'').show();
+		$('#icontest_'+replyId+'').html(		
 				'<a href="/images/'+reFileName+'" download="'+reOrgFileName+'"><button class="btn btn-outline-secondary" type="button"><i class="bi bi-caret-down-square"></i></button></a>'+
-				'<button onclick="deleteReply()" class="btn btn-outline-secondary" type="button"><i style="color:#666666" data-toggle="tooltip" title="파일삭제" class="bi bi-trash3"></i></button>'
+				'<button onclick="deleteReply()" class="btn btn-outline-secondary" type="button"><i style="color:#666666" data-toggle="tooltip" title="파일삭제" class="bi bi-trash3"></i></button>'+
+				'<button onclick="memo_fileOption_cancle('+replyId+')" class="btn btn-outline-secondary" type="button"><i class="bi bi-x" style="color:#666666"></i></button>'
 				);
 	}
-	
+	function memo_fileOption_cancle(replyId){
+		console.log('취소 테스트 성공');
+		$('#icontest_'+replyId+'').hide();
+	}
 	function reFileUpdateMouseOut(replyId){
 		
 		$('#icontest_'+replyId+'').html('');
@@ -1960,14 +2015,17 @@
 	};
 	
 	function updateCardTitle(postTitle,id){
-		
+			$('.modal_card_title_input').html('<div class="spinner-border text-light" role="status"></div>');
 		 $.ajax({
 	         url: 'updateCardTitleAjax',
 	    	 method: "POST",
 	 	     data: {'postTitle': postTitle, 'id' : id }
 	 	     })
 	 	
-		.done(function() {		
+		.done(function() {	
+			$('.modal_card_title_input').html('');
+			$('.modal_card_title_input').hide();
+			$('#cardModalLabel').show();
 			$('#cardModalLabel').text(postTitle);	
 			$('#card_title_'+id+'').html('<h6 data-filter-by="text" id="card_title_'+id+'">'+postTitle+'<p><small>'+dueDay+' 까지 완료</small></h6><br>');
 		});
@@ -1975,14 +2033,32 @@
 	
 	function updateCardDescription(description,id){
 		//console.log("어디까지 오나3 : " + description);
+			
+			$('.card_des_input').html('<div class="spinner-border text-light" role="status"></div>');
 		 $.ajax({
 	         url: 'updateCardDescriptionAjax',
 	    	 method: "POST",
 	 	     data: {'description': description, 'id' : id }
 	 	     })
 	 	
-		.done(function() {		
-			$('#cardDescriptionDiv').html('<br><h6>'+description+'</h6>');
+		.done(function() {	
+			$('.card_des_input').hide();
+			$('.card_des_input').html(
+					'<textarea class="form-control col" rows="3"  onKeypress="javascript:if(event.keyCode==13) {updateCardDescription(this.value,'+id+')}">'+description+'</textarea>'+
+					'<p>'+
+					'<div class="container">'+
+						'<div class="row justify-content-md-center">'+
+							'<div class="col-md-auto">'+
+							    '<button type="button" class="close btn btn-round" onclick="updat_cardDes_cancle()" ><i class="material-icons">close</i></button>'+
+					   		    '<a style="color:#666666" data-toggle="tooltip" title="파일첨부" onclick="updateCardFile()" data-bs-toggle="modal" data-bs-target="#modal_card_updateFile">'+
+					   			'<i class="material-icons">attach_file</i>'+
+					       		'</a><p>'+
+				       		'</div>'+
+			   			'</div>'+
+		   			'</div>'
+			       		);
+			$('#cardDescriptionDiv').show();
+			$('#cardDescriptionDiv').html('<br><h6 id="cardDesHTag">'+description+'</h6>');
 			$('#card_description_'+id+'').text('\u00a0\u00a0\u00a0'+description+'');
 		});
 	};
@@ -2012,8 +2088,11 @@
 										'<div class="col" id="reply_reinsert_'+insertReplyPreNumber+'">'+
 									      '<small style="color:black">'+userNickName+'</small>'+
 									      '<div><a><small  onclick="replyReInsert(this.id)" id="'+n247_reDes+'">'+' '+n247_reDes+'</small></a><small style="color:#dcdee0">\u00a0\u00a0 지금</small></div>'+
-									    '</div>'+
-							    	'</div>');
+								        '</div>'+
+							    	'</div>'+
+							    	'<div class="reDescription_input2"></div>');
+			$("#input_card_reply").attr('disabled', false);
+			$('#modal_card_footer_spiner').html('');
 			
 			
 		})
@@ -2021,15 +2100,25 @@
 	
 	function replyReInsert(n247_reDes){
 		//console.log("임시번호 부여하기 어떻게 되가니2" + insertReplyPreNumber);
-		$('#reply_reinsert_'+insertReplyPreNumber+'').html(
-				'<div class="input-group">'+
+		$('.reDescription_input2').html();
+		$('#reply_reinsert_'+insertReplyPreNumber+'').hide();
+		$('.reDescription_input2').html(
+				'<div class="reDescription_input">'+
+				'<div class="row">'+
+				'<button type="button" class="close btn btn-round" onclick="updat_reply_cancle2('+insertReplyPreNumber+')" ><i class="material-icons">close</i></button>'+
 				'<input type="text" class="form-control col" onKeypress="javascript:if(event.keyCode==13) {updateReDesToDes(this.value)}" placeholder="'+n247_reDes+'" maxlength="45">'+
-				'<button onclick="deleteChangeReply()" class="btn btn-outline-secondary" type="button"><i data-toggle="tooltip" title="메모삭제" class="bi bi-trash3"></i></button>'+
+				'<button onclick="deleteChangeReply()" class="btn btn-outline-secondary" type="button" id="card_modal_memo_deleteButton"><i data-toggle="tooltip" title="메모삭제" class="bi bi-trash3"></i></button>'+
+				'</div>'+
 				'</div>'
 				);
+		
 		replyReInsert_delReplyDes(n247_reDes);
 	}
-	
+	function updat_reply_cancle2(id){
+		console.log('테스트 성공');
+		$('.reDescription_input2').html('');
+		$('#reply_reinsert_'+id+'').show();
+	}
 	var delReply = '';
 	function replyReInsert_delReplyDes(delReDes){
 		delReply=delReDes;
@@ -2072,6 +2161,7 @@
 			$('#reply_reinsert_'+insertReplyPreNumber+'').empty();
 			
 		});
+		modalClose();
 	}
 	
 
