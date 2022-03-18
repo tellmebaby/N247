@@ -17,216 +17,135 @@
     <title>N247</title>
   </head>
   <body>
-	  	    <nav class="py-2 bg-light border-bottom">
-			    <div class="container d-flex flex-wrap">
-			      <ul class="nav me-auto">
 	
-			      </ul>
-			      <ul class="nav">
-			        <li class="nav-item"><a href="#" class="nav-link link-dark px-2" data-bs-toggle="modal" data-bs-target="#member-login-Modal">Login</a></li>
-			        <li class="nav-item"><a href="#" class="nav-link link-dark px-2" data-bs-toggle="modal" data-bs-target="#member-signUp-Modal">Sign up</a></li>
-			      </ul>
-			    </div>
-			</nav>
-
-  			<p>
+  			<br><br><br>
 		    <div class="container">
-			  <div class="row justify-content-md-center">
-			    <div class="col-md-8">
-			      <img src="/images/logoN247.png" class="img-fluid">
+			  <div class="row justify-content-center">
+			    <div class="col-auto">
+			      <img src="/images/logoN247.png" class="img-fluid" width="450">
 			    </div>
 			  </div>
-			  <div class="row justify-content-md-center">
+			  <div class="row justify-content-center">
 			    <div class="col-md-auto">
 			       <small class=erm >${errorMessage }</small>
 			    </div>
 			  </div>
 			</div>
-			
-			<p>
-		    <p>
-		    <p>
 		   
 		   	<div class="container">
-			  <div class="row justify-content-md-center">
-			    <div class="col-md-6">
-			    	<img src="/images/mainImg.png" class="img-fluid">
+			  <div class="row justify-content-center">
+			    <div class="col-auto">
+			    	<img src="/images/mainImg.png" class="img-fluid" width="350">
 			    </div>
 			  </div>
 			</div>
-		   
-<!-- 		modal start -->
-		   <div class="modal fade" id="member-login-Modal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
-		 	 <div class="modal-dialog">
-		  	  <form action="loginAction" method="post" >
-		  	   <div class="modal-content">
-		  	     <div class="modal-header">
-		  	       <h5 class="modal-title" id="ModalLabel">Login</h5>	
-		  	       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-		  	     </div>
-		  	     <div class="modal-body">    
-		           <div class="mb-3 row">
-		   			<label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
-		   			 <div class="col-sm-10">
-		     			 <input type="text" name="id" class="form-control" id="staticEmail" placeholder="email@example.com">
-		   		  	 </div>
-		 	       </div>
-				   <div class="mb-3 row">
-					 <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
-					  <div class="col-sm-10">
-					   <input type="password" name="password" class="form-control" id="inputPassword">
-					  </div>   
-				   </div>
-				 </div>
-		    	 <div class="modal-footer" id="modal_footer_button">
-		           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-		           <button type="submit" class="btn btn-primary" id="modal_login_button">로그인</button>
-		         </div>
-		      </div>
-		     </form>
-		    </div>
-		   </div>
 
- 			<div class="modal fade" id="member-signUp-Modal" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
-		 	 <div class="modal-dialog">
-		  	  <form action="memberAction" method="post" >
-		  	   <div class="modal-content">
-		  	     <div class="modal-header">
-		  	       <h5 class="modal-title" id="ModalLabel">Sign up</h5>	
-		  	       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-		  	     </div>
-		  	     <div class="modal-body">    
-		           <div class="mb-3 row">
-		           
-		   			<label for="staticEmail-signUp" class="col-sm-2 col-form-label">이메일</label>
-		   			 <div class="col-sm-10">
-		     			 <input type="text" name="id" class="form-control" required id="idInput" placeholder="email@example.com">
-		   		  	 </div>
-		 	       </div>
-		 	       <div class="mb-3 row">
-		   			<label for="staticEmail" class="col-sm-2 col-form-label">계정이름</label>
-		   			 <div class="col-sm-10">
-		     			 <input type="text" name="nickName" class="form-control" id="nickInput" placeholder="10자이내 입력">
-		   		  	 </div>
-		   		  	 
-		 	       </div>
-				   <div class="mb-3 row">
-					 <label for="inputPassword1" class="col-sm-2 col-form-label">비밀번호</label>
-					  <div class="col-sm-10">
-		     			 <input type="password" name="password" class="form-control" id="inputPassword1" placeholder="숫자문자조합 8자이상 입력">
-		   		  	 </div>  
-				   </div>
-				   <div class="mb-3 row">
-					 <label for="inputPassword" class="col-sm-2 col-form-label">비밀번호 재입력</label>
-					  <div class="col-sm-10">
-					   <input type="password" name="passwordConfirm" class="form-control" id="inputPassword2">
-					  </div>   
-				   </div>
-				   <div class="alert alert-warning text-small" role="alert">
-			                 <span>비밀번호는 숫자문자조합 8자이상 입력 </span>
-			            </div>
-				 </div>
-		    	 <div class="modal-footer">
-		           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-		           <button type="submit" class="btn btn-primary">가입하기</button>
-		         </div>
-		      </div>
-		     </form>
-		    </div>
-		   </div>
-
+		    <br><br>
+			 <div class="container">
+			  <div class="row justify-content-center">
+			    <div class="col-auto">
+			    	<a href="javascript:void(0)" onclick="kakaoLogin();"><img class="img-fluid" src="resources/images/kakao_login_medium_wide.png"></a>
+			    </div>
+			  </div>
+			 </div>
+			 
+<!-- 			 <br><br> -->
+<!-- 			 <div class="container"> -->
+<!-- 			  <div class="row justify-content-center"> -->
+<!-- 			    <div class="col-auto"> -->
+<!-- 			    	<a href="javascript:void(0)" onclick="test2login();">test3 login</a> -->
+<!-- 			    </div> -->
+<!-- 			  </div> -->
+<!-- 			 </div> -->
+			
 		<script type="text/javascript" src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
-
+		<!-- 카카오 스크립트 -->
+		<script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
 
 			<script>
 			
+			//카카오로그인
 			
-			var idCheckOk = 0; //현재는 체크안한 상태
-			var nickNameCheckOk = 0; //현재는 체크안한 상태 
+			Kakao.init('8fb8c0ff6b3b686826534e5606e18674'); //발급받은 키 중 javascript키를 사용해준다.
+			console.log(Kakao.isInitialized()); // sdk초기화여부판단
+			//카카오로그인
+			function kakaoLogin() {
+			    Kakao.Auth.login({
+			      success: function (response) {
+			        Kakao.API.request({
+			          url: '/v2/user/me',
+			          success: function (response) {
+			        	  //response 를 받아왔어요 
+			        	  const id = response.id;
+			        	  const nickName = response.properties.nickname;
+			        	  const userImg = response.properties.profile_image;
+						  const token = Kakao.Auth.getAccessToken();
+						  
+			        	  console.log(Kakao.Auth.getAccessToken());
+			        	  
+			        	  console.log('보낼아이들 :' + id + nickName + userImg + token);
+			        	  loginKakaoAction(id, nickName, userImg, token);
 			
-			$("#idInput").change(function idCheck(){
+			        	  //보낼거야  이름, 아이디, 사진 그리고 토큰도 보낼거야 loginAction 안했어
+			        	  //loginAction 에서 할일은 우선, if 에서 토큰이 유효한지 검증  했어
+			        	  //true = 아이디가 디비에 존재하는지 검증 내가 할게 
+			        	  //true = 그냥 로그인 / false = 회원가입후 로그인 db에기록 내가 할게 
+			        	  
+			        	  //curl -v -X GET "https://kapi.kakao.com/v1/user/access_token_info" \ -H "Authorization: Bearer ${ACCESS_TOKEN}" 하는 방법 
+			        	  //request.getHeader(String)
+			        	  
+			          },
+			          fail: function (error) {
+			            console.log(error)
+			          },
+			        })
+			      },
+			      fail: function (error) {
+			        console.log(error)
+			      },
+			    })
+			  }
+
+			//로그인 돌려서 체크 받아와
+			function loginKakaoAction(id, nickName, userImg, token){
+				$.ajax({
+			        url: 'loginKakaoAction',
+			   	 method: "POST",
+				     data: {'id': id, 'nickName' : nickName, 'userImg' : userImg , 'token' : token}
+				     })
 				
-				var id = $('#idInput').val();
-				
-				 $.ajax({
-			         url: 'idCheck',
-			    	 method: "POST",
-			 	     data: {'id': id}
-			 	     })
-			 	
-				.done(function(data) {
-					if(data==1){
-						
-						$('#idInput').val('');
-						$('#idInput').attr("placeholder", "해당 email은 사용 할 수 없습니다.");
-						//사용할수 없습니다를 띄어
-						
-						}else{
-						idCheckOk = true;
-						
-						//사용할수 있습니다를 띄어 
-						//idCheckOk = true;
-						}
-					})
+				.done(function(data) {	
+					const idCheck = data;
+					//로그인 결과에 따라 로그인이 달라진다.
+					//첫탭 만들기는 보드 넘어가서 하자 
+					//유저아이디를 받아오는 게 나을듯
+					if(idCheck == 1){
+						console.log('우리 회원입니다.')
+						location.href="/mvc/board";
+					}
+			
 				});
+			}
 			
-			$("#nickInput").change(function nickCheck(){
+			function test2login() {
+				const id = "test2";
+				$.ajax({
+			        url: 'test2loginAction',
+			   	 method: "POST",
+				     data: {'id': id}
+				     })
 				
-				var nick = $('#nickInput').val();
-				 $.ajax({
-			         url: 'nickCheck',
-			    	 method: "POST",
-			 	     data: {'nickName': nick}
-				 	})
-				 	
-				.done(function(data) {
-					if(data==1){
-						
-							$('#nickInput').val('');
-							$('#nickInput').attr("placeholder", "해당 이름은 사용 할 수 없습니다.");
-							//사용할수 없습니다를 띄어
-						}else{
-							nickNameCheckOk = true;
-						}
-					})
-				});
-			
-				$("#inputPassword1").change(function passwordCheck(){
-				
-				var password = $('#inputPassword1').val();
-				 $.ajax({
-			         url: 'passwordCheck',
-			    	 method: "POST",
-			 	     data: {'password': password}
-				 	})
-				 	
-				.done(function(data) {
-					if(data==1){
-						
-							$('#inputPassword1').val('');
-							$('#inputPassword1').attr("placeholder", "형식에 맞지 않습니다.");
-							//사용할수 없습니다를 띄어
-						}
-					})
-				});
-				
-				$("#inputPassword2").change(function passwordConfirm(){
-					var password =$('#inputPassword1').val();
-					var passwordConfirm =$('#inputPassword2').val();
-					
-					if(passwordConfirm == password){
-						
-					}else{
-						$('#inputPassword2').val('');
-						$('#inputPassword2').attr("placeholder", "비밀번호가 맞지 않습니다.");
+				.done(function(data) {	
+					const idCheck = data;
+					//로그인 결과에 따라 로그인이 달라진다.
+					//첫탭 만들기는 보드 넘어가서 하자 
+					//유저아이디를 받아오는 게 나을듯
+					if(idCheck == 1){
+						console.log('우리 회원입니다.')
+						location.href="/mvc/board";
 					}
 				});
-
-// 			$("#modal_login_button").on("click",function(){
-// 				console.log('테스트 성공');
-// 				$('#modal_login_button').attr('disabled', true);
-// 			});
-
+			}
 			</script>
 <!-- 		   modal end -->
 

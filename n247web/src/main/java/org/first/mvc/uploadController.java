@@ -65,7 +65,7 @@ public class uploadController {
     			logger.error("#Exception Message : {}",e.getMessage());
 			}
 		}
-		return new RedirectView ("/mvc/board?tabId="+tabId) ;
+		return new RedirectView ("/mvc/board?") ;
 	}
 	
 	
@@ -84,7 +84,7 @@ public class uploadController {
 	
 	@RequestMapping(value = "/register/updateFileAction", method = RequestMethod.POST, produces = "application/json; charset=UTF-8")
 	public RedirectView updateFileAction (Locale locale, Model model, MultipartHttpServletRequest multiRequest, Integer up_userId, Integer up_postId, Integer up_tabId) {
-		System.out.println("/register/createPostAction 돌아가는 중입니다.");
+		System.out.println("/register/updateFileAction 돌아가는 중입니다.");
 		
 		try {
 		fileService.uploadFile(multiRequest,up_userId,up_postId,up_tabId);

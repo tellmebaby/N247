@@ -246,6 +246,24 @@ public class DAO {
 				return result ;
 			}
 			
+			public static Integer getCountId(String id) {
+				String resource = "org/first/mvc/mybatis_config.xml";
+				InputStream inputStream;
+				
+				Integer result = 0;
+				
+				try {
+					inputStream = Resources.getResourceAsStream(resource);
+					SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+					SqlSession session = sqlSessionFactory.openSession();
+					result = session.selectOne("org.first.mvc.BaseMapper.getCountId", id);
+		
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+				return result ;
+			}
 			
 			public static Integer getCountPostCheck(Integer tabId) {
 				String resource = "org/first/mvc/mybatis_config.xml";
@@ -1385,12 +1403,11 @@ public class DAO {
 					}
 					return result;
 				}
-				public static void userInfoUpdate (String nickName, String mb_introduce ,Integer userId) {
+				public static void updateMemberIntroduce ( String mb_introduce ,Integer userId) {
 					
 					String resource = "org/first/mvc/mybatis_config.xml";
 					InputStream inputStream;
 					Member p1 = new Member();
-					p1.setNickName(nickName);
 					p1.setMb_introduce(mb_introduce);
 					p1.setUserId(userId);
 					
@@ -1510,7 +1527,7 @@ public class DAO {
 					}
 				}
 				
-				public static void updateFriAdmission(Integer idN247_f, Integer userNum, Integer tabId ) {
+				public static void updateFriAdmission(Integer idN247_f, Integer userNum) {
 					String resource = "org/first/mvc/mybatis_config.xml";
 					InputStream inputStream;
 					Fn247 p1 = new Fn247();
@@ -1811,6 +1828,27 @@ public class DAO {
 						SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
 						SqlSession session = sqlSessionFactory.openSession();
 						session.update("org.first.mvc.BaseMapper.updateTabDueDay", tab);
+						session.commit();
+						session.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				
+				//updateProjectLastUpdate
+				
+				public static void updateProjectLastUpdate (Integer tabId ) {
+					String resource = "org/first/mvc/mybatis_config.xml";
+					InputStream inputStream;
+
+					Post tab = new Post();
+					tab.setTabId(tabId);
+					
+					try {
+						inputStream = Resources.getResourceAsStream(resource);
+						SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+						SqlSession session = sqlSessionFactory.openSession();
+						session.update("org.first.mvc.BaseMapper.updateProjectLastUpdate", tab);
 						session.commit();
 						session.close();
 					} catch (IOException e) {
@@ -2702,6 +2740,25 @@ public class DAO {
 						 return result;
 					 }
 					
+					 
+				 // 친구검색
+					 public static List<Member> searchFriends (String search) {
+						 	List<Member> result = new ArrayList<Member>();
+						 	String resource = "org/first/mvc/mybatis_config.xml";
+							InputStream inputStream;
+							
+							try {
+								inputStream = Resources.getResourceAsStream(resource);
+								SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+								SqlSession session = sqlSessionFactory.openSession();
+								result = session.selectList("org.first.mvc.BaseMapper.searchFriends", search);
+							 	
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+
+						 return result;
+					 }
 				 //카드리스트 받아서 분류해준다.
 					 
 					 public static Post cardsSet (Member userIdTabId) {
@@ -2930,11 +2987,11 @@ public class DAO {
 						
 						 for (int i=0 ; i<postList.size(); i++) {
 							 if(postList.get(i).getId() != null) {
-								 //System.out.println("포스트 아이디가 있어서 실행중 : " + userId.getUserId());
+								 System.out.println("포스트 아이디가 있어서 실행중 : " + userId.getUserId());
 								 postList.get(i).setProgress(progress(postList.get(i).getCreate(),postList.get(i).getDueDay()));
 								 postList.get(i).setProgressBg(progressBg(postList.get(i).getProgress()));
 								 postList.get(i).setCompareMessage(calCardDueDate(dateChangeAction2(postList.get(i).getLastUpdate()),date_now));	
-								 //System.out.println("일단 postAdmCheck 를 0으로 넣었어 ");
+								 System.out.println("일단 postAdmCheck 를 0으로 넣었어 ");
 								 postList.get(i).setPostAdmCheck(0);
 								 postList.get(i).setDueDayString(dateToString3(postList.get(i).getDueDay()));
 								
@@ -2988,7 +3045,7 @@ public class DAO {
 						 }
 						 
 						 result.addAll(postList);
-						 
+						 System.out.println("포스트세팅 마친 아이들 :" + postList.size());
 						
 						 
 						 return result;
@@ -3304,5 +3361,56 @@ public class DAO {
 							 return result;
 						 }
 					    
+					    //카카오로그인 처음 이용시 디비에 기록해준다.
+					    public static void signIn (String id, String nickName, String userImg) {
+							String resource = "org/first/mvc/mybatis_config.xml";
+							InputStream inputStream;
+							Member p1 = new Member();
+							p1.setId(id);
+							p1.setNickName(nickName);
+							p1.setUserImg(userImg);
+							
+							try {
+								inputStream = Resources.getResourceAsStream(resource);
+								SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+								SqlSession session = sqlSessionFactory.openSession();
+								session.insert("org.first.mvc.BaseMapper.signIn", p1);
+								session.commit();
+								session.close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					    
+
+					    public static Integer getUserIdtoId (String id){
+							String resource = "org/first/mvc/mybatis_config.xml";
+							InputStream inputStream;
+							Integer result= 0 ;
+							try {
+								inputStream = Resources.getResourceAsStream(resource);
+								SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+								SqlSession session = sqlSessionFactory.openSession();
+								result = session.selectOne("org.first.mvc.BaseMapper.getUserIdtoId", id);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							 return result;
+						 }
+					    
+					    public static List<Member> getIntroduce (Integer userId){
+							String resource = "org/first/mvc/mybatis_config.xml";
+							InputStream inputStream;
+							List<Member> result = new ArrayList<Member>();
+							try {
+								inputStream = Resources.getResourceAsStream(resource);
+								SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+								SqlSession session = sqlSessionFactory.openSession();
+								result = session.selectList("org.first.mvc.BaseMapper.getIntroduce", userId);
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+							 return result;
+						 }
 					   
 }

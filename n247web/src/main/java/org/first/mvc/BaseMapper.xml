@@ -4,11 +4,15 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.first.mvc.BaseMapper">
  
- 
-  <select id="getCountId" resultType="integer">
-    SELECT count(*) id FROM hong.iamkayList where id
+  <select id="getUserIdtoId" resultType="Integer">
+  	SELECT userId FROM hong.N247_kakaoLogin WHERE id = #{id}
   </select>
-  
+   <select id="getCountId" resultType="integer">
+    SELECT count(*) id FROM hong.N247_kakaoLogin where id
+  </select>
+  <insert id="signIn" parameterType="org.first.mvc.entity.Member">
+    insert into hong.N247_kakaoLogin (hong.N247_kakaoLogin.create,id,nickName,userImg,hong.N247_kakaoLogin.modified) values (now(),#{id},#{nickName},#{userImg},now())
+  </insert>
   <insert id="insertFile" parameterType="org.first.mvc.entity.Upload">
     insert into hong.N247_up (hong.N247_up.create,hong.N247_up.up_lastModified,up_fileName,up_isDel,up_userId,up_postId,up_tabId,up_check,up_orgName) values (now(),now(),#{up_fileName},0,#{up_userId},#{up_postId},#{up_tabId},#{up_check},#{up_orgName})
   </insert>
@@ -137,22 +141,29 @@
   <select id="countFt" resultType="Integer">
   	select count(*) from hong.N247_ft where ft_tabId = #{ft_tabId} AND ft_isDel = 0 
   </select>
-
+  <select id="searchFriends" resultType="org.first.mvc.entity.Member">
+ 	SELECT * FROM hong.N247_kakaoLogin WHERE nickName = #{search}
+  </select>
   <select id="searchPostNick" resultType="org.first.mvc.entity.Post" parameterType="org.first.mvc.entity.Post">
 		<bind name="search1" value="'%' + _parameter.search + '%'" />
-			SELECT  hong.N247.tabId, hong.N247_tab.tabTitle, hong.member.nickName as nick, hong.N247.description, hong.N247.postTitle, hong.N247.lastUpdate , hong.N247.isDel
+			SELECT  hong.N247.tabId, hong.N247_tab.tabTitle, hong.N247_kakaoLogin.nickName as nick, hong.N247.description, hong.N247.postTitle, hong.N247.lastUpdate , hong.N247.isDel
 			FROM hong.N247 
-  			left join hong.member on userId = hong.N247.userNum 
+  			left join hong.N247_kakaoLogin on userId = hong.N247.userNum 
             left join hong.N247_tab on hong.N247_tab.tabId = hong.N247.tabId
-  			where hong.member.nickName like #{search1} AND hong.member.userId = #{userNum} 
-            or hong.N247.description like #{search1} AND hong.member.userId = #{userNum} 
-            or hong.N247.postTitle like #{search1} AND hong.member.userId = #{userNum} 
+  			where hong.N247_kakaoLogin.nickName like #{search1} AND hong.N247_kakaoLogin.userId = #{userNum} 
+            or hong.N247.description like #{search1} AND hong.N247_kakaoLogin.userId = #{userNum} 
+            or hong.N247.postTitle like #{search1} AND hong.N247_kakaoLogin.userId = #{userNum} 
             order by hong.N247.lastUpdate desc
   </select>
   
   <select id="getMemberNick" resultType="String">
     select nickName from hong.member where id = #{id}
   </select>
+  
+  <select id="getIntroduce" resultType="org.first.mvc.entity.Member">
+  	SELECT * FROM hong.N247_kakaoLogin where userId = #{userId}
+  </select>
+  
   <select id="getNickNameToUserNum" resultType="String">
   	select nickName from hong.member where userId = #{userNum}
   </select>
@@ -226,6 +237,9 @@
   <update id="updateProjectIntro" parameterType="org.first.mvc.entity.Post">
     update hong.N247_tab set tab_intro=#{tab_intro},hong.N247_tab.lastUpdate=now() where tabId=#{tabId}
   </update>
+  <update id="updateProjectLastUpdate" parameterType="org.first.mvc.entity.Post">
+    update hong.N247_tab set hong.N247_tab.lastUpdate=now() where tabId=#{tabId}
+  </update>
   <update id="updateTabDueDay" parameterType="org.first.mvc.entity.Post">
     update hong.N247_tab set tab_dueDay=#{tab_dueDay},hong.N247_tab.lastUpdate=now() where tabId=#{tabId}
   </update>
@@ -289,7 +303,7 @@
     UPDATE hong.N247_re SET N247_reIsDel = 1 , hong.N247_re.lastModified = now() WHERE N247_reDes = #{n247_reDes}
   </update>
   <update id="updateMemberIntroduce" parameterType="org.first.mvc.entity.Member">
-    UPDATE hong.member set nickName = #{nickName} ,mb_introduce = #{mb_introduce} , hong.member.modified = now() where userId = #{userId}
+    UPDATE hong.N247_kakaoLogin set mb_introduce = #{mb_introduce} , hong.N247_kakaoLogin.modified = now() where userId = #{userId}
   </update>
   <update id="updateUploadDel" parameterType="org.first.mvc.entity.Upload">
     UPDATE hong.N247_up set up_isDel = 1 where idN247_up = #{idN247_up}
@@ -318,16 +332,74 @@
   </select>
   
   <select id="getMemberList" resultType="org.first.mvc.entity.Member">
-   SELECT hong.N247_f.idN247_f, hong.N247_f.fUserId, hong.N247_f.myId, 
+  	SELECT hong.N247_f.idN247_f, hong.N247_f.fUserId, hong.N247_f.myId, 
 	hong.N247_f.adm, hong.N247_f.f_isDel, hong.N247_f.create as f_create, 
-	hong.member.id, hong.member.userId, hong.member.nickName, 
-	hong.member.mb_introduce, hong.member.userImg, hong.member.create, hong.member.modified
-   FROM hong.N247_f 
-   left join hong.member on userId = myId or userId = fUserId where f_isDel = 0 
-   AND myId = #{userId} OR f_isDel = 0 AND fUserId = #{userId}
+	hong.N247_kakaoLogin.id, hong.N247_kakaoLogin.userId, hong.N247_kakaoLogin.nickName, 
+	hong.N247_kakaoLogin.mb_introduce, hong.N247_kakaoLogin.userImg, hong.N247_kakaoLogin.create, hong.N247_kakaoLogin.modified
+	FROM hong.N247_f 
+	left join hong.N247_kakaoLogin on userId = myId or userId = fUserId where f_isDel = 0 
+    AND myId = #{userId} OR f_isDel = 0 AND fUserId = #{userId}
   </select>
   
-  <select id="getPostList" resultType="org.first.mvc.entity.Post">
+  
+   <select id="getPostList" resultType="org.first.mvc.entity.Post">
+    SELECT hong.N247_kakaoLogin.nickName, hong.N247_kakaoLogin.userImg, hong.N247_kakaoLogin.userId,
+ 	hong.N247_re.idN247_re,hong.N247_re.N247_rePoId,hong.N247_re.N247_reDes,
+ 	hong.N247_re.N247_reUsId,hong.N247_re.lastModified,hong.N247_re.N247_reIsDel,
+ 	hong.N247_up.idN247_up, hong.N247_up.up_fileName, hong.N247_up.up_orgName, hong.N247_up.up_check, hong.N247_up.up_lastModified, hong.N247_up.up_isDel, hong.N247_up.up_userId,
+ 	hong.N247.id, hong.N247.postTitle, hong.N247.description, hong.N247.isDel, hong.N247.create, hong.N247.lastUpdate,
+ 	hong.N247_tab.tabId, hong.N247.userNum, hong.N247.dueDay ,hong.N247_tab.tabTitle, hong.N247_tab.tab_intro,
+    hong.N247_tab.tab_dueDay, hong.N247_tab.create as tab_create, hong.N247_tab.isDel as tabCompCheck,  
+    hong.N247_tab.lastUpdate as tab_LastUpdate, hong.N247_tab.userNum as tab_userNum
+    FROM hong.N247_tab 
+	left join hong.N247_re on N247_rePoId = userNum 
+	left join hong.N247 on hong.N247.tabId = hong.N247_tab.tabId
+	left join hong.N247_up on up_postId = hong.N247.id
+	left join hong.N247_kakaoLogin on userId = hong.N247_re.N247_reUsId or userId = hong.N247.userNum
+ 	where hong.N247_tab.tabId = #{tabId} 
+ 	order by lastUpdate desc
+  </select>
+  
+  <select id="getFriendAdmList" resultType="org.first.mvc.entity.Member">
+  	SELECT idN247_ft,ft_userId FROM hong.N247_ft Where ft_tabId = #{tabId} and ft_isDel = 0
+  </select>
+
+  <select id="getReplyListCard" resultType="org.first.mvc.entity.Post">
+  	SELECT hong.N247.id, hong.N247.postTitle, hong.N247.description, hong.N247.create, hong.N247.lastUpdate ,
+	hong.N247.dueDay, hong.N247.userNum, hong.N247_re.idN247_re, hong.N247_re.N247_rePoId, hong.N247_re.N247_reDes,
+	hong.N247_re.N247_reUsId, hong.N247_re.lastModified, hong.N247_re.N247_reIsDel, hong.N247_re.N247_reFile, 
+    hong.N247_re.N247_reUpCheck,hong.N247_re.N247_reOrgFile,
+	hong.N247_up.idN247_up, hong.N247_up.up_fileName,  hong.N247_up.up_orgName, hong.N247_up.up_isDel,  
+	hong.N247_up.up_postId, hong.N247_up.up_check, hong.N247_kakaoLogin.id, hong.N247_kakaoLogin.nickName, 
+    hong.N247_kakaoLogin.userId, hong.N247_kakaoLogin.userImg
+	FROM hong.N247
+	left join hong.N247_re on N247_rePoId = hong.N247.id
+	left join hong.N247_up on up_postId = hong.N247.id
+	left join hong.N247_kakaoLogin on userId = N247_reUsId or userId = hong.N247.userNum
+	WHERE hong.N247.id = #{id}
+  </select>
+  
+  <select id="getFriTabList" resultType="org.first.mvc.entity.Member">
+  	SELECT hong.N247_ft.lastModified, hong.N247_ft.idN247_ft,
+  	hong.member.id, hong.member.nickName, hong.member.userId, hong.member.userImg 
+  	FROM hong.N247_ft
+	left join hong.member on userId = hong.N247_ft.ft_userId
+	WHERE ft_tabId = #{tabId} AND ft_isDel = 0
+  </select>
+  
+  <select id="getFriendsAdmList" resultType="org.first.mvc.entity.Member">
+    SELECT hong.N247_kakaoLogin.nickName, hong.N247_kakaoLogin.userImg, hong.N247_kakaoLogin.userId, hong.N247_kakaoLogin.id, hong.N247_kakaoLogin.mb_introduce,
+ 	hong.N247_f.idN247_f, hong.N247_f.fUserId, hong.N247_f.myId, hong.N247_f.f_isDel, hong.N247_f.adm,
+ 	hong.N247_ft.idN247_ft, hong.N247_ft.ft_tabId, hong.N247_ft.ft_userId, hong.N247_tab.userNum
+ 	FROM hong.N247_f 
+ 	left join hong.N247_ft on ft_userId = myId AND ft_isDel = 0 or ft_userId = fUserId AND ft_isDel = 0
+ 	left join hong.N247_kakaoLogin on userId = myId or userId = fUserId
+ 	left join hong.N247_tab on hong.N247_tab.tabId = ft_tabId
+ 	WHERE myId = #{userId} AND f_isDel = 0 OR fUserId = #{userId} AND f_isDel = 0
+  </select>
+  
+  
+  <select id="Legacy_getPostList" resultType="org.first.mvc.entity.Post">
     SELECT hong.member.nickName, hong.member.userImg, hong.member.userId,
  	hong.N247_re.idN247_re,hong.N247_re.N247_rePoId,hong.N247_re.N247_reDes,
  	hong.N247_re.N247_reUsId,hong.N247_re.lastModified,hong.N247_re.N247_reIsDel,
@@ -343,42 +415,6 @@
 	left join hong.member on userId = hong.N247_re.N247_reUsId or userId = hong.N247.userNum
  	where hong.N247_tab.tabId = #{tabId} 
  	order by lastUpdate desc
-  </select>
-  
-  <select id="getFriendAdmList" resultType="org.first.mvc.entity.Member">
-  	SELECT idN247_ft,ft_userId FROM hong.N247_ft Where ft_tabId = #{tabId} and ft_isDel = 0
-  </select>
-
-  <select id="getReplyListCard" resultType="org.first.mvc.entity.Post">
-  	SELECT hong.N247.id, hong.N247.postTitle, hong.N247.description, hong.N247.create, hong.N247.lastUpdate ,
-	hong.N247.dueDay, hong.N247.userNum, hong.N247_re.idN247_re, hong.N247_re.N247_rePoId, hong.N247_re.N247_reDes,
-	hong.N247_re.N247_reUsId, hong.N247_re.lastModified, hong.N247_re.N247_reIsDel, hong.N247_re.N247_reFile, hong.N247_re.N247_reUpCheck,hong.N247_re.N247_reOrgFile,
-	hong.N247_up.idN247_up, hong.N247_up.up_fileName,  hong.N247_up.up_orgName, hong.N247_up.up_isDel,  
-	hong.N247_up.up_postId, hong.N247_up.up_check, hong.member.id, hong.member.nickName, hong.member.userId, hong.member.userImg
-	FROM hong.N247
-	left join hong.N247_re on N247_rePoId = hong.N247.id
-	left join hong.N247_up on up_postId = hong.N247.id
-	left join hong.member on userId = N247_reUsId or userId = hong.N247.userNum
-	WHERE hong.N247.id = #{id}
-  </select>
-  
-  <select id="getFriTabList" resultType="org.first.mvc.entity.Member">
-  	SELECT hong.N247_ft.lastModified, hong.N247_ft.idN247_ft,
-  	hong.member.id, hong.member.nickName, hong.member.userId, hong.member.userImg 
-  	FROM hong.N247_ft
-	left join hong.member on userId = hong.N247_ft.ft_userId
-	WHERE ft_tabId = #{tabId} AND ft_isDel = 0
-  </select>
-  
-  <select id="getFriendsAdmList" resultType="org.first.mvc.entity.Member">
-    SELECT hong.member.nickName, hong.member.userImg, hong.member.userId, hong.member.id, hong.member.mb_introduce,
- 	hong.N247_f.idN247_f, hong.N247_f.fUserId, hong.N247_f.myId, hong.N247_f.f_isDel, hong.N247_f.adm,
- 	hong.N247_ft.idN247_ft, hong.N247_ft.ft_tabId, hong.N247_ft.ft_userId, hong.N247_tab.userNum
- 	FROM hong.N247_f 
- 	left join hong.N247_ft on ft_userId = myId AND ft_isDel = 0 or ft_userId = fUserId AND ft_isDel = 0
- 	left join hong.member on userId = myId or userId = fUserId
- 	left join hong.N247_tab on hong.N247_tab.tabId = ft_tabId
- 	WHERE myId = #{userId} AND f_isDel = 0 OR fUserId = #{userId} AND f_isDel = 0
   </select>
   
 </mapper>

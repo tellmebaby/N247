@@ -81,6 +81,8 @@ public class Member {
 	
 	private Integer idN247_ft;
 	
+	private Integer idN247_f;
+	
 	private int check;
 	
 	private Double progress;
@@ -98,6 +100,14 @@ public class Member {
 	
 	
 	
+	public Integer getIdN247_f() {
+		return idN247_f;
+	}
+
+	public void setIdN247_f(Integer idN247_f) {
+		this.idN247_f = idN247_f;
+	}
+
 	public Integer getUserNum() {
 		return userNum;
 	}
